@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug Backend (Spring)",
+            "request": "launch",
+            "mainClass": "edu.ntu.pms.PmsApplication",
+            "projectName": "pms",
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "type": "chrome",
+            "name": "Debug Frontend (Vite)",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/frontend",
+            "preLaunchTask": "Start Frontend", // This matches the label in tasks.json
+            "sourceMapPathOverrides": {
+                "webpack:///./src/*": "${webRoot}/src/*"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug Full Stack",
+            "configurations": [
+                "Debug Backend (Spring)",
+                "Debug Frontend (Vite)"
+            ],
+            "stopAll": true
+        }
+    ]
+}

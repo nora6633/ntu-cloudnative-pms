@@ -1,0 +1,35 @@
+{
+  "name": "Full Stack Dev (React + Spring)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace", // This is the primary service VS Code attaches to
+  "workspaceFolder": "/workspace",
+  "features": {
+    // Install Java 25
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "25",
+      "installMaven": "true"
+    },
+    // Install Node.js 24
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodejsVersion": "24"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack", // For Java development
+        "vmware.vscode-spring-boot-dashboard", // For Spring Boot support
+        "dbaeumer.vscode-eslint", // For linting JavaScript/TypeScript
+        "esbenp.prettier-vscode", // For code formatting
+        "ms-vscode.vscode-typescript-next", // For latest TypeScript support
+        "christian-kohler.npm-intellisense", // For better npm support
+        "postman.postman-for-vscode", // For API testing
+        "vitest.explorer", // For running Vitest tests
+        "vscjava.vscode-java-test", // For running Java tests
+        "mtxr.sqltools", // Database GUI
+				"mtxr.sqltools-driver-mysql" // MySQL Driver for GUI
+      ]
+    }
+  },
+  "forwardPorts": [5173, 8080]
+}

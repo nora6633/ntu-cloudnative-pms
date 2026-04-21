@@ -1,0 +1,27 @@
+services:
+  workspace:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - VITE_API_URL=http://localhost:8080/api
+    volumes:
+      - ..:/workspace:cached
+    network_mode: service:db # Optional: if you add a DB service
+    command: sleep infinity
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
