@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROPERTIES="$SCRIPT_DIR/.mvn/wrapper/maven-wrapper.properties"
+
+distributionUrl=$(grep '^distributionUrl=' "$PROPERTIES" | cut -d= -f2-)
+
+DIST_NAME=$(basename "$distributionUrl" .zip)
+M2_HOME="${MAVEN_USER_HOME:-$HOME/.m2}"
+DIST_DIR="$M2_HOME/wrapper/dists/$DIST_NAME"
+
+if [ -z "$(find "$DIST_DIR" -name "mvn" 2>/dev/null)" ]; then
+  echo "Downloading Apache Maven..."
+  mkdir -p "$DIST_DIR"
+  TMP=$(mktemp)
+  curl -fsSL "$distributionUrl" -o "$TMP"
+  unzip -q "$TMP" -d "$DIST_DIR"
+  rm -f "$TMP"
+fi
+
+MVN_BIN=$(find "$DIST_DIR" -name "mvn" -not -name "mvnDebug" -type f | head -1)
+exec "$MVN_BIN" "$@"
