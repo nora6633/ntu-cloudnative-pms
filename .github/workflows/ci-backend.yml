@@ -2,7 +2,6 @@ name: CI / Backend
 
 on:
   push:
-    branches: [main]
     paths: ['backend/**']
   pull_request:
     branches: [main]
@@ -17,7 +16,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: pms_test
           MYSQL_DATABASE: pms_test
         ports:
           - 3306:3306
@@ -45,7 +44,7 @@ jobs:
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pms_test
           SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: root
+          SPRING_DATASOURCE_PASSWORD: pms_test
         run: ./mvnw --no-transfer-progress verify
 
       - name: Upload test report
