@@ -103,7 +103,7 @@ Browser → CDN (React SPA) → Kubernetes Ingress → Spring Boot Pods (5–10 
 
 ## Getting Started
 
-> Prerequisites: Java 17+, Node.js 18+, Docker, MySQL
+> Prerequisites: Java 25 (eclipse-temurin:25-jdk-alpine), Node.js 24, Docker, MySQL
 
 ### 1. Clone the repository
 
