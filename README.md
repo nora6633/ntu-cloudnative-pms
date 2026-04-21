@@ -28,11 +28,11 @@ The Performance Management System (PMS) supports the full lifecycle of employee 
 
 | Module | Description |
 |---|---|
-| **Login** | JWT-based authentication with role claims |
+| **Login** | JWT stored in `HttpOnly; SameSite=Lax` cookie to prevent XSS token theft; CSRF token issued on login and validated on every state-changing request |
 | **Registration** | Admin-managed user account creation |
 | **Template** | HR creates evaluation templates per job type and evaluation cycle |
 | **Evaluation** | Full lifecycle: goal drafting → approval → progress → review → closure |
-| **Access Control** | Role-based and attribute-based access enforcement (HTTP 403 on violation) |
+| **Access Control** | Role-based access enforcement via `@PreAuthorize`; HTTP 403 on violation |
 | **Audit Log** | Immutable, append-only, tamper-proof audit trail for all CUD operations |
 | **Notification** *(optional)* | Real-time status-change notifications via Server-Sent Events (SSE) |
 
@@ -47,8 +47,8 @@ The Performance Management System (PMS) supports the full lifecycle of employee 
 **Backend**
 - Java / Spring Boot
 - Spring Data JPA
-- JWT for authentication
-- Casbin for access control
+- Spring Security with JWT for authentication
+- Spring Security with `@PreAuthorize` for role-based access control
 - Hibernate Envers for audit log
 
 **Database**
