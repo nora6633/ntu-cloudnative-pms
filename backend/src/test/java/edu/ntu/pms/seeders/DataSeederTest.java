@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import edu.ntu.pms.template.repository.TemplateRepository;
 import edu.ntu.pms.user.Role;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
@@ -34,9 +38,16 @@ class DataSeederTest {
     @Autowired
     private DepartmentRepository departmentRepository;
 
+    @Autowired
+    private TemplateRepository templateRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @BeforeEach
     void setUp() throws Exception {
         // Clear data before each test
+        templateRepository.deleteAll();
         userRepository.deleteAll();
         jobRepository.deleteAll();
         departmentRepository.deleteAll();
@@ -167,6 +178,7 @@ class DataSeederTest {
         long initialUserCount = userRepository.count();
         long initialJobCount = jobRepository.count();
         long initialDeptCount = departmentRepository.count();
+        long initialTemplateCount = templateRepository.count();
 
         // Run seeder again
         dataSeeder.run();
@@ -175,6 +187,22 @@ class DataSeederTest {
         assertEquals(initialUserCount, userRepository.count(), "User count should remain the same after re-running seeder");
         assertEquals(initialJobCount, jobRepository.count(), "Job count should remain the same after re-running seeder");
         assertEquals(initialDeptCount, departmentRepository.count(), "Department count should remain the same after re-running seeder");
+        assertEquals(initialTemplateCount, templateRepository.count(), "Template count should remain the same after re-running seeder");
+    }
+
+    @Test
+    void shouldSeedTemplatesForEachJob() {
+        assertEquals(12, templateRepository.count(), "Seeder should create one template per job per evaluation type");
+
+        for (Job job : jobRepository.findAll()) {
+            Long templateCount = entityManager.createQuery(
+                            "select count(t) from Template t where t.job.id = :jobId",
+                            Long.class)
+                    .setParameter("jobId", job.getId())
+                    .getSingleResult();
+
+            assertEquals(3L, templateCount, "Each job should have three seeded templates");
+        }
     }
 
     @Test

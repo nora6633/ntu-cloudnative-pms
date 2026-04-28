@@ -2,6 +2,7 @@ package edu.ntu.pms.user.entity;
 
 import java.util.List;
 
+import edu.ntu.pms.template.entity.Template;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,4 +32,7 @@ public class Job {
 
     @OneToMany(mappedBy = "job")
     private List<User> employees;
+    
+    @OneToMany(mappedBy = "job")
+    private List<Template> templates;
 }
