@@ -1,9 +1,16 @@
 import { render, screen } from '@testing-library/react';
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
+
+vi.mock('./api/axiosInstance', () => ({
+  default: {
+    get: vi.fn().mockRejectedValue(new Error('not authenticated')),
+    post: vi.fn(),
+  },
+}));
+
 import App from './App';
 
-test('renders the welcome message', () => {
+test('renders loading state while checking auth', () => {
   render(<App />);
-  const linkElement = screen.getByText(/Get started/i); // Matches "Get started"
-  expect(linkElement).toBeDefined();
+  expect(screen.getByText(/Loading/i)).toBeDefined();
 });

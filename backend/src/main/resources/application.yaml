@@ -28,3 +28,12 @@ logging:
     root: INFO
     org.springframework: INFO
     edu.ntu.pms: DEBUG
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-change-me-please-make-it-at-least-32-bytes-long}
+    expiration-minutes: 60
+  cookie:
+    name: AUTH_TOKEN
+    secure: ${COOKIE_SECURE:false}
+    same-site: Lax
