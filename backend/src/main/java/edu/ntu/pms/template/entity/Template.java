@@ -3,6 +3,7 @@ package edu.ntu.pms.template.entity;
 import java.util.List;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.user.entity.Job;
@@ -34,6 +35,7 @@ public class Template {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ManyToOne(optional = false)
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
