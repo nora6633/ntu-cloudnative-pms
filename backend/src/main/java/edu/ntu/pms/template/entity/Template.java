@@ -2,6 +2,9 @@ package edu.ntu.pms.template.entity;
 
 import java.util.List;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
 import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.user.entity.Job;
 import jakarta.persistence.CollectionTable;
@@ -15,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +26,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "templates")
+@Audited
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -31,6 +36,7 @@ public class Template {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ManyToOne(optional = false)
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
@@ -41,5 +47,6 @@ public class Template {
 
     @ElementCollection
     @CollectionTable(name = "template_criteria", joinColumns = @JoinColumn(name = "template_id"))
+    @OrderColumn(name = "position")
     List<Criterion> criteria;
 }

@@ -2,6 +2,8 @@ package edu.ntu.pms.evaluation.entity;
 
 import java.util.List;
 
+import org.hibernate.envers.Audited;
+
 import edu.ntu.pms.evaluation.enums.EvaluationStatus;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.user.entity.User;
@@ -21,6 +23,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "evaluations")
+@Audited
 @NoArgsConstructor
 @Data
 public class Evaluation {

@@ -1,5 +1,7 @@
 package edu.ntu.pms.evaluation.entity;
 
+import org.hibernate.envers.Audited;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "evaluation_items")
+@Audited
 @NoArgsConstructor
 @Data
 public class EvaluationItem {
