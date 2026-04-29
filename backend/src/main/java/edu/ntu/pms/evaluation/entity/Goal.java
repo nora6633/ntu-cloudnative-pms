@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.envers.Audited;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -19,6 +21,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "goals")
+@Audited
 @NoArgsConstructor
 @Data
 public class Goal {

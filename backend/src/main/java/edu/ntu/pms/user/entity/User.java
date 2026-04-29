@@ -2,6 +2,9 @@ package edu.ntu.pms.user.entity;
 
 import java.util.List;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
 import edu.ntu.pms.user.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +25,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Audited
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,6 +40,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 64)
     private String username;
 
+    @NotAudited
     @Column(nullable = false, length = 100)
     private String passwordHash;
 

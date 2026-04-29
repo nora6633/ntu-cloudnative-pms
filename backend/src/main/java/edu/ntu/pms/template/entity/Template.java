@@ -2,6 +2,8 @@ package edu.ntu.pms.template.entity;
 
 import java.util.List;
 
+import org.hibernate.envers.Audited;
+
 import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.user.entity.Job;
 import jakarta.persistence.CollectionTable;
@@ -22,6 +24,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "templates")
+@Audited
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
