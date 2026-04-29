@@ -1,7 +1,9 @@
 package edu.ntu.pms.security;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,17 +22,26 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.ntu.pms.auth.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final HandlerExceptionResolver resolver;
+    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
-    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, 
+        @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.resolver = resolver;
     }
 
     @Bean
@@ -53,21 +64,30 @@ public class WebSecurityConfig {
 
     @Bean
     AuthenticationEntryPoint unauthorizedEntryPoint() {
-        return (request, response, ex) -> writeError(response, HttpStatus.UNAUTHORIZED, "Authentication required");
+        return (request, response, ex) -> handleException(request, response, ex);
     }
 
     @Bean
     AccessDeniedHandler forbiddenAccessHandler() {
-        return (request, response, ex) -> writeError(response, HttpStatus.FORBIDDEN, "Access denied");
+        return (request, response, ex) -> handleException(request, response, ex);
     }
 
-    private static void writeError(jakarta.servlet.http.HttpServletResponse response,
-                                   HttpStatus status,
-                                   String message) throws java.io.IOException {
-        response.setStatus(status.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"message\":\"" + message + "\"}");
+    /*
+     * Delegates exception handling to the GlobalExceptionHandler via the HandlerExceptionResolver.
+     * We check if the response is already committed before trying to write to it,
+     * because if the exception happens late in the filter chain, the response might have
+     * already been sent to the client. In that case, we can't write a new error response, 
+     * so we just log the error instead.
+     */
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception ex) throws IOException {
+        if (!response.isCommitted()) {
+            resolver.resolveException(request, response, null, ex);
+        } else {
+            // If response is already committed, we can't write to it. Just log the error.
+            logger.error("Response already committed. Cannot delegate exception to GlobalHandler.", ex);
+        }
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

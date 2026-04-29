@@ -9,7 +9,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -24,6 +24,9 @@ spring:
       indent_output: true
     deserialization:
       fail-on-unknown-properties: false
+  mvc:
+    problemdetails:
+      enabled: true
 server:
   port: 8080
   servlet:
