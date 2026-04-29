@@ -7,9 +7,41 @@ on:
     branches: [main]
     paths: ['backend/**']
 
+concurrency:
+  group: ci-backend-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-test:
-    name: Build & Test (Spring Boot)
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-22.04
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      - name: Run unit tests
+        run: ./mvnw --no-transfer-progress -DexcludedGroups=integration test
+
+      - name: Upload unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-unit-test-report
+          path: backend/target/surefire-reports/
+
+  integration-tests:
+    name: Integration Tests
     runs-on: ubuntu-22.04
 
     services:
@@ -40,16 +72,16 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Build and test
+      - name: Run integration tests
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pms_test
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: pms_test
-        run: ./mvnw --no-transfer-progress verify
+        run: ./mvnw --no-transfer-progress -Dgroups=integration test
 
-      - name: Upload test report
+      - name: Upload integration test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: backend-test-report
+          name: backend-integration-test-report
           path: backend/target/surefire-reports/
