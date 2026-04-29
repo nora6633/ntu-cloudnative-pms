@@ -12,7 +12,7 @@ import edu.ntu.pms.evaluation.entity.EvaluationItem;
 import edu.ntu.pms.evaluation.entity.Goal;
 import edu.ntu.pms.evaluation.entity.Progress;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface EvaluationMapper {
 
     // Entity to DTO mappings
