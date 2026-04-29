@@ -14,7 +14,7 @@ concurrency:
 jobs:
   build-and-test:
     name: Build & Test (React)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     defaults:
       run:
