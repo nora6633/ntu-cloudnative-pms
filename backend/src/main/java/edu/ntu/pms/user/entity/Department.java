@@ -2,6 +2,7 @@ package edu.ntu.pms.user.entity;
 
 import java.util.List;
 
+import edu.ntu.pms.evaluation.entity.Evaluation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,4 +35,7 @@ public class Department {
 
     @OneToMany(mappedBy = "overseenDepartment")
     private List<User> overseers;
+
+    @OneToMany(mappedBy = "department")
+    private List<Evaluation> evaluations;
 }
