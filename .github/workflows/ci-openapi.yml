@@ -1,0 +1,28 @@
+name: CI / OpenAPI
+
+on:
+  push:
+    paths: ['docs/api/**']
+  pull_request:
+    branches: [main]
+    paths: ['docs/api/**']
+
+concurrency:
+  group: ci-openapi-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint OpenAPI spec
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Lint with Redocly
+        run: npx --yes @redocly/cli@latest lint docs/api/openapi.yaml
