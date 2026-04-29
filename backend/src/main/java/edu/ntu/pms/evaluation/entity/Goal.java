@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,10 +47,12 @@ public class Goal {
 
     @ElementCollection
     @CollectionTable(name = "goal_criteria", joinColumns = @JoinColumn(name = "goal_id"))
+    @OrderColumn(name = "position")
     private List<String> criteria = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "goal_progresses", joinColumns = @JoinColumn(name = "goal_id"))
+    @OrderColumn(name = "position")
     private List<Progress> progresses = new ArrayList<>();
 
     @ManyToOne(optional = false)

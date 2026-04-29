@@ -18,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,5 +47,6 @@ public class Template {
 
     @ElementCollection
     @CollectionTable(name = "template_criteria", joinColumns = @JoinColumn(name = "template_id"))
+    @OrderColumn(name = "position")
     List<Criterion> criteria;
 }
