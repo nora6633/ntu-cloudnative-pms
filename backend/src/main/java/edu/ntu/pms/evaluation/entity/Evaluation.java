@@ -3,6 +3,7 @@ package edu.ntu.pms.evaluation.entity;
 import java.util.List;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import edu.ntu.pms.evaluation.enums.EvaluationStatus;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
@@ -55,6 +56,7 @@ public class Evaluation {
     @JoinColumn(name = "supervisor_id", nullable = false)
     private User supervisor;
 
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
