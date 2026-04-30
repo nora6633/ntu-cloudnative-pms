@@ -221,6 +221,8 @@ public class EvaluationServiceImpl implements EvaluationService {
         checkHrAccess(eval);
         eval.getStatus().assertIsPendingClosure(eval);
 
+        User hr = currentUser.get();
+        eval.snapshot(hr);
         eval.approve();
         repo.save(eval);
     }

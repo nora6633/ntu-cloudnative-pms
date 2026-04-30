@@ -107,4 +107,18 @@ public class Evaluation {
     public void reject() {
         this.status.handleReject(this);
     }
+
+    public void snapshot(User hr) {
+        this.employeeName = employee.getUsername();
+        this.employeeJobTitle = employee.getJob().getTitle();
+        this.employeeDepartmentName = employee.getDepartment().getName();
+
+        this.supervisorName = supervisor.getUsername();
+        this.supervisorJobTitle = supervisor.getJob().getTitle();
+        this.supervisorDepartmentName = supervisor.getDepartment().getName();
+
+        this.hrName = hr.getUsername();
+        this.hrJobTitle = hr.getJob().getTitle();
+        this.hrDepartmentName = hr.getDepartment().getName();
+    }
 }
