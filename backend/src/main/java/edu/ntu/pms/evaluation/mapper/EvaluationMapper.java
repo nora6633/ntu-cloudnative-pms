@@ -3,6 +3,7 @@ package edu.ntu.pms.evaluation.mapper;
 import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import edu.ntu.pms.evaluation.dto.EvaluationDTO;
@@ -44,11 +45,20 @@ public interface EvaluationMapper {
     // Bottom Level: MapStruct uses this for the List<ProgressDTO> inside GoalDTO
     ProgressDTO toProgressDto(Progress entity);
 
-    // DTO to Entity mappings
+    // For new goal
+    @Mapping(target = "evaluation", ignore = true) // evaluation will be set in the service layer
+    Goal toGoal(GoalDTO dto);
 
-    @Mapping(source = "evaluationId", target = "evaluation.id")
-    Goal toGoal(GoalDTO dto, Long evaluationId);
+    // For updating existing goal - only update fields that are present in the DTO
+    @Mapping(target = "id", ignore = true) // ID should not be updated
+    @Mapping(target = "evaluation", ignore = true) // evaluation should not be updated
+    void updateGoalFromDto(GoalDTO dto, @MappingTarget Goal entity);
 
-    @Mapping(source = "evaluationId", target = "evaluation.id")
-    EvaluationItem toEvaluationItem(EvaluationItemDTO dto, Long evaluationId);
+
+    // Update only feedback and rating of an existing EvaluationItem.
+    @Mapping(target = "id", ignore = true) // ID should not be updated
+    @Mapping(target = "evaluation", ignore = true) // evaluation should not be updated
+    @Mapping(target = "name", ignore = true) // name should not be updated
+    @Mapping(target = "description", ignore = true) // description should not be updated
+    void updateItemFromDto(EvaluationItemDTO dto, @MappingTarget EvaluationItem entity);
 }

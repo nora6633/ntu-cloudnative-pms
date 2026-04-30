@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +19,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "evaluation_items")
 @Audited
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder
 public class EvaluationItem {
     
     @Id
@@ -28,10 +32,10 @@ public class EvaluationItem {
     private String name;
     
     @Column(nullable = false, length = 255)
-    private String description = "";
+    private String description;
     
     @Column(nullable = false, length = 255)
-    private String feedback = "";
+    private String feedback;
 
     @Column(nullable = true)
     private Integer rating;

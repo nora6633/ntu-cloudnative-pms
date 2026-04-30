@@ -2,11 +2,14 @@ package edu.ntu.pms.evaluation.dto;
 
 import java.util.List;
 
+import edu.ntu.pms.evaluation.enums.EvaluationStatus;
+import edu.ntu.pms.evaluation.enums.EvaluationType;
+
 public record EvaluationDTO(
     Long id,
     String cycle,
-    String status,
-    String type,
+    EvaluationStatus status,
+    EvaluationType type,
     String employeeName,
     String employeeJobTitle,
     String employeeDepartmentName,

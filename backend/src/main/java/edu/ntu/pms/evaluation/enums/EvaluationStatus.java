@@ -1,84 +1,44 @@
 package edu.ntu.pms.evaluation.enums;
 
-import edu.ntu.pms.evaluation.entity.Evaluation;
+import java.util.List;
+import java.util.Map;
 
-public enum EvaluationStatus implements EvaluationStateHandler {
-    INITIAL {
-        @Override
-        public void assertIsInitial(Evaluation eval) {
-            // no-op: this state represents INITIAL so the assertion passes
-        }
-        @Override
-        public void handleSubmit(Evaluation eval) {
-            eval.setStatus(PENDING_GOAL_APPROVAL);
-        }
-    },
-    PENDING_GOAL_APPROVAL {
-        @Override
-        public void assertIsPendingGoalApproval(Evaluation eval) {
-            // no-op: this state represents PENDING_GOAL_APPROVAL
-        }
-        @Override
-        public void handleApprove(Evaluation eval) {
-            eval.setStatus(WORKING);
-        }
-        
-        @Override
-        public void handleReject(Evaluation eval) {
-            eval.setStatus(INITIAL);
-        }
-    },
-    WORKING {
-        @Override
-        public void assertIsWorking(Evaluation eval) {
-            // no-op: this state represents WORKING
-        }
-        @Override
-        public void handleSubmit(Evaluation eval) {
-            eval.setStatus(REVIEW);
-        }
-    },
-    REVIEW {
-        @Override
-        public void handleSubmit(Evaluation eval) {
-            eval.setStatus(PENDING_REVIEW_CONFIRMATION);
-        }
-        @Override
-        public void assertIsReview(Evaluation eval) {
-            // no-op: this state represents REVIEW so the assertion passes
-        }
-    },
-    PENDING_REVIEW_CONFIRMATION {
-        @Override
-        public void assertIsPendingReviewConfirmation(Evaluation eval) {
-            // no-op: this state represents PENDING_REVIEW_CONFIRMATION
-        }
-        @Override
-        public void handleApprove(Evaluation eval) {
-            eval.setStatus(PENDING_CLOSURE);
-        }
+/**
+ * Enumeration representing the various statuses an evaluation can be in during its lifecycle.
+ * Each status has defined allowed transitions to ensure that the evaluation process follows
+ * a valid sequence of states. The assertCanTransitionTo method is used to enforce these
+ * transitions and prevent invalid state changes.
+ */
+public enum EvaluationStatus {
+    INITIAL,
+    PENDING_GOAL_APPROVAL,
+    WORKING,
+    REVIEW,
+    PENDING_REVIEW_CONFIRMATION,
+    PENDING_CLOSURE,
+    CLOSED;
 
-        @Override
-        public void handleReject(Evaluation eval) {
-            eval.setStatus(REVIEW);
-        }
-    },
-    PENDING_CLOSURE {
-        @Override
-        public void assertIsPendingClosure(Evaluation eval) {
-            // no-op: this state represents PENDING_CLOSURE
-        }
-        @Override
-        public void handleApprove(Evaluation eval) {
-            eval.setStatus(CLOSED);
-        }
+    // Define allowed transitions for each status
+    private static final Map<EvaluationStatus, List<EvaluationStatus>> ALLOWED_TRANSITIONS = Map.of(
+        INITIAL, List.of(PENDING_GOAL_APPROVAL),
+        PENDING_GOAL_APPROVAL, List.of(INITIAL, WORKING),
+        WORKING, List.of(REVIEW),
+        REVIEW, List.of(PENDING_REVIEW_CONFIRMATION),
+        PENDING_REVIEW_CONFIRMATION, List.of(REVIEW, PENDING_CLOSURE),
+        PENDING_CLOSURE, List.of(REVIEW, CLOSED),
+        CLOSED, List.of() // No transitions allowed from CLOSED
+    );
 
-        @Override
-        public void handleReject(Evaluation eval) {
-            eval.setStatus(REVIEW);
+    /**
+     * Asserts that a transition from the current status to the specified new status is valid.
+     * If the transition is not allowed, an IllegalStateException is thrown.
+     * @param newStatus The status to which the evaluation is attempting to transition.
+     */
+    public void assertCanTransitionTo(EvaluationStatus newStatus) {
+        if (!ALLOWED_TRANSITIONS.get(this).contains(newStatus)) {
+            throw new IllegalStateException(
+                String.format("Invalid status transition from %s to %s", this, newStatus)
+            );
         }
-    },
-    CLOSED {
-        // No transitions allowed from CLOSED
     }
 }

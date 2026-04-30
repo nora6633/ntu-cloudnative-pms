@@ -9,6 +9,7 @@ import edu.ntu.pms.evaluation.enums.EvaluationStatus;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,7 +65,7 @@ public class Evaluation {
     @OneToMany(mappedBy = "evaluation")
     private List<EvaluationItem> evaluationItems;
 
-    @OneToMany(mappedBy = "evaluation")
+    @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Goal> goals;
 
     // Snapshot fields for historical data
@@ -95,19 +96,55 @@ public class Evaluation {
     @Column(nullable = true, length = 100)
     private String hrDepartmentName;
 
-    // Status transition methods
-    public void submit() {
-        this.status.handleSubmit(this);
+    public void submitForGoalApproval(){
+        this.status.assertCanTransitionTo(EvaluationStatus.PENDING_GOAL_APPROVAL);
+        this.status = EvaluationStatus.PENDING_GOAL_APPROVAL;
+    };
+
+    public void approveGoals(){
+        this.status.assertCanTransitionTo(EvaluationStatus.WORKING);
+        this.status = EvaluationStatus.WORKING;
     }
 
-    public void approve() {
-        this.status.handleApprove(this);
+    public void rejectGoals(){
+        this.status.assertCanTransitionTo(EvaluationStatus.INITIAL);
+        this.status = EvaluationStatus.INITIAL;
     }
 
-    public void reject() {
-        this.status.handleReject(this);
+    public void submitForProgressReview(){
+        this.status.assertCanTransitionTo(EvaluationStatus.REVIEW);
+        this.status = EvaluationStatus.REVIEW;
     }
 
+    public void submitReview(){
+        this.status.assertCanTransitionTo(EvaluationStatus.PENDING_REVIEW_CONFIRMATION);
+        this.status = EvaluationStatus.PENDING_REVIEW_CONFIRMATION;
+    };
+
+    public void approveReview(){
+        this.status.assertCanTransitionTo(EvaluationStatus.PENDING_CLOSURE);
+        this.status = EvaluationStatus.PENDING_CLOSURE;
+    }
+
+    public void rejectReview(){
+        this.status.assertCanTransitionTo(EvaluationStatus.REVIEW);
+        this.status = EvaluationStatus.REVIEW;
+    }
+
+    public void approveEvaluation(){
+        this.status.assertCanTransitionTo(EvaluationStatus.CLOSED);
+        this.status = EvaluationStatus.CLOSED;
+    };
+
+    public void rejectEvaluation(){
+        this.status.assertCanTransitionTo(EvaluationStatus.REVIEW);
+        this.status = EvaluationStatus.REVIEW;
+    }
+
+    /**
+     * Takes a snapshot of the employee, supervisor, and HR details at the time of evaluation closure.
+     * @param hr The HR user who is approving the evaluation closure, whose details will be included in the snapshot.
+     */
     public void snapshot(User hr) {
         this.employeeName = employee.getUsername();
         this.employeeJobTitle = employee.getJob().getTitle();
