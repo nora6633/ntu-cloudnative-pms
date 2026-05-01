@@ -79,18 +79,40 @@ public class EvaluationCreationService  {
         ));
     }
 
-    // Builder method to create an Evaluation object with the provided parameters.
+    /**
+     * Helper method to create an Evaluation entity based on the provided parameters. 
+     * This method clones the evaluation items to ensure that each evaluation has its own set of items, even if they are based on the same template.
+     * 
+     * @param cycle
+     * @param type
+     * @param employee
+     * @param supervisor
+     * @param department
+     * @param items
+     * @return
+     */
     private Evaluation createEvaluation(String cycle, EvaluationType type, User employee,
-            User supervisor, Department department, List<EvaluationItem> items) {
-        return Evaluation.builder()
+            User supervisor, Department department, List<EvaluationItem> items) 
+    {
+        Evaluation evaluation = Evaluation.builder()
                 .cycle(cycle)
                 .status(EvaluationStatus.INITIAL)
                 .type(type)
                 .employee(employee)
                 .supervisor(supervisor)
                 .department(department)
-                .evaluationItems(items)
                 .build();
+        
+        // Clone the evaluation items to ensure that each evaluation has its own set of items, even if they are based on the same template.
+        List<EvaluationItem> newItems = items.stream()
+                .map(EvaluationItem::clone)
+                .collect(Collectors.toList());
+
+        // Set the evaluation reference in each item and associate the items with the evaluation.
+        newItems.forEach(item -> item.setEvaluation(evaluation));
+        evaluation.setEvaluationItems(newItems);
+
+        return evaluation;
     }
 
     /**

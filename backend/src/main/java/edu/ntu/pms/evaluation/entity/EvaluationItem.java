@@ -34,7 +34,7 @@ public class EvaluationItem {
     @Column(nullable = false, length = 255)
     private String description;
     
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String feedback;
 
     @Column(nullable = true)
@@ -43,4 +43,13 @@ public class EvaluationItem {
     @ManyToOne(optional = false)
     @JoinColumn(name = "evaluation_id", nullable = false)
     private Evaluation evaluation;
+
+    public EvaluationItem clone() {
+        return EvaluationItem.builder()
+                .name(this.name)
+                .description(this.description)
+                .feedback(this.feedback)
+                .rating(this.rating)
+                .build();
+    }
 }
