@@ -62,6 +62,7 @@ public class EvaluationCreationService  {
 
         List<Evaluation> evaluationsToCreate = jobs.stream()
                 .flatMap(job -> job.getEmployees().stream()
+                        .filter(employee -> employee.getSupervisor() != null) // Filter out employees without supervisors
                         .map(employee -> createEvaluation(cycleName, evaluationType, employee,
                                 employee.getSupervisor(), employee.getDepartment(), jobEvaluationItemsMap.get(job))))
                 .collect(Collectors.toList());

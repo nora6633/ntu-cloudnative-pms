@@ -54,7 +54,7 @@ public class EvaluationController {
             .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasRole('ROLE_HR')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/start-cycle")
     public String startEvaluationCycle(@Valid @RequestBody EvaluationCycleDTO cycleDTO) {
         service.startEvaluationCycle(cycleDTO.cycleName(), cycleDTO.evaluationType(), cycleDTO.jobToTemplateIdMap());

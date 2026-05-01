@@ -1,0 +1,6 @@
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-test-secret-0123456789
+    expiration-minutes: 60
+  cookie:
+    name: app_jwt
