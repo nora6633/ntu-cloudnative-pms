@@ -18,22 +18,57 @@ import edu.ntu.pms.evaluation.enums.EvaluationStatus;
 
 @Mapper(componentModel = "spring")
 public interface EvaluationMapper {
+    /* From Entity to DTO */
 
-    // Entity to DTO mappings
-
-    // Top Level
-    @Mapping(source = "employee.username", target = "employeeName", conditionQualifiedByName = "isNotClosed")
-    @Mapping(source = "employee.job.title", target = "employeeJobTitle", conditionQualifiedByName = "isNotClosed")
-    @Mapping(source = "employee.department.name", target = "employeeDepartmentName", conditionQualifiedByName = "isNotClosed")
-    @Mapping(source = "supervisor.username", target = "supervisorName", conditionQualifiedByName = "isNotClosed")
-    @Mapping(source = "supervisor.job.title", target = "supervisorJobTitle", conditionQualifiedByName = "isNotClosed")
-    @Mapping(source = "supervisor.department.name", target = "supervisorDepartmentName", conditionQualifiedByName = "isNotClosed")
+    // Top Level: use helper mapping methods that select live fields when not CLOSED
+    @Mapping(source = ".", target = "employeeName", qualifiedByName = "mapEmployeeName")
+    @Mapping(source = ".", target = "employeeJobTitle", qualifiedByName = "mapEmployeeJobTitle")
+    @Mapping(source = ".", target = "employeeDepartmentName", qualifiedByName = "mapEmployeeDepartmentName")
+    @Mapping(source = ".", target = "supervisorName", qualifiedByName = "mapSupervisorName")
+    @Mapping(source = ".", target = "supervisorJobTitle", qualifiedByName = "mapSupervisorJobTitle")
+    @Mapping(source = ".", target = "supervisorDepartmentName", qualifiedByName = "mapSupervisorDepartmentName")
     EvaluationDTO toDto(Evaluation entity);
 
-    @Condition
-    @Named("isNotClosed")
-    default boolean isNotClosed(Evaluation entity) {
-        return entity.getStatus() != EvaluationStatus.CLOSED;
+    @Named("mapEmployeeName")
+    default String mapEmployeeName(Evaluation e) {
+        if (e == null) return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getEmployeeName();
+        return e.getEmployee() != null ? e.getEmployee().getUsername() : null;
+    }
+
+    @Named("mapEmployeeJobTitle")
+    default String mapEmployeeJobTitle(Evaluation e) {
+        if (e == null) return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getEmployeeJobTitle();
+        return (e.getEmployee() != null && e.getEmployee().getJob() != null) ? e.getEmployee().getJob().getTitle() : null;
+    }
+
+    @Named("mapEmployeeDepartmentName")
+    default String mapEmployeeDepartmentName(Evaluation e) {
+        if (e == null) return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getEmployeeDepartmentName();
+        return (e.getEmployee() != null && e.getEmployee().getDepartment() != null) ? e.getEmployee().getDepartment().getName() : null;
+    }
+
+    @Named("mapSupervisorName")
+    default String mapSupervisorName(Evaluation e) {
+        if (e == null) return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getSupervisorName();
+        return e.getSupervisor() != null ? e.getSupervisor().getUsername() : null;
+    }
+
+    @Named("mapSupervisorJobTitle")
+    default String mapSupervisorJobTitle(Evaluation e) {
+        if (e == null) return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getSupervisorJobTitle();
+        return (e.getSupervisor() != null && e.getSupervisor().getJob() != null) ? e.getSupervisor().getJob().getTitle() : null;
+    }
+
+    @Named("mapSupervisorDepartmentName")
+    default String mapSupervisorDepartmentName(Evaluation e) {
+        if (e == null) return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getSupervisorDepartmentName();
+        return (e.getSupervisor() != null && e.getSupervisor().getDepartment() != null) ? e.getSupervisor().getDepartment().getName() : null;
     }
 
     // Mid Level: MapStruct uses this automatically for the List<GoalDTO>
@@ -44,6 +79,8 @@ public interface EvaluationMapper {
 
     // Bottom Level: MapStruct uses this for the List<ProgressDTO> inside GoalDTO
     ProgressDTO toProgressDto(Progress entity);
+
+    /* From DTO to Entity */
 
     // For new goal
     @Mapping(target = "evaluation", ignore = true) // evaluation will be set in the service layer
