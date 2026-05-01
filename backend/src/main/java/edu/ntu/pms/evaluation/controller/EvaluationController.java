@@ -17,6 +17,7 @@ import edu.ntu.pms.evaluation.dto.EvaluationItemDTO;
 import edu.ntu.pms.evaluation.dto.GoalDTO;
 import edu.ntu.pms.evaluation.mapper.EvaluationMapper;
 import edu.ntu.pms.evaluation.service.EvaluationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
@@ -31,6 +32,7 @@ public class EvaluationController {
         this.mapper = mapper;
     }
 
+    @Tag(name = "employee")
     @GetMapping("/my-evaluations")
     public List<EvaluationDTO> getMyEvaluations() {
         return service.getMyEvaluations().stream()
@@ -38,6 +40,7 @@ public class EvaluationController {
             .collect(Collectors.toList());
     } 
 
+    @Tag(name = "manager")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @GetMapping("/manager-evaluations")
     public List<EvaluationDTO> getEvaluationsForManager() {
@@ -46,6 +49,7 @@ public class EvaluationController {
             .collect(Collectors.toList());
     }
 
+    @Tag(name = "hr")
     @PreAuthorize("hasRole('ROLE_HR')")
     @GetMapping("/hr-evaluations")
     public List<EvaluationDTO> getEvaluationsForHr() {
@@ -54,6 +58,7 @@ public class EvaluationController {
             .collect(Collectors.toList());
     }
 
+    @Tag(name = "admin")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/start-cycle")
     public String startEvaluationCycle(@Valid @RequestBody EvaluationCycleDTO cycleDTO) {
@@ -61,12 +66,14 @@ public class EvaluationController {
         return "Evaluation cycle started: " + cycleDTO.cycleName();
     }
 
+    @Tag(name = "employee")
     @PostMapping("/{id}/draft-goals")
     public String draftGoals(@PathVariable Long id, @Valid @RequestBody List<GoalDTO> goalDTOs) {
         service.draftGoals(id, goalDTOs);
         return "Goals drafted successfully";
     }
 
+    @Tag(name = "manager")
     @PostMapping("/{id}/draft-review")
     public String draftReview(@PathVariable Long id, @Valid @RequestBody List<EvaluationItemDTO> items) {
         service.draftReview(id, items);
@@ -77,24 +84,28 @@ public class EvaluationController {
 
     // Employee actions
 
+    @Tag(name = "employee")
     @PostMapping("/{id}/submit-for-goal-approval")
     public String submitForGoalApproval(@PathVariable Long id) {
         service.submitForGoalApproval(id);
         return "Evaluation submitted for goal approval";
     }
 
+    @Tag(name = "employee")
     @PostMapping("/{id}/submit-for-progress-review")
     public String submitForProgressReview(@PathVariable Long id) {
         service.submitForProgressReview(id);
         return "Evaluation submitted for progress review";
     }
 
+    @Tag(name = "manager")
     @PostMapping("/{id}/approve-review")
     public String approveReview(@PathVariable Long id) {
         service.approveReview(id);
         return "Review approved";
     }
 
+    @Tag(name = "manager")
     @PostMapping("/{id}/reject-review")
     public String rejectReview(@PathVariable Long id) {
         service.rejectReview(id);
@@ -103,6 +114,7 @@ public class EvaluationController {
 
     // Manager actions
 
+    @Tag(name = "manager")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/{id}/approve-goals")
     public String approveGoals(@PathVariable Long id) {
@@ -110,6 +122,7 @@ public class EvaluationController {
         return "Goals approved";
     }
 
+    @Tag(name = "manager")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/{id}/reject-goals")
     public String rejectGoals(@PathVariable Long id) {
@@ -117,6 +130,7 @@ public class EvaluationController {
         return "Goals rejected";
     }
 
+    @Tag(name = "manager")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/{id}/submit-review")
     public String submitReview(@PathVariable Long id) {
@@ -126,6 +140,7 @@ public class EvaluationController {
 
     // HR actions
 
+    @Tag(name = "hr")
     @PreAuthorize("hasRole('ROLE_HR')")
     @PostMapping("/{id}/approve-evaluation")
     public String approveEvaluation(@PathVariable Long id) {
@@ -133,6 +148,7 @@ public class EvaluationController {
         return "Evaluation approved for closure";
     }
 
+    @Tag(name = "hr")
     @PreAuthorize("hasRole('ROLE_HR')")
     @PostMapping("/{id}/reject-evaluation")
     public String rejectEvaluation(@PathVariable Long id) {
