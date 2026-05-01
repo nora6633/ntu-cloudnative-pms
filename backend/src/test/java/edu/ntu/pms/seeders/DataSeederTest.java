@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ import edu.ntu.pms.user.repository.DepartmentRepository;
 import edu.ntu.pms.user.repository.JobRepository;
 import edu.ntu.pms.user.repository.UserRepository;
 
+@Tag("integration")
 @SpringBootTest
 @TestPropertySource(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 class DataSeederTest {
