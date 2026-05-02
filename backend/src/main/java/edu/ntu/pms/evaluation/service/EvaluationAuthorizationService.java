@@ -38,7 +38,7 @@ public class EvaluationAuthorizationService {
      * Throws AccessDeniedException if the user is not the owner of the evaluation.
      */
     public void checkEmployeeAccess(Evaluation eval) {
-        if (eval.getEmployee().getId() != currentUser.get().getId()) {
+        if (!eval.getEmployee().getId().equals(currentUser.get().getId())) {
             throw new AccessDeniedException("You are not the owner of this evaluation.");
         }
     }
@@ -49,7 +49,7 @@ public class EvaluationAuthorizationService {
      * evaluation.
      */
     public void checkManagerAccess(Evaluation eval) {
-        if (eval.getSupervisor().getId() != currentUser.get().getId()) {
+        if (!eval.getSupervisor().getId().equals(currentUser.get().getId())) {
             throw new AccessDeniedException("You are not the supervisor of this evaluation.");
         }
     }
@@ -63,7 +63,7 @@ public class EvaluationAuthorizationService {
     public void checkHrAccess(Evaluation eval) {
         Department dept = Optional.ofNullable(currentUser.get().getOverseenDepartment())
                 .orElseThrow(() -> new OverseenDepartmentNotFoundException(currentUser.get().getId()));
-        if (eval.getDepartment().getId() != dept.getId()) {
+        if (!eval.getDepartment().getId().equals(dept.getId())) {
             throw new AccessDeniedException("You do not oversee the department of this evaluation.");
         }
     }

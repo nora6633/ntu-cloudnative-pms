@@ -98,14 +98,14 @@ public class EvaluationController {
         return "Evaluation submitted for progress review";
     }
 
-    @Tag(name = "manager")
+    @Tag(name = "employee")
     @PostMapping("/{id}/approve-review")
     public String approveReview(@PathVariable Long id) {
         service.approveReview(id);
         return "Review approved";
     }
 
-    @Tag(name = "manager")
+    @Tag(name = "employee")
     @PostMapping("/{id}/reject-review")
     public String rejectReview(@PathVariable Long id) {
         service.rejectReview(id);
