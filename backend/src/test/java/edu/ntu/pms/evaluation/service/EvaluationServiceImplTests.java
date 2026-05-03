@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import edu.ntu.pms.evaluation.dto.EvaluationItemDTO;
 import edu.ntu.pms.evaluation.dto.GoalDTO;
 import edu.ntu.pms.evaluation.entity.Evaluation;
+import edu.ntu.pms.evaluation.entity.Goal;
 import edu.ntu.pms.evaluation.enums.EvaluationStatus;
 import edu.ntu.pms.evaluation.repository.EvaluationRepository;
 import edu.ntu.pms.security.AuthenticatedUser;
@@ -111,6 +112,7 @@ public class EvaluationServiceImplTests {
                 .id(10L)
                 .status(EvaluationStatus.INITIAL)
                 .employee(employee)
+                .goals(List.of(new Goal()))
                 .build();
 
         when(evalRepo.findById(10L)).thenReturn(Optional.of(eval));

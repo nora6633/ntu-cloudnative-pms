@@ -4,6 +4,9 @@ import static edu.ntu.pms.evaluation.enums.EvaluationStatus.*;
 import static edu.ntu.pms.evaluation.enums.EvaluationType.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import edu.ntu.pms.user.entity.Department;
@@ -11,86 +14,152 @@ import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
 
 public class EvaluationTests {
-    
-    @Test
-    void lifecycle_happyPath_and_rejectsInvalidCalls() {
-        User emp = User.builder().id(1L).username("emp").job(Job.builder().id(1L).title("J").build()).department(Department.builder().id(2L).name("D").build()).build();
-        User sup = User.builder().id(2L).username("sup").job(Job.builder().id(1L).title("J").build()).department(Department.builder().id(2L).name("D").build()).build();
 
-        Evaluation e = Evaluation.builder()
+    private User emp;
+    private User sup;
+    private Department dept;
+    private Job job;
+    private Evaluation evaluation;
+    private EvaluationItem item;
+
+
+    @BeforeEach
+    void setup() {
+        job = Job.builder().id(1L).title("J").build();
+        dept = Department.builder().id(2L).name("D").build();
+        emp = User.builder().id(1L).username("emp").job(job).department(dept).build();
+        sup = User.builder().id(2L).username("sup").job(job).department(dept).build();
+
+        item = EvaluationItem.builder().id(10L).description("Item 1").build();
+
+        evaluation = Evaluation.builder()
                 .cycle("2026")
                 .status(INITIAL)
                 .type(ANNUAL)
                 .employee(emp)
                 .supervisor(sup)
-                .department(Department.builder().id(2L).name("D").build())
+                .department(dept)
                 .build();
+    }
+    
+    @Test
+    void lifecycle_happyPath_and_rejectsInvalidCalls() {
+        evaluation.setEvaluationItems(List.of(item));
+        evaluation.setGoals(List.of(new Goal()));
 
-        e.submitForGoalApproval();
-        assertEquals(PENDING_GOAL_APPROVAL, e.getStatus());
+        evaluation.submitForGoalApproval();
+        assertEquals(PENDING_GOAL_APPROVAL, evaluation.getStatus());
 
-        e.rejectGoals();
-        assertEquals(INITIAL, e.getStatus());
+        evaluation.rejectGoals();
+        assertEquals(INITIAL, evaluation.getStatus());
 
-        e.submitForGoalApproval(); // Re-submit for goal approval
-        e.approveGoals();
-        assertEquals(WORKING, e.getStatus());
+        evaluation.submitForGoalApproval(); // Re-submit for goal approval
+        evaluation.approveGoals();
+        assertEquals(WORKING, evaluation.getStatus());
 
-        e.submitForProgressReview();
-        assertEquals(REVIEW, e.getStatus());
+        evaluation.submitForProgressReview();
+        assertEquals(REVIEW, evaluation.getStatus());
 
-        e.submitReview();
-        assertEquals(PENDING_REVIEW_CONFIRMATION, e.getStatus());
+        evaluation.getEvaluationItems().get(0).setFeedback("fb");
+        evaluation.getEvaluationItems().get(0).setRating(3);
+        evaluation.submitReview();
+        assertEquals(PENDING_REVIEW_CONFIRMATION, evaluation.getStatus());
 
-        e.rejectReview();
-        assertEquals(REVIEW, e.getStatus());
+        evaluation.rejectReview();
+        assertEquals(REVIEW, evaluation.getStatus());
 
-        e.submitReview(); // Re-submit for review approval
-        e.approveReview();
-        assertEquals(PENDING_CLOSURE, e.getStatus());
+        evaluation.submitReview(); // Re-submit for review approval
+        evaluation.approveReview();
+        assertEquals(PENDING_CLOSURE, evaluation.getStatus());
 
-        e.rejectEvaluation();
-        assertEquals(REVIEW, e.getStatus());
+        evaluation.rejectEvaluation();
+        assertEquals(REVIEW, evaluation.getStatus());
 
-        e.submitReview(); // Re-submit for review approval
-        e.approveReview();
-        e.approveEvaluation();
-        assertEquals(CLOSED, e.getStatus());
+        evaluation.submitReview(); // Re-submit for review approval
+        evaluation.approveReview();
+        evaluation.approveEvaluation();
+        assertEquals(CLOSED, evaluation.getStatus());
 
         // invalid: cannot approve goals when closed
-        assertThrows(IllegalStateException.class, () -> e.approveGoals());
+        assertThrows(IllegalStateException.class, () -> evaluation.approveGoals());
+    }
+
+    @Test
+    void snapshot_rejectsIfNotClosed() {
+        evaluation.setStatus(WORKING);
+
+        User hr = User.builder().id(3L).username("hr").job(job).department(dept).build();
+
+        assertThrows(IllegalStateException.class, () -> evaluation.snapshot(hr));
     }
 
     @Test
     void snapshot_populatesFields() {
-        Job job = Job.builder().id(5L).title("Dev").build();
-        Department dept = Department.builder().id(7L).name("Eng").build();
-
-        User emp = User.builder().id(1L).username("emp").job(job).department(dept).build();
-        User sup = User.builder().id(2L).username("sup").job(job).department(dept).build();
         User hr = User.builder().id(3L).username("hr").job(job).department(dept).build();
 
-        Evaluation e = Evaluation.builder()
-                .cycle("2026")
-                .status(CLOSED)
-                .type(ANNUAL)
-                .employee(emp)
-                .supervisor(sup)
-                .department(dept)
-                .build();
+        evaluation.setStatus(CLOSED);
 
-        e.snapshot(hr);
+        evaluation.snapshot(hr);
 
-        assertEquals("emp", e.getEmployeeName());
-        assertEquals("Dev", e.getEmployeeJobTitle());
-        assertEquals("Eng", e.getEmployeeDepartmentName());
+        assertEquals("emp", evaluation.getEmployeeName());
+        assertEquals("J", evaluation.getEmployeeJobTitle());
+        assertEquals("D", evaluation.getEmployeeDepartmentName());
 
-        assertEquals("sup", e.getSupervisorName());
-        assertEquals("Dev", e.getSupervisorJobTitle());
-        assertEquals("Eng", e.getSupervisorDepartmentName());
+        assertEquals("sup", evaluation.getSupervisorName());
+        assertEquals("J", evaluation.getSupervisorJobTitle());
+        assertEquals("D", evaluation.getSupervisorDepartmentName());
 
-        assertEquals("hr", e.getHrName());
-        assertEquals("Dev", e.getHrJobTitle());
-        assertEquals("Eng", e.getHrDepartmentName());
+        assertEquals("hr", evaluation.getHrName());
+        assertEquals("J", evaluation.getHrJobTitle());
+        assertEquals("D", evaluation.getHrDepartmentName());
     }
+
+    @Test
+    void submitForGoalApproval_rejectsIfStatusNotInitial() {
+        evaluation.setStatus(WORKING);
+        assertThrows(IllegalStateException.class, () -> evaluation.submitForGoalApproval());
+    }
+
+    @Test
+    void submitForGoalApproval_rejectsIfNoGoalsSet() {
+        assertThrows(IllegalStateException.class, () -> evaluation.submitForGoalApproval());
+    }
+
+    @Test
+    void submitReview_rejectsIfStatusNotInReview() {
+        evaluation.setStatus(WORKING);
+        assertThrows(IllegalStateException.class, () -> evaluation.submitReview());
+    }
+
+    @Test
+    void submitReview_rejectsIfItemsUncommented() {
+        item.setRating(3);
+
+        evaluation.setStatus(REVIEW);
+        evaluation.setEvaluationItems(List.of(item));
+
+        assertThrows(IllegalStateException.class, () -> evaluation.submitReview());
+    }
+
+    @Test
+    void submitReview_rejectsIfItemsFeedbackIsBlank() {
+        item.setRating(3);
+        item.setFeedback("");
+
+        evaluation.setStatus(REVIEW);
+        evaluation.setEvaluationItems(List.of(item));
+
+        assertThrows(IllegalStateException.class, () -> evaluation.submitReview());
+    }
+
+    @Test
+    void submitReview_rejectsIfItemsUnscored() {
+        item.setFeedback("fb");
+
+        evaluation.setStatus(REVIEW);
+        evaluation.setEvaluationItems(List.of(item));
+
+        assertThrows(IllegalStateException.class, () -> evaluation.submitReview());
+    }
+
 }

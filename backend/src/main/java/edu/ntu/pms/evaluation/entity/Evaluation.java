@@ -98,6 +98,9 @@ public class Evaluation {
 
     public void submitForGoalApproval(){
         this.status.assertCanTransitionTo(EvaluationStatus.PENDING_GOAL_APPROVAL);
+        if (this.goals == null || this.goals.isEmpty()) {
+            throw new IllegalStateException("Cannot submit for goal approval without any goals set.");
+        }
         this.status = EvaluationStatus.PENDING_GOAL_APPROVAL;
     };
 
@@ -118,6 +121,11 @@ public class Evaluation {
 
     public void submitReview(){
         this.status.assertCanTransitionTo(EvaluationStatus.PENDING_REVIEW_CONFIRMATION);
+        for (EvaluationItem item : evaluationItems) {
+            if (item.getFeedback() == null || item.getFeedback().isBlank() || item.getRating() == null) {
+                throw new IllegalStateException("Cannot submit review with unscored or uncommented evaluation items. Please ensure all items have feedback and ratings before submitting the review.");
+            }
+        }
         this.status = EvaluationStatus.PENDING_REVIEW_CONFIRMATION;
     };
 
@@ -146,6 +154,10 @@ public class Evaluation {
      * @param hr The HR user who is approving the evaluation closure, whose details will be included in the snapshot.
      */
     public void snapshot(User hr) {
+        if (this.status != EvaluationStatus.CLOSED) {
+            throw new IllegalStateException("Can only take snapshot when evaluation is closed.");
+        }
+
         this.employeeName = employee.getUsername();
         this.employeeJobTitle = employee.getJob().getTitle();
         this.employeeDepartmentName = employee.getDepartment().getName();
