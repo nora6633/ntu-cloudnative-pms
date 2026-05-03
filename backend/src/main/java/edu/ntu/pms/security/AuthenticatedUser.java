@@ -1,5 +1,6 @@
 package edu.ntu.pms.security;
 
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,6 @@ public class AuthenticatedUser {
     public User get() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("Authenticated user not found in database"));
+            .orElseThrow(() -> new AuthenticationException("Authenticated user not found in database: " + username) {});
     }
 }

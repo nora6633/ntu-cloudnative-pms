@@ -76,4 +76,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problem.setTitle("Server Error");
         return problem;
     }
+
+    // Catch IllegalArgumentException separately to return a 400 Bad Request instead of 500 Internal Server Error
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, 
+            ex.getMessage() // Use the exception message as the detail for better clarity
+        );
+        problem.setTitle("Bad Request");
+        return problem;
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail handleIllegalStateException(IllegalStateException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, 
+            ex.getMessage() // Use the exception message as the detail for better clarity
+        );
+        problem.setTitle("Bad Request");
+        return problem;
+    }
 }

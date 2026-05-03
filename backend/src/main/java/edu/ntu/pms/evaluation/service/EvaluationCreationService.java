@@ -125,6 +125,10 @@ public class EvaluationCreationService  {
      * @param templateId The ID of the template to use for creating the evaluation.
      */
     public void createEvaluationForNewUser(User user, Long templateId) {
+        if (user.getSupervisor() == null) {
+            throw new IllegalArgumentException("Cannot create evaluation for user without a supervisor: " + user.getUsername());
+        }
+
         List<EvaluationItem> items = templateService.createEvaluationItemsForJob(user.getJob(), templateId, EvaluationType.PROBATION);
         Evaluation eval = createEvaluation(
             "Probation - " + user.getUsername(), 
