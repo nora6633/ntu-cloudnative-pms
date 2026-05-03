@@ -19,6 +19,12 @@ spring:
           revision_field_name: REV
           revision_type_field_name: REVTYPE
           store_data_at_delete: true
+    open-in-view: false
+  data:
+    web:
+      pageable:
+        max-page-size: 100
+        default-page-size: 10
   jackson:
     serialization:
       indent_output: true

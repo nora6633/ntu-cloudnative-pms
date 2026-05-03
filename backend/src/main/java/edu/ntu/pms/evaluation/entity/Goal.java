@@ -18,7 +18,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "goals")
@@ -57,5 +59,7 @@ public class Goal {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "evaluation_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Evaluation evaluation;
 }

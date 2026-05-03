@@ -2,6 +2,9 @@ package edu.ntu.pms.evaluation.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import edu.ntu.pms.evaluation.dto.EvaluationCycleDTO;
 import edu.ntu.pms.evaluation.dto.EvaluationDTO;
 import edu.ntu.pms.evaluation.dto.EvaluationItemDTO;
 import edu.ntu.pms.evaluation.dto.GoalDTO;
+import edu.ntu.pms.evaluation.entity.Evaluation;
 import edu.ntu.pms.evaluation.mapper.EvaluationMapper;
 import edu.ntu.pms.evaluation.service.EvaluationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,28 +38,34 @@ public class EvaluationController {
 
     @Tag(name = "employee")
     @GetMapping("/my-evaluations")
-    public List<EvaluationDTO> getMyEvaluations() {
-        return service.getMyEvaluations().stream()
+    public Slice<EvaluationDTO> getMyEvaluations(Pageable pageable) {
+        Slice<Evaluation> page = service.getMyEvaluations(pageable);
+        List<EvaluationDTO> dtos = page.getContent().stream()
             .map(mapper::toDto)
             .collect(Collectors.toList());
-    } 
+        return new SliceImpl<>(dtos, pageable, page.hasNext());
+    }
 
     @Tag(name = "manager")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @GetMapping("/manager-evaluations")
-    public List<EvaluationDTO> getEvaluationsForManager() {
-        return service.getEvaluationsForManager().stream()
+    public Slice<EvaluationDTO> getEvaluationsForManager(Pageable pageable) {
+        Slice<Evaluation> page = service.getEvaluationsForManager(pageable);
+        List<EvaluationDTO> dtos = page.getContent().stream()
             .map(mapper::toDto)
             .collect(Collectors.toList());
+        return new SliceImpl<>(dtos, pageable, page.hasNext());
     }
 
     @Tag(name = "hr")
     @PreAuthorize("hasRole('ROLE_HR')")
     @GetMapping("/hr-evaluations")
-    public List<EvaluationDTO> getEvaluationsForHr() {
-        return service.getEvaluationsForHr().stream()
+    public Slice<EvaluationDTO> getEvaluationsForHr(Pageable pageable) {
+        Slice<Evaluation> page = service.getEvaluationsForHr(pageable);
+        List<EvaluationDTO> dtos = page.getContent().stream()
             .map(mapper::toDto)
             .collect(Collectors.toList());
+        return new SliceImpl<>(dtos, pageable, page.hasNext());
     }
 
     @Tag(name = "admin")

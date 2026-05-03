@@ -20,11 +20,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "evaluations")
@@ -63,9 +66,15 @@ public class Evaluation {
     private Department department;
 
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "evaluation_item_position")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<EvaluationItem> evaluationItems;
 
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "goal_position")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Goal> goals;
 
     // Snapshot fields for historical data

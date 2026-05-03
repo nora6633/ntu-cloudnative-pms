@@ -7,6 +7,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import edu.ntu.pms.auth.JwtService;
 import edu.ntu.pms.evaluation.dto.EvaluationDTO;
@@ -57,15 +61,18 @@ class EvaluationControllerTests {
                 null, null, null,
                 List.of(), List.of());
 
-        when(evaluationService.getMyEvaluations()).thenReturn(List.of(e));
+        PageRequest pageable = PageRequest.of(0, 10);
+        Slice<Evaluation> slice = new SliceImpl<>(List.of(e), pageable, false);
+
+        when(evaluationService.getMyEvaluations(any(Pageable.class))).thenReturn(slice);
         when(mapper.toDto(e)).thenReturn(dto);
 
         mockMvc.perform(get("/evaluations/my-evaluations"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$.content[0].id").value(1));
 
-        verify(evaluationService, times(1)).getMyEvaluations();
+        verify(evaluationService, times(1)).getMyEvaluations(any(Pageable.class));
         verify(mapper, times(1)).toDto(e);
     }
 
@@ -151,7 +158,7 @@ class EvaluationControllerTests {
 
     @Test
     void serviceThrowsRuntimeException_resultsInInternalServerError() throws Exception {
-        when(evaluationService.getMyEvaluations()).thenThrow(new RuntimeException("boom"));
+        when(evaluationService.getMyEvaluations(any(Pageable.class))).thenThrow(new RuntimeException("boom"));
 
         mockMvc.perform(get("/evaluations/my-evaluations"))
                 .andExpect(status().isInternalServerError())

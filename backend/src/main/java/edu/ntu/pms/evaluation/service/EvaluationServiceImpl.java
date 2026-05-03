@@ -2,8 +2,14 @@ package edu.ntu.pms.evaluation.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.ntu.pms.common.ResourceNotFoundException;
 import edu.ntu.pms.evaluation.dto.EvaluationItemDTO;
@@ -15,6 +21,7 @@ import edu.ntu.pms.evaluation.repository.EvaluationRepository;
 import edu.ntu.pms.security.AuthenticatedUser;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.User;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Service class responsible for handling evaluation-related operations. This
@@ -27,6 +34,7 @@ import edu.ntu.pms.user.entity.User;
  * and relationships to the evaluation.
  */
 @Service
+@RequiredArgsConstructor
 public class EvaluationServiceImpl implements EvaluationService {
 
     private static final String RESOURCE_NAME = "Evaluation";
@@ -37,40 +45,47 @@ public class EvaluationServiceImpl implements EvaluationService {
     private final EvaluationUpdateService updateService;
     private final EvaluationAuthorizationService authorizationService;
 
-    public EvaluationServiceImpl(
-        AuthenticatedUser currentUser,
-        EvaluationRepository evalRepo,
-        EvaluationCreationService creationService,
-        EvaluationUpdateService updateService,
-        EvaluationAuthorizationService authorizationService
-    ) {
-        this.currentUser = currentUser;
-        this.evalRepo = evalRepo;
-        this.creationService = creationService;
-        this.updateService = updateService;
-        this.authorizationService = authorizationService;
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<Evaluation> getMyEvaluations(Pageable pageable) {
+        Slice<Evaluation> page = evalRepo.findByEmployeeId(currentUser.get().getId(), pageable);
+        return loadPageAndCollections(page, pageable);
     }
 
     @Override
-    public List<Evaluation> getMyEvaluations() {
-        return evalRepo.findByEmployeeId(currentUser.get().getId());
+    @Transactional(readOnly = true)
+    public Slice<Evaluation> getEvaluationsForManager(Pageable pageable) {
+        Slice<Evaluation> page = evalRepo.findBySupervisorId(currentUser.get().getId(), pageable);
+        return loadPageAndCollections(page, pageable);
     }
 
     @Override
-    public List<Evaluation> getEvaluationsForManager() {
-        return evalRepo.findBySupervisorId(currentUser.get().getId());
-    }
-
-    @Override
-    public List<Evaluation> getEvaluationsForHr() {
+    @Transactional(readOnly = true)
+    public Slice<Evaluation> getEvaluationsForHr(Pageable pageable) {
         Department dept = Optional.ofNullable(currentUser.get().getOverseenDepartment())
                 .orElseThrow(() -> new OverseenDepartmentNotFoundException(currentUser.get().getId()));
+        Slice<Evaluation> page = evalRepo.findByDepartmentId(dept.getId(), pageable);
+        return loadPageAndCollections(page, pageable);
+    }
 
-        return evalRepo.findByDepartmentId(dept.getId());
+    /**
+     * Helper: given a paged result of Evaluations, load their collection relationships
+     * in a single IN-query and return a new Slice preserving order and pagination metadata.
+     */
+    private Slice<Evaluation> loadPageAndCollections(Slice<Evaluation> page, Pageable pageable) {
+        List<Long> ids = page.getContent().stream().map(Evaluation::getId).collect(Collectors.toList());
+        if (ids.isEmpty()) return page;
+
+        List<Evaluation> fetched = evalRepo.findAllWithCollectionsByIdIn(ids);
+
+        // Preserve the order of the original page by mapping back the fetched evaluations to their IDs
+        final var byId = fetched.stream().collect(Collectors.toMap(Evaluation::getId, e -> e));
+        List<Evaluation> ordered = ids.stream().map(byId::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return new SliceImpl<>(ordered, pageable, page.hasNext());
     }
 
     private Evaluation getEvaluation(Long evaluationId) {
-        return evalRepo.findById(evaluationId)
+        return evalRepo.findWithAllCollectionsById(evaluationId)
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, evaluationId));
     }
 

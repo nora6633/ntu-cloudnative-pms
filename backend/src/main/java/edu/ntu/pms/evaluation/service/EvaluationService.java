@@ -1,6 +1,8 @@
 package edu.ntu.pms.evaluation.service;
 
 import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -14,11 +16,11 @@ import edu.ntu.pms.user.entity.User;
 @Service
 public interface EvaluationService {
     
-    List<Evaluation> getMyEvaluations();
-    
-    List<Evaluation> getEvaluationsForManager();
-    
-    List<Evaluation> getEvaluationsForHr();
+    Slice<Evaluation> getMyEvaluations(Pageable pageable);
+
+    Slice<Evaluation> getEvaluationsForManager(Pageable pageable);
+
+    Slice<Evaluation> getEvaluationsForHr(Pageable pageable);
     
     /**
      * Start an evaluation cycle for employees.

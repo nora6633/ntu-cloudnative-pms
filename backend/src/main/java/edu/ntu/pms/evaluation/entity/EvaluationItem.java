@@ -13,7 +13,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "evaluation_items")
@@ -42,6 +44,8 @@ public class EvaluationItem {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "evaluation_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Evaluation evaluation;
 
     public EvaluationItem clone() {
