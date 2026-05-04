@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -56,7 +57,8 @@ class AuditLogIntegrationTest {
 
     @Test
     void insertCreatesRevisionWithAuditedFields() {
-        Long userId = saveUser("audit_test_alice", Role.EMPLOYEE);
+        String username = unique("audit_test_alice");
+        Long userId = saveUser(username, Role.EMPLOYEE);
 
         tx.executeWithoutResult(s -> {
             AuditReader reader = AuditReaderFactory.get(em);
@@ -65,14 +67,15 @@ class AuditLogIntegrationTest {
             assertTrue(revs.size() >= 1, "should have at least one revision after insert");
 
             User audited = reader.find(User.class, userId, revs.get(revs.size() - 1));
-            assertEquals("audit_test_alice", audited.getUsername());
+            assertEquals(username, audited.getUsername());
             assertEquals(Role.EMPLOYEE, audited.getRole());
         });
     }
 
     @Test
     void passwordHashIsNotAudited() {
-        Long userId = saveUser("audit_test_bob", Role.EMPLOYEE);
+        String username = unique("audit_test_bob");
+        Long userId = saveUser(username, Role.EMPLOYEE);
 
         tx.executeWithoutResult(s -> {
             AuditReader reader = AuditReaderFactory.get(em);
@@ -86,11 +89,13 @@ class AuditLogIntegrationTest {
 
     @Test
     void updateAddsSecondRevision() {
-        Long userId = saveUser("audit_test_charlie", Role.EMPLOYEE);
+        String original = unique("audit_test_charlie");
+        String renamed = original + "_renamed";
+        Long userId = saveUser(original, Role.EMPLOYEE);
 
         tx.executeWithoutResult(s -> {
             User reloaded = userRepository.findById(userId).orElseThrow();
-            reloaded.setUsername("audit_test_charlie_renamed");
+            reloaded.setUsername(renamed);
             userRepository.save(reloaded);
         });
 
@@ -100,13 +105,13 @@ class AuditLogIntegrationTest {
             assertEquals(2, revs.size(), "insert + update should yield two revisions");
 
             User latest = reader.find(User.class, userId, revs.get(revs.size() - 1));
-            assertEquals("audit_test_charlie_renamed", latest.getUsername());
+            assertEquals(renamed, latest.getUsername());
         });
     }
 
     @Test
     void revisionUsernameDefaultsToSystem() {
-        Long userId = saveUser("audit_test_dave", Role.EMPLOYEE);
+        Long userId = saveUser(unique("audit_test_dave"), Role.EMPLOYEE);
 
         tx.executeWithoutResult(s -> {
             AuditReader reader = AuditReaderFactory.get(em);
@@ -121,7 +126,7 @@ class AuditLogIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken("auditor", null, List.of()));
 
-        Long userId = saveUser("audit_test_eve", Role.EMPLOYEE);
+        Long userId = saveUser(unique("audit_test_eve"), Role.EMPLOYEE);
 
         tx.executeWithoutResult(s -> {
             AuditReader reader = AuditReaderFactory.get(em);
@@ -129,6 +134,14 @@ class AuditLogIntegrationTest {
                     reader.getRevisions(User.class, userId).get(0));
             assertEquals("auditor", rev.getUsername());
         });
+    }
+
+    /**
+     * Each test uses a unique username so the same DB instance can be shared
+     * across tests without false positives from leftover rows.
+     */
+    private static String unique(String base) {
+        return base + "_" + UUID.randomUUID().toString().substring(0, 8);
     }
 
     private Long saveUser(String username, Role role) {
