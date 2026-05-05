@@ -1,8 +1,10 @@
-package edu.ntu.pms.user;
+package edu.ntu.pms.user.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import edu.ntu.pms.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
