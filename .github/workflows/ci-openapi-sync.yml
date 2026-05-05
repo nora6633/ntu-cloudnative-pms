@@ -1,0 +1,92 @@
+name: CI / Sync OpenAPI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ci-openapi-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Generate and commit OpenAPI spec
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: pms
+          MYSQL_DATABASE: pms
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      - name: Build backend
+        working-directory: backend
+        run: ./mvnw -B -DskipTests package
+
+      - name: Start backend
+        working-directory: backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pms
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: pms
+        run: |
+          nohup java -jar target/*.jar > backend.log 2>&1 &
+          echo "BACKEND_PID=$!" >> $GITHUB_ENV
+
+      - name: Wait for /v3/api-docs.yaml
+        id: wait
+        run: |
+          for i in {1..60}; do
+            if curl -fs http://localhost:8080/api/v3/api-docs.yaml -o /tmp/spec.yaml; then
+              echo "ready=true" >> $GITHUB_OUTPUT
+              echo "Backend exposed OpenAPI in $((i*2))s"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "ready=false" >> $GITHUB_OUTPUT
+          echo "::warning::/v3/api-docs.yaml never became available — skipping sync (springdoc not yet merged?)"
+          tail -200 backend/backend.log || true
+
+      - name: Stop backend
+        if: always()
+        run: kill $BACKEND_PID 2>/dev/null || true
+
+      - name: Update docs/api/openapi.yaml
+        if: steps.wait.outputs.ready == 'true'
+        run: |
+          mkdir -p docs/api
+          mv /tmp/spec.yaml docs/api/openapi.yaml
+
+      - name: Commit if changed
+        if: steps.wait.outputs.ready == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: 'chore: sync OpenAPI spec'
+          file_pattern: 'docs/api/openapi.yaml'
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>

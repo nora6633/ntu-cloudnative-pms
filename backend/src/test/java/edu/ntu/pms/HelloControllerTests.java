@@ -1,21 +1,16 @@
 package edu.ntu.pms;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-public class HelloControllerTests {
-    private final HelloController helloController;
+class HelloControllerTests {
 
-    @Autowired
-    public HelloControllerTests(HelloController helloController) {
-        this.helloController = helloController;
-    }
+    private final HelloController helloController = new HelloController();
 
     @Test
-    public void testSayHello() {
+    void sayHello_returnsGreeting() {
         var response = helloController.sayHello();
-        assert response.get("message").equals("Hello from Spring Boot 25!");
+        assertEquals("Hello from Spring Boot 25!", response.get("message"));
     }
 }

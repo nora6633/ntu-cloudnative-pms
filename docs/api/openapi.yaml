@@ -1,0 +1,651 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080/api
+  description: Generated server url
+security:
+- cookieAuth: []
+paths:
+  /evaluations/{id}/submit-review:
+    post:
+      tags:
+      - manager
+      operationId: submitReview
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/submit-for-progress-review:
+    post:
+      tags:
+      - employee
+      operationId: submitForProgressReview
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/submit-for-goal-approval:
+    post:
+      tags:
+      - employee
+      operationId: submitForGoalApproval
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/reject-review:
+    post:
+      tags:
+      - employee
+      operationId: rejectReview
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/reject-goals:
+    post:
+      tags:
+      - manager
+      operationId: rejectGoals
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/reject-evaluation:
+    post:
+      tags:
+      - hr
+      operationId: rejectEvaluation
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/draft-review:
+    post:
+      tags:
+      - manager
+      operationId: draftReview
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/EvaluationItemDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/draft-goals:
+    post:
+      tags:
+      - employee
+      operationId: draftGoals
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/GoalDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/approve-review:
+    post:
+      tags:
+      - employee
+      operationId: approveReview
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/approve-goals:
+    post:
+      tags:
+      - manager
+      operationId: approveGoals
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/{id}/approve-evaluation:
+    post:
+      tags:
+      - hr
+      operationId: approveEvaluation
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /evaluations/start-cycle:
+    post:
+      tags:
+      - admin
+      operationId: startEvaluationCycle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationCycleDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /auth/logout:
+    post:
+      tags:
+      - auth-controller
+      operationId: logout
+      responses:
+        "200":
+          description: OK
+  /auth/login:
+    post:
+      tags:
+      - auth-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /hello:
+    get:
+      tags:
+      - hello-controller
+      operationId: sayHello
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /evaluations/my-evaluations:
+    get:
+      tags:
+      - employee
+      operationId: getMyEvaluations
+      parameters:
+      - name: pageable
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SliceEvaluationDTO"
+  /evaluations/manager-evaluations:
+    get:
+      tags:
+      - manager
+      operationId: getEvaluationsForManager
+      parameters:
+      - name: pageable
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SliceEvaluationDTO"
+  /evaluations/hr-evaluations:
+    get:
+      tags:
+      - hr
+      operationId: getEvaluationsForHr
+      parameters:
+      - name: pageable
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SliceEvaluationDTO"
+  /auth/me:
+    get:
+      tags:
+      - auth-controller
+      operationId: me
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /admin/ping:
+    get:
+      tags:
+      - hello-controller
+      operationId: adminOnly
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+components:
+  schemas:
+    EvaluationItemDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: Name of the evaluation item
+          example: Code Quality
+          minLength: 1
+        description:
+          type: string
+          description: Description of the evaluation item
+          example: Assessment of the code quality standards
+          minLength: 1
+        feedback:
+          type: string
+          description: Feedback for the evaluation item
+          example: Code is well-structured and maintainable
+        rating:
+          type: integer
+          format: int32
+          description: Rating for the evaluation item
+          example: 5
+      required:
+      - description
+      - id
+      - name
+    GoalDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        definition:
+          type: string
+          description: A clear and concise statement of the goal
+          example: Complete the performance management system implementation by the
+            end of the year
+          minLength: 1
+        metric:
+          type: string
+          description: The metric used to measure the goal's success
+          example: Project completion
+          minLength: 1
+        resource:
+          type: string
+          description: The required resource for the goal completion
+          example: Development team
+          minLength: 1
+        relevance:
+          type: string
+          description: The relevance the goal to the evaluation criteria
+          example: "This goal is critical for the successful implementation of the\
+            \ performance management system, which is a key initiative for the organization\
+            \ this year."
+          minLength: 1
+        deadline:
+          type: string
+          format: date
+          description: The date by which the goal should be completed
+          example: 2027-12-31
+        criteria:
+          type: array
+          description: The criteria against which the goal will be evaluated
+          example:
+          - Team Collaboration
+          - Code Quality
+          items:
+            type: string
+          minItems: 1
+        progresses:
+          type: array
+          description: The progress updates for the goal
+          items:
+            $ref: "#/components/schemas/ProgressDTO"
+      required:
+      - criteria
+      - definition
+      - metric
+      - relevance
+      - resource
+    ProgressDTO:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        description:
+          type: string
+          minLength: 1
+      required:
+      - description
+    EvaluationCycleDTO:
+      type: object
+      properties:
+        cycleName:
+          type: string
+          description: "Name of the evaluation cycle, e.g., '2026'"
+          example: "2026"
+          minLength: 1
+        evaluationType:
+          type: string
+          description: Type of the evaluation cycle
+          enum:
+          - ANNUAL
+          - QUARTER
+          - PROBATION
+          example: ANNUAL
+        jobToTemplateIdMap:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+          description: Mapping of job IDs to evaluation template IDs for this cycle
+          example:
+            "1": 1
+            "2": 2
+            "3": 3
+            "4": 4
+          minProperties: 1
+      required:
+      - cycleName
+      - evaluationType
+      - jobToTemplateIdMap
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+      - password
+      - username
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - EMPLOYEE
+          - MANAGER
+          - HR
+    Pageable:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          minimum: 0
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+        sort:
+          type: array
+          items:
+            type: string
+    EvaluationDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        cycle:
+          type: string
+        status:
+          type: string
+          enum:
+          - INITIAL
+          - PENDING_GOAL_APPROVAL
+          - WORKING
+          - REVIEW
+          - PENDING_REVIEW_CONFIRMATION
+          - PENDING_CLOSURE
+          - CLOSED
+        type:
+          type: string
+          enum:
+          - ANNUAL
+          - QUARTER
+          - PROBATION
+        employeeName:
+          type: string
+        employeeJobTitle:
+          type: string
+        employeeDepartmentName:
+          type: string
+        supervisorName:
+          type: string
+        supervisorJobTitle:
+          type: string
+        supervisorDepartmentName:
+          type: string
+        hrName:
+          type: string
+        hrJobTitle:
+          type: string
+        hrDepartmentName:
+          type: string
+        goals:
+          type: array
+          items:
+            $ref: "#/components/schemas/GoalDTO"
+        evaluationItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/EvaluationItemDTO"
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        unpaged:
+          type: boolean
+    SliceEvaluationDTO:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/EvaluationDTO"
+        number:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    SortObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      name: AUTH_TOKEN
+      in: cookie
