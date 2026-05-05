@@ -40,10 +40,11 @@ interface EvaluationWorkingSectionProps {
   setDetailsDialogOpen: (open: boolean) => void;
   criteriaDialogOpen: boolean;
   setCriteriaDialogOpen: (open: boolean) => void;
-  onCreateGoal: (goal: Omit<Goal, "id" | "progress" | "status" | "progressHistory">) => void;
-  onUpdateProgress: (goalId: string) => void;
-  onProgressUpdate: (progress: number, note: string) => void;
-  onViewDetails: (goalId: string) => void;
+  onCreateGoal: (goal: { title: string; description: string; category: string; deadline: string }) => void;
+  onAddProgress: (goal: Goal) => void;
+  onSubmitProgress: (description: string) => void;
+  onViewDetails: (goal: Goal) => void;
+  onSubmitForReview: () => void;
   userJobTitle: string;
   evaluationGoalDialogOpen?: boolean;
   selectedEvaluationGoal?: EvaluationGoal | null;
@@ -61,19 +62,20 @@ export function EvaluationWorkingSection({
   criteriaDialogOpen,
   setCriteriaDialogOpen,
   onCreateGoal,
-  onUpdateProgress,
-  onProgressUpdate,
+  onAddProgress,
+  onSubmitProgress,
   onViewDetails,
+  onSubmitForReview,
   userJobTitle,
 }: EvaluationWorkingSectionProps) {
-  const activeGoals = goals.filter((g) => g.status !== "completed");
-  const completedGoals = goals.filter((g) => g.status === "completed");
+  const activeGoals = goals;
+  const completedGoals: Goal[] = [];
 
   const stats = {
     total: goals.length,
-    completed: completedGoals.length,
-    onTrack: goals.filter((g) => g.status === "on-track").length,
-    atRisk: goals.filter((g) => g.status === "at-risk").length,
+    completed: 0,
+    onTrack: 0,
+    atRisk: 0,
   };
 
   return (
@@ -92,7 +94,7 @@ export function EvaluationWorkingSection({
               <Button variant="outline" size="icon" onClick={() => setCriteriaDialogOpen(true)}>
                 <ListTodo className="w-5 h-5" />
               </Button>
-              <Button onClick={() => alert("Goals submitted for review!")} size="lg">
+              <Button onClick={onSubmitForReview} size="lg">
                 Submit
               </Button>
             </div>
@@ -156,7 +158,7 @@ export function EvaluationWorkingSection({
                   <GoalCard
                     key={goal.id}
                     goal={goal}
-                    onUpdateProgress={onUpdateProgress}
+                    onAddProgress={onAddProgress}
                     onViewDetails={onViewDetails}
                   />
                 ))}
@@ -177,7 +179,7 @@ export function EvaluationWorkingSection({
                   <GoalCard
                     key={goal.id}
                     goal={goal}
-                    onUpdateProgress={onUpdateProgress}
+                    onAddProgress={onAddProgress}
                     onViewDetails={onViewDetails}
                   />
                 ))}
@@ -191,7 +193,7 @@ export function EvaluationWorkingSection({
                 <GoalCard
                   key={goal.id}
                   goal={goal}
-                  onUpdateProgress={onUpdateProgress}
+                  onAddProgress={onAddProgress}
                   onViewDetails={onViewDetails}
                 />
               ))}
@@ -209,8 +211,7 @@ export function EvaluationWorkingSection({
       <UpdateProgressDialog
         open={updateProgressDialogOpen}
         onClose={() => setUpdateProgressDialogOpen(false)}
-        currentProgress={selectedGoal?.progress || 0}
-        onUpdateProgress={onProgressUpdate}
+        onAddProgress={onSubmitProgress}
       />
 
       <GoalDetailsDialog
@@ -223,6 +224,7 @@ export function EvaluationWorkingSection({
         open={criteriaDialogOpen}
         onClose={() => setCriteriaDialogOpen(false)}
         jobTitle={userJobTitle}
+        items={[]}
       />
     </>
   );

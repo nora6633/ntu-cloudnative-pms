@@ -1,30 +1,31 @@
-import { useState, useMemo } from "react";
-import { Eye } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Label } from "../components/ui/label";
-import { ScrollArea } from "../components/ui/scroll-area";
+import { useState, useMemo } from 'react';
+import { Eye } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Label } from '../components/ui/label';
+import { Input } from '../components/ui/input';
+import { ScrollArea } from '../components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from '../components/ui/select';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog";
-import { JOB_TITLES } from "../data";
-import type { Template } from "../types";
+} from '../components/ui/dialog';
+import { JOB_TITLES, INITIAL_TEMPLATES } from '../data';
+import type { Template } from '../types';
+import type { EvaluationCycleDTOEvaluationType } from '../../api/generated/orvalClient';
+import { startEvaluationCycle } from '../../api';
 
-const EVALUATION_CYCLES = [
-  "Annual Review",
-  "Semi-Annual Review",
-  "Quarterly Review",
-  "Monthly Review",
-  "Project-Based Review",
+const EVALUATION_TYPES: { label: string; value: EvaluationCycleDTOEvaluationType }[] = [
+  { label: 'Annual',    value: 'ANNUAL'    },
+  { label: 'Quarter',   value: 'QUARTER'   },
+  { label: 'Probation', value: 'PROBATION' },
 ];
 
 // ── Template preview dialog ────────────────────────────────────────────────
@@ -69,31 +70,25 @@ function TemplatePreviewDialog({
 }
 
 // ── Main section ───────────────────────────────────────────────────────────
-interface StartEvaluationSectionProps {
-  templates: Template[];
-  onStart: (selections: { jobTitle: string; template: Template }[], cycle: string) => void;
-}
+export function StartEvaluationSection() {
+  const templates = INITIAL_TEMPLATES;
 
-export function StartEvaluationSection({ templates, onStart }: StartEvaluationSectionProps) {
-  const [cycle, setCycle] = useState("");
-  const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
+  const [cycleName, setCycleName]       = useState('');
+  const [evalType, setEvalType]         = useState<EvaluationCycleDTOEvaluationType | null>(null);
+  const [previewTemplate, setPreview]   = useState<Template | null>(null);
+  const [previewOpen, setPreviewOpen]   = useState(false);
+  const [submitting, setSubmitting]     = useState(false);
 
-  // Always show all canonical job titles; dropdowns are empty when no templates exist yet.
-  const jobsWithTemplates = JOB_TITLES;
-
-  // Templates grouped by job title, each sorted highest id first.
   const templatesByJob = useMemo(() => {
     const map: Record<string, Template[]> = {};
-    for (const job of jobsWithTemplates) {
+    for (const job of JOB_TITLES) {
       map[job] = templates
         .filter((t) => t.jobTitle === job)
         .sort((a, b) => Number(b.id) - Number(a.id));
     }
     return map;
-  }, [templates, jobsWithTemplates]);
+  }, [templates]);
 
-  // Selected template id per job — default to the highest-id template for each job.
   const [selectedIds, setSelectedIds] = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {};
     for (const job of JOB_TITLES) {
@@ -107,29 +102,46 @@ export function StartEvaluationSection({ templates, onStart }: StartEvaluationSe
 
   const getTemplate = (id: string) => templates.find((t) => t.id === id) ?? null;
 
-  const handleSelect = (job: string, id: string) =>
-    setSelectedIds((prev) => ({ ...prev, [job]: id }));
-
-  const handleViewTemplate = (job: string) => {
-    const t = getTemplate(selectedIds[job]);
-    if (t) { setPreviewTemplate(t); setPreviewOpen(true); }
-  };
+  const jobsWithTemplates = JOB_TITLES.filter(
+    (job) => (templatesByJob[job]?.length ?? 0) > 0,
+  );
 
   const isSubmittable =
-    cycle !== "" &&
-    JOB_TITLES
-      .filter((job) => (templatesByJob[job]?.length ?? 0) > 0)
-      .every((job) => !!selectedIds[job]);
+    cycleName.trim() !== '' &&
+    evalType !== null &&
+    jobsWithTemplates.every((job) => !!selectedIds[job]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isSubmittable) return;
-    const selections = jobsWithTemplates.map((job) => ({
-      jobTitle: job,
-      template: getTemplate(selectedIds[job])!,
-    }));
-    onStart(selections, cycle);
-    alert(`Evaluation started for cycle: ${cycle}`);
+    if (!isSubmittable || evalType === null) return;
+
+    const jobToTemplateIdMap: Record<string, number> = {};
+    // hardcode for now;
+    jobToTemplateIdMap['1'] = 1;
+    jobToTemplateIdMap['2'] = 2;
+    jobToTemplateIdMap['3'] = 3;
+    jobToTemplateIdMap['4'] = 4;
+    
+    // for (const job of jobsWithTemplates) {
+    //   const id = selectedIds[job];
+    //   if (id) jobToTemplateIdMap[job] = Number(id);
+    // }
+
+    setSubmitting(true);
+    try {
+      await startEvaluationCycle({
+        cycleName: cycleName.trim(),
+        evaluationType: evalType,
+        jobToTemplateIdMap: jobToTemplateIdMap,
+      });
+      alert(`Evaluation cycle "${cycleName}" started successfully.`);
+      setCycleName('');
+    } catch (error) {
+      console.log(error);
+      alert('Failed to start evaluation cycle. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -138,51 +150,64 @@ export function StartEvaluationSection({ templates, onStart }: StartEvaluationSe
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Start Evaluation</h2>
           <p className="text-gray-600 mt-1">
-            Select evaluation form for each job to start evaluation
+            Configure and launch a new evaluation cycle for all employees
           </p>
         </div>
 
         <div className="bg-white rounded-lg border p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
 
-            {/* Evaluation Cycle */}
+            {/* Cycle name */}
             <div className="space-y-2">
-              <Label>Evaluation Cycle</Label>
-              <Select value={cycle} onValueChange={setCycle}>
+              <Label htmlFor="cycleName">Cycle Name</Label>
+              <Input
+                id="cycleName"
+                placeholder="e.g. 2026"
+                value={cycleName}
+                onChange={(e) => setCycleName(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* Evaluation type */}
+            <div className="space-y-2">
+              <Label>Evaluation Type</Label>
+              <Select
+                value={evalType ?? ''}
+                onValueChange={(v) => setEvalType(v as EvaluationCycleDTOEvaluationType)}
+              >
                 <SelectTrigger className="w-72">
-                  <SelectValue placeholder="Select cycle" />
+                  <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {EVALUATION_CYCLES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  {EVALUATION_TYPES.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Per-job rows — only jobs that have at least one template */}
+            {/* Per-job template selection */}
             <div className="space-y-5 pt-2">
-              {jobsWithTemplates
-                .filter((job) => (templatesByJob[job]?.length ?? 0) > 0)
-                .map((job) => {
-                const options = templatesByJob[job];
-                const selectedId = selectedIds[job] ?? "";
+              {jobsWithTemplates.map((job) => {
+                const options    = templatesByJob[job];
+                const selectedId = selectedIds[job] ?? '';
                 return (
                   <div key={job} className="space-y-1.5">
                     <Label className="text-gray-700">{job}</Label>
                     <div className="flex items-center gap-3">
                       <Select
                         value={selectedId}
-                        onValueChange={(id) => handleSelect(job, id)}
+                        onValueChange={(id) =>
+                          setSelectedIds((prev) => ({ ...prev, [job]: id }))
+                        }
                       >
                         <SelectTrigger className="w-72">
-                          <SelectValue placeholder="Select template..." />
+                          <SelectValue placeholder="Select template…" />
                         </SelectTrigger>
                         <SelectContent>
                           {options.map((t) => (
-                            <SelectItem key={t.id} value={t.id}>
-                              {t.name}
-                            </SelectItem>
+                            <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -192,7 +217,10 @@ export function StartEvaluationSection({ templates, onStart }: StartEvaluationSe
                         variant="outline"
                         size="sm"
                         disabled={!selectedId}
-                        onClick={() => handleViewTemplate(job)}
+                        onClick={() => {
+                          const t = getTemplate(selectedId);
+                          if (t) { setPreview(t); setPreviewOpen(true); }
+                        }}
                         className="shrink-0 gap-2"
                       >
                         <Eye className="w-4 h-4" />
@@ -204,15 +232,14 @@ export function StartEvaluationSection({ templates, onStart }: StartEvaluationSe
               })}
             </div>
 
-            {/* Submit */}
             <div className="pt-6 flex justify-center">
               <Button
                 type="submit"
-                disabled={!isSubmittable}
+                disabled={!isSubmittable || submitting}
                 size="lg"
                 className="px-12"
               >
-                Start
+                {submitting ? 'Starting…' : 'Start'}
               </Button>
             </div>
           </form>

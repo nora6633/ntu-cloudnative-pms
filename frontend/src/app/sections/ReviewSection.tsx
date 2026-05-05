@@ -1,73 +1,122 @@
-import { EmployeeTable } from "../components/EmployeeTable";
-import { EmployeeReviewDialog } from "../components/EmployeeReviewDialog";
-import type { ReviewEmployee, ReviewProgress } from "../types";
+import { useState, useEffect, useCallback } from 'react';
+import { EmployeeTable } from '../components/EmployeeTable';
+import { EmployeeReviewDialog } from '../components/EmployeeReviewDialog';
+import type { BaseEmployee } from '../components/EmployeeTable';
+import type { EvaluationDTO, EvaluationItemDTO } from '../../api';
+import { getEvaluationsForManager, draftReview, submitReview } from '../../api';
 
-const STATUS_OPTIONS = ["Not Started", "In Progress", "Submitted", "Closed"];
-
-const STATUS_COLOR_MAP: Record<string, string> = {
-  "Not Started": "bg-gray-100 text-gray-800",
-  "In Progress": "bg-blue-100 text-blue-800",
-  "Submitted":   "bg-green-100 text-green-800",
-  "Closed":      "bg-purple-100 text-purple-800",
-};
-
-interface ReviewSectionProps {
-  employees: ReviewEmployee[];
-  searchQuery: string;
-  setSearchQuery: (v: string) => void;
-  jobFilter: string;
-  setJobFilter: (v: string) => void;
-  statusFilter: string;
-  setStatusFilter: (v: string) => void;
-  selectedEmployee: ReviewEmployee | null;
-  employeeReviewDialogOpen: boolean;
-  setEmployeeReviewDialogOpen: (open: boolean) => void;
-  savedReviewProgress: { [employeeId: string]: ReviewProgress };
-  onEmployeeClick: (employee: ReviewEmployee) => void;
-  onSaveReview: (employeeId: string, progress: ReviewProgress) => void;
-  onSubmitReview: (employeeId: string, progress: ReviewProgress) => void;
+function reviewStatus(status: string | undefined): string {
+  switch (status) {
+    case 'REVIEW':                      return 'Review Drafting';
+    case 'PENDING_REVIEW_CONFIRMATION': return 'Pending Confirmation';
+    case 'PENDING_CLOSURE':             return 'Pending Closure';
+    case 'CLOSED':                      return 'Closed';
+    default:                            return 'Pending Review';
+  }
 }
 
-export function ReviewSection({
-  employees,
-  searchQuery,
-  setSearchQuery,
-  jobFilter,
-  setJobFilter,
-  statusFilter,
-  setStatusFilter,
-  selectedEmployee,
-  employeeReviewDialogOpen,
-  setEmployeeReviewDialogOpen,
-  savedReviewProgress,
-  onEmployeeClick,
-  onSaveReview,
-  onSubmitReview,
-}: ReviewSectionProps) {
+const STATUS_OPTIONS = ['Review Drafting', 'Pending Confirmation', 'Pending Closure', 'Closed'];
+
+const STATUS_COLOR_MAP: Record<string, string> = {
+  'Review Drafting': 'bg-gray-100 text-gray-800',
+  'Pending Confirmation': 'bg-yellow-100 text-yellow-800',
+  'Pending Closure': 'bg-orange-100 text-orange-800',
+  'Closed':        'bg-purple-100 text-purple-800',
+};
+
+interface EvalRow extends BaseEmployee {
+  _evaluation: EvaluationDTO;
+}
+
+function toRow(e: EvaluationDTO): EvalRow {
+  return {
+    id: String(e.id),
+    name: e.employeeName ?? '—',
+    avatar: '',
+    jobTitle: e.employeeJobTitle ?? '—',
+    submitDate: '',
+    status: reviewStatus(e.status),
+    _evaluation: e,
+  };
+}
+
+export function ReviewSection() {
+  const [rows, setRows]           = useState<EvalRow[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState<string | null>(null);
+  const [search, setSearch]       = useState('');
+  const [jobFilter, setJob]       = useState('all');
+  const [statusFilter, setStatus] = useState('all');
+  const [selected, setSelected]   = useState<EvalRow | null>(null);
+  const [dialogOpen, setDialog]   = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getEvaluationsForManager({ pageable: { page: 0, size: 100 } });
+      const inReview = (res.data.content ?? []).filter((e) =>
+        e.status === 'REVIEW' ||
+        e.status === 'PENDING_REVIEW_CONFIRMATION' ||
+        e.status === 'PENDING_CLOSURE' ||
+        e.status === 'CLOSED',
+      );
+      setRows(inReview.map(toRow));
+    } catch {
+      setError('Failed to load evaluations.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleSave = async (id: number, items: EvaluationItemDTO[]) => {
+    try {      await draftReview(id, items);
+      alert('Draft saved successfully.');
+    } catch {
+      alert('Failed to save draft.');
+    }
+  };
+
+  const handleSubmit = async (id: number, items: EvaluationItemDTO[]) => {
+    try {
+      await draftReview(id, items);
+      await submitReview(id);
+      await load();
+
+      alert('Review submitted successfully.');
+    } catch {
+      alert('Failed to submit review.');
+    }
+};
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading…</p></div>;
+  if (error)   return <div className="flex items-center justify-center min-h-screen"><p className="text-red-500">{error}</p></div>;
+
   return (
     <>
       <EmployeeTable
         title="Review Performance"
-        description="Review subordinates performance for this evaluation cycle"
-        employees={employees}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        description="Review subordinates' performance for this evaluation cycle"
+        employees={rows}
+        searchQuery={search}
+        setSearchQuery={setSearch}
         jobFilter={jobFilter}
-        setJobFilter={setJobFilter}
+        setJobFilter={setJob}
         statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
+        setStatusFilter={setStatus}
         statusOptions={STATUS_OPTIONS}
         statusColorMap={STATUS_COLOR_MAP}
-        onEmployeeClick={onEmployeeClick}
+        onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
       />
 
       <EmployeeReviewDialog
-        open={employeeReviewDialogOpen}
-        onClose={() => setEmployeeReviewDialogOpen(false)}
-        employee={selectedEmployee}
-        onSave={onSaveReview}
-        onSubmit={onSubmitReview}
-        savedProgress={selectedEmployee ? savedReviewProgress[selectedEmployee.id] : undefined}
+        open={dialogOpen}
+        onClose={() => setDialog(false)}
+        evaluation={selected?._evaluation ?? null}
+        onSave={handleSave}
+        onSubmit={handleSubmit}
       />
     </>
   );

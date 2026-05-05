@@ -1,16 +1,18 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
-
-vi.mock('./api/axiosInstance', () => ({
-  default: {
-    get: vi.fn().mockRejectedValue(new Error('not authenticated')),
-    post: vi.fn(),
-  },
-}));
-
 import App from './App';
 
-test('renders loading state while checking auth', () => {
+
+vi.mock('./api', () => ({
+  me: vi.fn().mockRejectedValue(new Error('not authenticated')),
+}));
+
+
+test('renders loading state while checking auth', async () => {
   render(<App />);
-  expect(screen.getByText(/Loading/i)).toBeDefined();
+  expect(screen.getByText(/Loading/i)).toBeInTheDocument();
+  
+  await waitFor(() => {
+    expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument();
+  });
 });

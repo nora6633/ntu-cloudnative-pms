@@ -1,69 +1,98 @@
-import { EmployeeTable } from "../components/EmployeeTable";
-import { ReviewDialog } from "../components/ReviewDialog";
-import type { ReviewGoalEmployee } from "../types";
+import { useState, useEffect, useCallback } from 'react';
+import { EmployeeTable } from '../components/EmployeeTable';
+import { ReviewDialog } from '../components/ReviewDialog';
+import type { BaseEmployee } from '../components/EmployeeTable';
+import type { EvaluationDTO } from '../../api';
+import { getEvaluationsForManager, approveGoals, rejectGoals } from '../../api';
 
-const STATUS_OPTIONS = ["Pending", "Approved", "Rejected"];
+const STATUS_OPTIONS = ['Pending Goal Approval'];
 
 const STATUS_COLOR_MAP: Record<string, string> = {
-  Pending:  "bg-yellow-100 text-yellow-800",
-  Approved: "bg-green-100 text-green-800",
-  Rejected: "bg-red-100 text-red-800",
+  'Pending Goal Approval': 'bg-yellow-100 text-yellow-800',
+  Approved: 'bg-green-100 text-green-800',
+  Rejected: 'bg-red-100 text-red-800',
 };
 
-interface ReviewGoalSectionProps {
-  employees: ReviewGoalEmployee[];
-  searchQuery: string;
-  setSearchQuery: (v: string) => void;
-  jobFilter: string;
-  setJobFilter: (v: string) => void;
-  statusFilter: string;
-  setStatusFilter: (v: string) => void;
-  selectedEmployee: ReviewGoalEmployee | null;
-  reviewDialogOpen: boolean;
-  setReviewDialogOpen: (open: boolean) => void;
-  onEmployeeClick: (employee: ReviewGoalEmployee) => void;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
+interface EvalRow extends BaseEmployee {
+  _evaluation: EvaluationDTO;
 }
 
-export function ReviewGoalSection({
-  employees,
-  searchQuery,
-  setSearchQuery,
-  jobFilter,
-  setJobFilter,
-  statusFilter,
-  setStatusFilter,
-  selectedEmployee,
-  reviewDialogOpen,
-  setReviewDialogOpen,
-  onEmployeeClick,
-  onApprove,
-  onReject,
-}: ReviewGoalSectionProps) {
+function toRow(e: EvaluationDTO): EvalRow {
+  return {
+    id: String(e.id),
+    name: e.employeeName ?? '—',
+    avatar: '',
+    jobTitle: e.employeeJobTitle ?? '—',
+    submitDate: '',
+    status: 'Pending Goal Approval',
+    _evaluation: e,
+  };
+}
+
+export function ReviewGoalSection() {
+  const [rows, setRows]         = useState<EvalRow[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState<string | null>(null);
+  const [search, setSearch]     = useState('');
+  const [jobFilter, setJob]     = useState('all');
+  const [statusFilter, setStatus] = useState('all');
+  const [selected, setSelected] = useState<EvalRow | null>(null);
+  const [dialogOpen, setDialog] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getEvaluationsForManager({ pageable: { page: 0, size: 100 } });
+      const pending = (res.data.content ?? []).filter(
+        (e) => e.status === 'PENDING_GOAL_APPROVAL',
+      );
+      setRows(pending.map(toRow));
+    } catch {
+      setError('Failed to load evaluations.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleApprove = async (id: number) => {
+    await approveGoals(id);
+    await load();
+  };
+
+  const handleReject = async (id: number) => {
+    await rejectGoals(id);
+    await load();
+  };
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading…</p></div>;
+  if (error)   return <div className="flex items-center justify-center min-h-screen"><p className="text-red-500">{error}</p></div>;
+
   return (
     <>
       <EmployeeTable
         title="Review Goals"
         description="Review and approve employee goal submissions"
-        employees={employees}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        employees={rows}
+        searchQuery={search}
+        setSearchQuery={setSearch}
         jobFilter={jobFilter}
-        setJobFilter={setJobFilter}
+        setJobFilter={setJob}
         statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
+        setStatusFilter={setStatus}
         statusOptions={STATUS_OPTIONS}
         statusColorMap={STATUS_COLOR_MAP}
-        onEmployeeClick={onEmployeeClick}
+        onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
       />
 
       <ReviewDialog
-        open={reviewDialogOpen}
-        onClose={() => setReviewDialogOpen(false)}
-        employee={selectedEmployee}
-        onApprove={onApprove}
-        onReject={onReject}
+        open={dialogOpen}
+        onClose={() => setDialog(false)}
+        evaluation={selected?._evaluation ?? null}
+        onApprove={handleApprove}
+        onReject={handleReject}
       />
     </>
   );

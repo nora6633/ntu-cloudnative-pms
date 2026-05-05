@@ -1,71 +1,56 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Slider } from "./ui/slider";
-import { Textarea } from "./ui/textarea";
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
 
 interface UpdateProgressDialogProps {
   open: boolean;
   onClose: () => void;
-  currentProgress: number;
-  onUpdateProgress: (progress: number, note: string) => void;
+  onAddProgress: (description: string) => void;
 }
 
 export function UpdateProgressDialog({
   open,
   onClose,
-  currentProgress,
-  onUpdateProgress,
+  onAddProgress,
 }: UpdateProgressDialogProps) {
-  const [progress, setProgress] = useState(currentProgress);
-  const [note, setNote] = useState("");
+  const [description, setDescription] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdateProgress(progress, note);
-    setNote("");
+    if (!description.trim()) return;
+    onAddProgress(description.trim());
+    setDescription('');
     onClose();
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Update Progress</DialogTitle>
+          <DialogTitle>Add Progress Update</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Progress</Label>
-              <span className="text-2xl font-semibold">{progress}%</span>
-            </div>
-            <Slider
-              value={[progress]}
-              onValueChange={(value) => setProgress(value[0])}
-              min={0}
-              max={100}
-              step={5}
-              className="w-full"
-            />
-          </div>
-
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="note">Progress Note (Optional)</Label>
+            <Label htmlFor="description">Progress Description</Label>
             <Textarea
-              id="note"
-              placeholder="Add a note about your progress, achievements, or blockers..."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={3}
+              id="description"
+              placeholder="Describe what you accomplished, any blockers you encountered, or next steps..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              required
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-2">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Update Progress</Button>
+            <Button type="submit" disabled={!description.trim()}>
+              Add Update
+            </Button>
           </div>
         </form>
       </DialogContent>
