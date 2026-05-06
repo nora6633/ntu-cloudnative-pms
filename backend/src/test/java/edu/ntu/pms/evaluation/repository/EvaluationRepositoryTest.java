@@ -21,10 +21,10 @@ import edu.ntu.pms.evaluation.entity.Goal;
 import edu.ntu.pms.evaluation.entity.Progress;
 import edu.ntu.pms.evaluation.enums.EvaluationStatus;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
-import edu.ntu.pms.user.Role;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
+import edu.ntu.pms.user.enums.Role;
 
 @DataJpaTest
 class EvaluationRepositoryTest {
@@ -101,7 +101,8 @@ class EvaluationRepositoryTest {
 
         Evaluation eval = createEvaluation(employee, supervisor);
         EvaluationItem item = createEvaluationItem(eval, "Quality", "Quality of work", "Good", 4);
-        Goal goal = createGoal(eval, "Increase coverage", "Coverage %", "Time", "High", LocalDate.now().plusDays(30), List.of("Unit tests"), "Started");
+        Goal goal = createGoal(eval, "Increase coverage", "Coverage %", "Time", "High", LocalDate.now().plusDays(30),
+                List.of("Unit tests"), "Started");
 
         eval.setEvaluationItems(List.of(item));
         eval.setGoals(List.of(goal));
@@ -126,7 +127,8 @@ class EvaluationRepositoryTest {
 
         Evaluation eval = createEvaluation(employee, supervisor);
         EvaluationItem item = createEvaluationItem(eval, "Delivery", "Timeliness", null, null);
-        Goal goal = createGoal(eval, "Ship features", "Stories done", "Team", "Medium", LocalDate.now().plusDays(10), List.of("Complete tasks"), "In progress");
+        Goal goal = createGoal(eval, "Ship features", "Stories done", "Team", "Medium", LocalDate.now().plusDays(10),
+                List.of("Complete tasks"), "In progress");
 
         eval.setEvaluationItems(List.of(item));
         eval.setGoals(List.of(goal));
@@ -145,39 +147,41 @@ class EvaluationRepositoryTest {
     // --- helpers ---
     private User persistUser(String username, Role role, User supervisor) {
         User u = User.builder()
-            .username(username)
-            .passwordHash("x")
-            .role(role)
-            .job(job)
-            .department(dept)
-            .supervisor(supervisor)
-            .build();
+                .username(username)
+                .passwordHash("x")
+                .role(role)
+                .job(job)
+                .department(dept)
+                .supervisor(supervisor)
+                .build();
         em.persist(u);
         return u;
     }
 
     private Evaluation createEvaluation(User employee, User supervisor) {
         return Evaluation.builder()
-            .cycle("2024")
-            .status(EvaluationStatus.INITIAL)
-            .type(EvaluationType.PROBATION)
-            .employee(employee)
-            .supervisor(supervisor)
-            .department(dept)
-            .build();
+                .cycle("2024")
+                .status(EvaluationStatus.INITIAL)
+                .type(EvaluationType.PROBATION)
+                .employee(employee)
+                .supervisor(supervisor)
+                .department(dept)
+                .build();
     }
 
-    private EvaluationItem createEvaluationItem(Evaluation eval, String name, String desc, String feedback, Integer rating) {
+    private EvaluationItem createEvaluationItem(Evaluation eval, String name, String desc, String feedback,
+            Integer rating) {
         return EvaluationItem.builder()
-            .name(name)
-            .description(desc)
-            .feedback(feedback)
-            .rating(rating)
-            .evaluation(eval)
-            .build();
+                .name(name)
+                .description(desc)
+                .feedback(feedback)
+                .rating(rating)
+                .evaluation(eval)
+                .build();
     }
 
-    private Goal createGoal(Evaluation eval, String definition, String metric, String resource, String relevance, LocalDate deadline, List<String> criteria, String progressDescription) {
+    private Goal createGoal(Evaluation eval, String definition, String metric, String resource, String relevance,
+            LocalDate deadline, List<String> criteria, String progressDescription) {
         Goal goal = new Goal();
         goal.setDefinition(definition);
         goal.setMetric(metric);
@@ -185,8 +189,10 @@ class EvaluationRepositoryTest {
         goal.setRelevance(relevance);
         goal.setDeadline(deadline);
         goal.setEvaluation(eval);
-        if (criteria != null) goal.getCriteria().addAll(criteria);
-        if (progressDescription != null) goal.getProgresses().add(new Progress(LocalDateTime.now(), progressDescription));
+        if (criteria != null)
+            goal.getCriteria().addAll(criteria);
+        if (progressDescription != null)
+            goal.getProgresses().add(new Progress(LocalDateTime.now(), progressDescription));
         return goal;
     }
 }
