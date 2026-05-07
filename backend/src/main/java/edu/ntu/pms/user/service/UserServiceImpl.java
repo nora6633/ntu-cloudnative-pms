@@ -11,6 +11,7 @@ import edu.ntu.pms.user.entity.User;
 import edu.ntu.pms.user.repository.DepartmentRepository;
 import edu.ntu.pms.user.repository.JobRepository;
 import edu.ntu.pms.user.repository.UserRepository;
+import edu.ntu.pms.user.mapper.UserMapper;
 import edu.ntu.pms.evaluation.service.EvaluationCreationService;
 
 @Service
@@ -21,15 +22,17 @@ public class UserServiceImpl implements UserService {
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final EvaluationCreationService evaluationCreationService;
+    private final UserMapper userMapper;
 
     public UserServiceImpl(UserRepository userRepository, JobRepository jobRepository,
             DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder,
-            EvaluationCreationService evaluationCreationService) {
+            EvaluationCreationService evaluationCreationService, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
         this.evaluationCreationService = evaluationCreationService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -84,15 +87,6 @@ public class UserServiceImpl implements UserService {
             evaluationCreationService.createEvaluationForNewUser(savedUser, userDTO.getProbationTemplateId());
         }
 
-        return UserDTO.builder()
-                .id(savedUser.getId())
-                .username(savedUser.getUsername())
-                .role(savedUser.getRole())
-                .jobId(savedUser.getJob().getId())
-                .departmentId(savedUser.getDepartment().getId())
-                .overseenDepartmentId(
-                        savedUser.getOverseenDepartment() != null ? savedUser.getOverseenDepartment().getId() : null)
-                .supervisorId(savedUser.getSupervisor() != null ? savedUser.getSupervisor().getId() : null)
-                .build();
+        return userMapper.toDto(savedUser);
     }
 }
