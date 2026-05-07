@@ -11,6 +11,7 @@ import edu.ntu.pms.user.entity.User;
 import edu.ntu.pms.user.repository.DepartmentRepository;
 import edu.ntu.pms.user.repository.JobRepository;
 import edu.ntu.pms.user.repository.UserRepository;
+import edu.ntu.pms.evaluation.service.EvaluationCreationService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,13 +20,16 @@ public class UserServiceImpl implements UserService {
     private final JobRepository jobRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EvaluationCreationService evaluationCreationService;
 
     public UserServiceImpl(UserRepository userRepository, JobRepository jobRepository,
-                           DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+            DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder,
+            EvaluationCreationService evaluationCreationService) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
+        this.evaluationCreationService = evaluationCreationService;
     }
 
     @Override
@@ -35,18 +39,33 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        // Using getReferenceById to avoid DB hit since we don't check IDs yet (as requested)
-        Job job = jobRepository.getReferenceById(userDTO.getJobId());
-        Department department = departmentRepository.getReferenceById(userDTO.getDepartmentId());
+        if (Boolean.TRUE.equals(userDTO.getRequireProbation())) {
+            if (userDTO.getSupervisorId() == null) {
+                throw new IllegalArgumentException("Supervisor must be assigned when probation is required");
+            }
+            if (userDTO.getProbationTemplateId() == null) {
+                throw new IllegalArgumentException("probationTemplateId is required when requireProbation is true");
+            }
+        }
+
+        Job job = jobRepository.findById(userDTO.getJobId())
+                .orElseThrow(() -> new IllegalArgumentException("Job ID not found: " + userDTO.getJobId()));
+        Department department = departmentRepository.findById(userDTO.getDepartmentId())
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Department ID not found: " + userDTO.getDepartmentId()));
 
         Department overseenDepartment = null;
         if (userDTO.getOverseenDepartmentId() != null) {
-            overseenDepartment = departmentRepository.getReferenceById(userDTO.getOverseenDepartmentId());
+            overseenDepartment = departmentRepository.findById(userDTO.getOverseenDepartmentId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Overseen Department ID not found: " + userDTO.getOverseenDepartmentId()));
         }
 
         User supervisor = null;
         if (userDTO.getSupervisorId() != null) {
-            supervisor = userRepository.getReferenceById(userDTO.getSupervisorId());
+            supervisor = userRepository.findById(userDTO.getSupervisorId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Supervisor ID not found: " + userDTO.getSupervisorId()));
         }
 
         User user = User.builder()
@@ -61,13 +80,18 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
+        if (Boolean.TRUE.equals(userDTO.getRequireProbation())) {
+            evaluationCreationService.createEvaluationForNewUser(savedUser, userDTO.getProbationTemplateId());
+        }
+
         return UserDTO.builder()
                 .id(savedUser.getId())
                 .username(savedUser.getUsername())
                 .role(savedUser.getRole())
                 .jobId(savedUser.getJob().getId())
                 .departmentId(savedUser.getDepartment().getId())
-                .overseenDepartmentId(savedUser.getOverseenDepartment() != null ? savedUser.getOverseenDepartment().getId() : null)
+                .overseenDepartmentId(
+                        savedUser.getOverseenDepartment() != null ? savedUser.getOverseenDepartment().getId() : null)
                 .supervisorId(savedUser.getSupervisor() != null ? savedUser.getSupervisor().getId() : null)
                 .build();
     }
