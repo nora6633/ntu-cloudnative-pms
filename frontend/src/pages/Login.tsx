@@ -31,23 +31,39 @@ export default function Login() {
     }
   };
 
+  // Helper for input styling to ensure visibility and spacing
+  const inputStyle = {
+    display: 'block',
+    marginTop: '0.5rem', // Creates space from the label text
+    padding: '0.5rem',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    width: '100%',
+    boxSizing: 'border-box' as const,
+    backgroundColor: '#fff',
+    color: '#000'
+  };
+
   return (
-    <section style={{ maxWidth: 360, margin: '4rem auto' }}>
+    <section style={{ maxWidth: 360, margin: '4rem auto', fontFamily: 'sans-serif' }}>
       <h1>Login</h1>
       <form onSubmit={onSubmit}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <label style={{ fontWeight: 'bold' }}>
             Username
             <input
+              style={inputStyle}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
               required
             />
           </label>
-          <label>
+
+          <label style={{ fontWeight: 'bold' }}>
             Password
             <input
+              style={inputStyle}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -55,8 +71,24 @@ export default function Login() {
               required
             />
           </label>
-          {error && <p style={{ color: 'crimson' }}>{error}</p>}
-          <button type="submit" disabled={submitting}>
+
+          {error && <p style={{ color: 'crimson', margin: 0 }}>{error}</p>}
+
+          <button 
+            type="submit" 
+            disabled={submitting}
+            style={{
+              padding: '0.75rem',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              // Dynamic Colors: Grey when disabled, White when enabled
+              backgroundColor: submitting ? '#cccccc' : '#ffffff',  // grey : green
+              color: '#000000', 
+              border: '1px solid #999',
+              borderRadius: '4px',
+              fontWeight: 'bold',
+              transition: 'background-color 0.2s'
+            }}
+          >
             {submitting ? 'Signing in...' : 'Sign in'}
           </button>
         </div>
