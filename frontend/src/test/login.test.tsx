@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, vi, ReactElement } from 'vitest';
-import { render, screen, fireEvent, waitFor, RenderResult } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, type RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ReactNode } from 'react';
+//import { ReactNode } from 'react';
 import Login from '../pages/Login';
-import { AuthContext, AuthContextValue } from '../auth/AuthContext';
+import { AuthContext, type AuthContextValue } from '../auth/AuthContext';
 import { useNavigate, useLocation, BrowserRouter } from 'react-router';
 
 vi.mock('react-router', async () => {
@@ -256,7 +256,7 @@ describe('Login Page', () => {
 
   describe('Form Validation', () => {
     it('should prevent form submission with empty fields', async () => {
-      const user = userEvent.setup();
+      //const user = userEvent.setup();
       const mockLogin = vi.fn();
       renderLogin({ login: mockLogin });
 
