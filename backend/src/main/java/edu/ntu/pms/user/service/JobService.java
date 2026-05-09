@@ -10,5 +10,6 @@ import edu.ntu.pms.user.entity.Job;
 @Service
 public interface JobService {
     List<Job> getAllJobs();
+    List<Job> getAllJobsWithTemplates();
     List<Job> getAllJobsForCycleStart(Set<Long> jobIds);
 }

@@ -23,6 +23,11 @@ public class JobServiceImpl implements JobService{
         return jobRepo.findAllByOrderByTitleAsc();
     }
 
+    @Override
+    public List<Job> getAllJobsWithTemplates() {
+        return jobRepo.findAllWithTemplatesOrderByTitleAsc();
+    }
+
     /**
      * Retrieves all jobs for the purpose of starting an evaluation cycle. The
      * provided set of job IDs must match exactly with the set of job IDs in the

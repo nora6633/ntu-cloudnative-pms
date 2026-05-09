@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.ntu.pms.template.dto.CriterionDTO;
+import edu.ntu.pms.template.dto.JobTemplatesDTO;
 import edu.ntu.pms.template.dto.JobSummaryDTO;
 import edu.ntu.pms.template.dto.TemplateDTO;
-import edu.ntu.pms.template.entity.Template;
+import edu.ntu.pms.template.mapper.TemplateMapper;
 import edu.ntu.pms.template.service.TemplateService;
-import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.service.JobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,10 +31,12 @@ public class TemplateController {
 
     private final JobService jobService;
     private final TemplateService templateService;
+    private final TemplateMapper templateMapper;
 
-    public TemplateController(JobService jobService, TemplateService templateService) {
+    public TemplateController(JobService jobService, TemplateService templateService, TemplateMapper templateMapper) {
         this.jobService = jobService;
         this.templateService = templateService;
+        this.templateMapper = templateMapper;
     }
 
     @Operation(
@@ -61,7 +62,34 @@ public class TemplateController {
     @GetMapping("/jobs")
     public List<JobSummaryDTO> getAllJobs() {
         return jobService.getAllJobs().stream()
-                .map(this::toJobSummaryDto)
+                .map(templateMapper::toJobSummaryDto)
+                .toList();
+    }
+
+    @Operation(
+            summary = "List jobs together with their templates",
+            description = "Returns all jobs and their associated templates in one response so HR can choose templates for evaluation-cycle setup without making per-job requests.",
+            security = @SecurityRequirement(name = "cookieAuth"))
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Jobs and templates retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = JobTemplatesDTO.class)))),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "The authenticated user does not have HR permission",
+                    content = @Content(schema = @Schema(implementation = org.springframework.http.ProblemDetail.class))),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Authentication is required",
+                    content = @Content(schema = @Schema(implementation = org.springframework.http.ProblemDetail.class)))
+    })
+    @Tag(name = "hr")
+    @PreAuthorize("hasRole('ROLE_HR')")
+    @GetMapping("/jobs/with-templates")
+    public List<JobTemplatesDTO> getAllJobsWithTemplates() {
+        return jobService.getAllJobsWithTemplates().stream()
+                .map(templateMapper::toJobTemplatesDto)
                 .toList();
     }
 
@@ -94,21 +122,7 @@ public class TemplateController {
             @Parameter(description = "Target job ID whose templates should be returned", example = "1")
             @PathVariable Long jobId) {
         return templateService.getAllTemplatesByJobId(jobId).stream()
-                .map(this::toTemplateDto)
+                .map(templateMapper::toTemplateDto)
                 .toList();
-    }
-
-    private JobSummaryDTO toJobSummaryDto(Job job) {
-        return new JobSummaryDTO(job.getId(), job.getTitle());
-    }
-
-    private TemplateDTO toTemplateDto(Template template) {
-        return new TemplateDTO(
-                template.getId(),
-                template.getJob().getId(),
-                template.getEvaluationType(),
-                template.getCriteria().stream()
-                        .map(criterion -> new CriterionDTO(criterion.getTitle(), criterion.getDescription()))
-                        .toList());
     }
 }
