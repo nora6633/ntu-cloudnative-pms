@@ -1,5 +1,7 @@
 package edu.ntu.pms.user.service;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ import edu.ntu.pms.user.mapper.UserMapper;
 import edu.ntu.pms.evaluation.service.EvaluationCreationService;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -23,17 +26,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final EvaluationCreationService evaluationCreationService;
     private final UserMapper userMapper;
-
-    public UserServiceImpl(UserRepository userRepository, JobRepository jobRepository,
-            DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder,
-            EvaluationCreationService evaluationCreationService, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.jobRepository = jobRepository;
-        this.departmentRepository = departmentRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.evaluationCreationService = evaluationCreationService;
-        this.userMapper = userMapper;
-    }
 
     @Override
     @Transactional
