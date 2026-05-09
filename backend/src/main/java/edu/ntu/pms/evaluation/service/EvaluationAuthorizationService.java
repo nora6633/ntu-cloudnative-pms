@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import edu.ntu.pms.evaluation.entity.Evaluation;
+import edu.ntu.pms.evaluation.entity.Goal;
 import edu.ntu.pms.evaluation.exception.OverseenDepartmentNotFoundException;
 import edu.ntu.pms.security.AuthenticatedUser;
 import edu.ntu.pms.user.entity.Department;
@@ -41,6 +42,17 @@ public class EvaluationAuthorizationService {
         if (!eval.getEmployee().getId().equals(currentUser.get().getId())) {
             throw new AccessDeniedException("You are not the owner of this evaluation.");
         }
+    }
+
+    /**
+     * Checks if the current user has access to the goal as the employee.
+     * Throws AccessDeniedException if the user is not the owner of the evaluation associated with the goal.
+     */
+    public void checkEmployeeAccess(Goal goal) {
+        if (goal.getEvaluation() == null) {
+            throw new IllegalStateException("Goal is not associated with any evaluation.");
+        }
+        checkEmployeeAccess(goal.getEvaluation());
     }
 
     /**
