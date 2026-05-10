@@ -15,6 +15,7 @@ export interface BaseEmployee {
   name: string;
   avatar: string;
   jobTitle: string;
+  typeTitle: string;
   status: string;
 }
 
@@ -30,6 +31,8 @@ interface EmployeeTableProps<T extends BaseEmployee> {
   setSearchQuery: (v: string) => void;
   jobFilter: string;
   setJobFilter: (v: string) => void;
+  cycleTypeFilter: string;
+  setCycleTypeFilter: (v: string) => void;
   statusFilter: string;
   setStatusFilter: (v: string) => void;
   hideStatus?: boolean;
@@ -46,6 +49,8 @@ export function EmployeeTable<T extends BaseEmployee>({
   setSearchQuery,
   jobFilter,
   setJobFilter,
+  cycleTypeFilter,
+  setCycleTypeFilter,
   statusFilter,
   setStatusFilter,
   hideStatus = false,
@@ -54,12 +59,14 @@ export function EmployeeTable<T extends BaseEmployee>({
   onEmployeeClick,
 }: EmployeeTableProps<T>) {
   const uniqueJobTitles = Array.from(new Set(employees.map((e) => e.jobTitle)));
+  const uniqueTypeTitles = Array.from(new Set(employees.map((e) => e.typeTitle)));
 
   const filtered = employees.filter((employee) => {
     const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesJob = jobFilter === "all" || employee.jobTitle === jobFilter;
+    const matchesType = cycleTypeFilter === "all" || employee.typeTitle === cycleTypeFilter;
     const matchesStatus = statusFilter === "all" || employee.status === statusFilter;
-    return matchesSearch && matchesJob && matchesStatus;
+    return matchesSearch && matchesJob && matchesType && matchesStatus;
   });
 
   const getStatusColor = (status: string) =>
@@ -90,7 +97,7 @@ export function EmployeeTable<T extends BaseEmployee>({
                 </div>
               </div>
 
-              <div className="w-64">
+              <div className="w-53">
                 <Label className="text-sm mb-2 block">Filter by Job</Label>
                 <Select value={jobFilter} onValueChange={setJobFilter}>
                   <SelectTrigger><SelectValue placeholder="All Jobs" /></SelectTrigger>
@@ -103,8 +110,21 @@ export function EmployeeTable<T extends BaseEmployee>({
                 </Select>
               </div>
 
+              <div className="w-46">
+                <Label className="text-sm mb-2 block">Filter by Cycle Type</Label>
+                <Select value={cycleTypeFilter} onValueChange={setCycleTypeFilter}>
+                  <SelectTrigger><SelectValue placeholder="All Types" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    {uniqueTypeTitles.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {!hideStatus && (
-                <div className="w-48">
+                <div className="w-52">
                   <Label className="text-sm mb-2 block">Filter by Status</Label>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger><SelectValue placeholder="All Status" /></SelectTrigger>
@@ -125,6 +145,7 @@ export function EmployeeTable<T extends BaseEmployee>({
               <TableRow>
                 <TableHead className="w-[300px]">Employee</TableHead>
                 <TableHead>Job Title</TableHead>
+                <TableHead>Cycle Type</TableHead>
                 {!hideStatus && <TableHead>Status</TableHead>}  
               </TableRow>
             </TableHeader>
@@ -152,6 +173,7 @@ export function EmployeeTable<T extends BaseEmployee>({
                       </div>
                     </TableCell>
                     <TableCell>{employee.jobTitle}</TableCell>
+                    <TableCell>{employee.typeTitle}</TableCell>
                     {!hideStatus && ( 
                     <TableCell>
                       <Badge className={getStatusColor(employee.status)}>

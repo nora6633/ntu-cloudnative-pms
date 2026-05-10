@@ -48,6 +48,7 @@ function toRow(e: EvaluationDTO): EvalRow {
     name: e.employeeName ?? '—',
     avatar: '',
     jobTitle: e.employeeJobTitle ?? '—',
+    typeTitle: e.type ?? '—',
     status: displayStatus(e.status),
     _evaluation: e,
   };
@@ -59,6 +60,7 @@ export function ViewAllSection() {
   const [error, setError]         = useState<string | null>(null);
   const [search, setSearch]       = useState('');
   const [jobFilter, setJob]       = useState('all');
+  const [cycleTypeFilter, setCycleType]   = useState('all');
   const [statusFilter, setStatus] = useState('all');
   const [selected, setSelected]   = useState<EvalRow | null>(null);
   const [dialogOpen, setDialog]   = useState(false);
@@ -91,6 +93,8 @@ export function ViewAllSection() {
         setSearchQuery={setSearch}
         jobFilter={jobFilter}
         setJobFilter={setJob}
+        cycleTypeFilter={cycleTypeFilter}
+        setCycleTypeFilter={setCycleType}
         statusFilter={statusFilter}
         setStatusFilter={setStatus}
         hideStatus={false}
