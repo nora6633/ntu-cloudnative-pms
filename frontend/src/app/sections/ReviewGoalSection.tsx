@@ -21,7 +21,6 @@ function toRow(e: EvaluationDTO): EvalRow {
     name: e.employeeName ?? '—',
     avatar: '',
     jobTitle: e.employeeJobTitle ?? '—',
-    submitDate: '',
     status: 'Pending Goal Approval',
     _evaluation: e,
   };

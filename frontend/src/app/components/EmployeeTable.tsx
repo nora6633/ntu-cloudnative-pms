@@ -15,7 +15,6 @@ export interface BaseEmployee {
   name: string;
   avatar: string;
   jobTitle: string;
-  submitDate: string;
   status: string;
 }
 
@@ -126,7 +125,6 @@ export function EmployeeTable<T extends BaseEmployee>({
               <TableRow>
                 <TableHead className="w-[300px]">Employee</TableHead>
                 <TableHead>Job Title</TableHead>
-                <TableHead>Submit Date</TableHead>
                 {!hideStatus && <TableHead>Status</TableHead>}  
               </TableRow>
             </TableHeader>
@@ -154,7 +152,6 @@ export function EmployeeTable<T extends BaseEmployee>({
                       </div>
                     </TableCell>
                     <TableCell>{employee.jobTitle}</TableCell>
-                    <TableCell>{employee.submitDate}</TableCell>
                     {!hideStatus && ( 
                     <TableCell>
                       <Badge className={getStatusColor(employee.status)}>
