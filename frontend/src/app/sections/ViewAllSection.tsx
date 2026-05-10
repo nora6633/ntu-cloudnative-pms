@@ -48,7 +48,6 @@ function toRow(e: EvaluationDTO): EvalRow {
     name: e.employeeName ?? '—',
     avatar: '',
     jobTitle: e.employeeJobTitle ?? '—',
-    submitDate: '',
     status: displayStatus(e.status),
     _evaluation: e,
   };
@@ -94,6 +93,7 @@ export function ViewAllSection() {
         setJobFilter={setJob}
         statusFilter={statusFilter}
         setStatusFilter={setStatus}
+        hideStatus={false}
         statusOptions={STATUS_OPTIONS}
         statusColorMap={STATUS_COLOR_MAP}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
