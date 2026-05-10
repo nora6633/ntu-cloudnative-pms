@@ -14,6 +14,7 @@ import edu.ntu.pms.user.repository.DepartmentRepository;
 import edu.ntu.pms.user.repository.JobRepository;
 import edu.ntu.pms.user.repository.UserRepository;
 import edu.ntu.pms.user.mapper.UserMapper;
+import edu.ntu.pms.user.enums.Role;
 import edu.ntu.pms.evaluation.service.EvaluationCreationService;
 
 @Service
@@ -41,6 +42,18 @@ public class UserServiceImpl implements UserService {
             if (userDTO.getProbationTemplateId() == null) {
                 throw new IllegalArgumentException("probationTemplateId is required when requireProbation is true");
             }
+        }
+
+        if (Role.EMPLOYEE.equals(userDTO.getRole()) && userDTO.getSupervisorId() == null) {
+            throw new IllegalArgumentException("Supervisor must be assigned for EMPLOYEE accounts");
+        }
+
+        if (Role.HR.equals(userDTO.getRole()) && userDTO.getOverseenDepartmentId() == null) {
+            throw new IllegalArgumentException("overseenDepartmentId is required for HR roles");
+        }
+
+        if (!Role.HR.equals(userDTO.getRole()) && userDTO.getOverseenDepartmentId() != null) {
+            throw new IllegalArgumentException("overseenDepartmentId is not allowed for non-HR roles");
         }
 
         Job job = jobRepository.findById(userDTO.getJobId())

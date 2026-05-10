@@ -50,15 +50,18 @@ public class UserServiceImplTests {
                 .role(Role.EMPLOYEE)
                 .jobId(1L)
                 .departmentId(1L)
+                .supervisorId(2L)
                 .build();
 
         Job job = Job.builder().id(1L).build();
         Department dept = Department.builder().id(1L).build();
+        User supervisor = User.builder().id(2L).build();
         User savedUser = User.builder().id(10L).username("testuser").build();
 
         when(userRepo.findByUsername("testuser")).thenReturn(Optional.empty());
         when(jobRepo.findById(1L)).thenReturn(Optional.of(job));
         when(deptRepo.findById(1L)).thenReturn(Optional.of(dept));
+        when(userRepo.findById(2L)).thenReturn(Optional.of(supervisor));
         when(passwordEncoder.encode("password123")).thenReturn("hashed_password");
         when(userRepo.save(any(User.class))).thenReturn(savedUser);
         when(userMapper.toDto(savedUser)).thenReturn(UserDTO.builder().id(10L).username("testuser").build());
@@ -111,7 +114,7 @@ public class UserServiceImplTests {
 
     @Test
     void registerUser_InvalidJobId_ThrowsException() {
-        UserDTO input = UserDTO.builder().username("user").jobId(99L).departmentId(1L).build();
+        UserDTO input = UserDTO.builder().username("user").role(Role.ADMIN).jobId(99L).departmentId(1L).build();
         when(userRepo.findByUsername("user")).thenReturn(Optional.empty());
         when(jobRepo.findById(99L)).thenReturn(Optional.empty());
 
@@ -123,6 +126,7 @@ public class UserServiceImplTests {
     void registerUser_ProbationMissingSupervisor_ThrowsException() {
         UserDTO input = UserDTO.builder()
                 .username("user")
+                .role(Role.ADMIN)
                 .requireProbation(true)
                 .probationTemplateId(1L)
                 .build();
@@ -165,6 +169,7 @@ public class UserServiceImplTests {
     void registerUser_InvalidOverseenDept_ThrowsException() {
         UserDTO input = UserDTO.builder()
                 .username("hruser")
+                .role(Role.HR)
                 .jobId(1L)
                 .departmentId(1L)
                 .overseenDepartmentId(99L)
@@ -177,5 +182,42 @@ public class UserServiceImplTests {
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> svc.registerUser(input));
         assertTrue(ex.getMessage().contains("Overseen Department ID not found"));
+    }
+
+    @Test
+    void registerUser_EmployeeMissingSupervisor_ThrowsException() {
+        UserDTO input = UserDTO.builder()
+                .username("emp")
+                .role(Role.EMPLOYEE)
+                .build();
+        when(userRepo.findByUsername("emp")).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> svc.registerUser(input));
+        assertEquals("Supervisor must be assigned for EMPLOYEE accounts", ex.getMessage());
+    }
+
+    @Test
+    void registerUser_HrMissingOverseenDept_ThrowsException() {
+        UserDTO input = UserDTO.builder()
+                .username("hruser")
+                .role(Role.HR)
+                .build();
+        when(userRepo.findByUsername("hruser")).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> svc.registerUser(input));
+        assertEquals("overseenDepartmentId is required for HR roles", ex.getMessage());
+    }
+
+    @Test
+    void registerUser_NonHrWithOverseenDept_ThrowsException() {
+        UserDTO input = UserDTO.builder()
+                .username("adminuser")
+                .role(Role.ADMIN)
+                .overseenDepartmentId(1L)
+                .build();
+        when(userRepo.findByUsername("adminuser")).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> svc.registerUser(input));
+        assertEquals("overseenDepartmentId is not allowed for non-HR roles", ex.getMessage());
     }
 }

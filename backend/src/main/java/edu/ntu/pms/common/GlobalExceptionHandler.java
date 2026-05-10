@@ -99,13 +99,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // Catch DataIntegrityViolationException to return a 400 Bad Request instead of
-    // 500 Internal Server Error when foreign keys fail
+    // 500 Internal Server Error when data constraints fail
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ProblemDetail handleDataIntegrityViolationException(
             org.springframework.dao.DataIntegrityViolationException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
-                "Data integrity violation: Please check if the provided IDs (like departmentId or jobId) actually exist.");
+                "Data integrity violation");
         problem.setTitle("Data Integrity Error");
         return problem;
     }
