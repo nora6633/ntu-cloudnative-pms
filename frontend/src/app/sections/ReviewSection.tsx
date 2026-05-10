@@ -5,23 +5,11 @@ import type { BaseEmployee } from '../components/EmployeeTable';
 import type { EvaluationDTO, EvaluationItemDTO } from '../../api';
 import { getEvaluationsForManager, draftReview, submitReview } from '../../api';
 
-function reviewStatus(status: string | undefined): string {
-  switch (status) {
-    case 'REVIEW':                      return 'Review Drafting';
-    case 'PENDING_REVIEW_CONFIRMATION': return 'Pending Confirmation';
-    case 'PENDING_CLOSURE':             return 'Pending Closure';
-    case 'CLOSED':                      return 'Closed';
-    default:                            return 'Pending Review';
-  }
-}
 
-const STATUS_OPTIONS = ['Review Drafting', 'Pending Confirmation', 'Pending Closure', 'Closed'];
+const STATUS_OPTIONS = ['Review Drafting'];
 
 const STATUS_COLOR_MAP: Record<string, string> = {
   'Review Drafting': 'bg-gray-100 text-gray-800',
-  'Pending Confirmation': 'bg-yellow-100 text-yellow-800',
-  'Pending Closure': 'bg-orange-100 text-orange-800',
-  'Closed':        'bg-purple-100 text-purple-800',
 };
 
 interface EvalRow extends BaseEmployee {
@@ -35,7 +23,7 @@ function toRow(e: EvaluationDTO): EvalRow {
     avatar: '',
     jobTitle: e.employeeJobTitle ?? '—',
     submitDate: '',
-    status: reviewStatus(e.status),
+    status: "Review Drafting",
     _evaluation: e,
   };
 }
@@ -46,7 +34,6 @@ export function ReviewSection() {
   const [error, setError]         = useState<string | null>(null);
   const [search, setSearch]       = useState('');
   const [jobFilter, setJob]       = useState('all');
-  const [statusFilter, setStatus] = useState('all');
   const [selected, setSelected]   = useState<EvalRow | null>(null);
   const [dialogOpen, setDialog]   = useState(false);
 
@@ -56,10 +43,7 @@ export function ReviewSection() {
     try {
       const res = await getEvaluationsForManager({ pageable: { page: 0, size: 100 } });
       const inReview = (res.data.content ?? []).filter((e) =>
-        e.status === 'REVIEW' ||
-        e.status === 'PENDING_REVIEW_CONFIRMATION' ||
-        e.status === 'PENDING_CLOSURE' ||
-        e.status === 'CLOSED',
+        e.status === 'REVIEW',
       );
       setRows(inReview.map(toRow));
     } catch {
@@ -104,8 +88,9 @@ export function ReviewSection() {
         setSearchQuery={setSearch}
         jobFilter={jobFilter}
         setJobFilter={setJob}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatus}
+        statusFilter="all"
+        setStatusFilter={() => {}}
+        hideStatus={true}
         statusOptions={STATUS_OPTIONS}
         statusColorMap={STATUS_COLOR_MAP}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}

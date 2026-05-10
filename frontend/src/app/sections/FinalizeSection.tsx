@@ -5,20 +5,11 @@ import type { BaseEmployee } from '../components/EmployeeTable';
 import type { EvaluationDTO } from '../../api';
 import { getEvaluationsForHr, approveEvaluation, rejectEvaluation } from '../../api';
 
-function finalizeStatus(e: EvaluationDTO): string {
-  switch (e.status) {
-    case 'PENDING_CLOSURE': return 'Pending';
-    case 'CLOSED':          return 'CLOSED';
-    default:                return 'Pending';
-  }
-}
 
-const STATUS_OPTIONS = ['Pending', 'CLOSED', 'Rejected'];
+const STATUS_OPTIONS = ['Pending'];
 
 const STATUS_COLOR_MAP: Record<string, string> = {
   Pending:  'bg-yellow-100 text-yellow-800',
-  CLOSED:   'bg-green-100 text-green-800',
-  Rejected: 'bg-red-100 text-red-800',
 };
 
 interface EvalRow extends BaseEmployee {
@@ -32,7 +23,7 @@ function toRow(e: EvaluationDTO): EvalRow {
     avatar: '',
     jobTitle: e.employeeJobTitle ?? '—',
     submitDate: '',
-    status: finalizeStatus(e),
+    status: "Pending",
     _evaluation: e,
   };
 }
@@ -43,7 +34,6 @@ export function FinalizeSection() {
   const [error, setError]         = useState<string | null>(null);
   const [search, setSearch]       = useState('');
   const [jobFilter, setJob]       = useState('all');
-  const [statusFilter, setStatus] = useState('all');
   const [selected, setSelected]   = useState<EvalRow | null>(null);
   const [dialogOpen, setDialog]   = useState(false);
 
@@ -53,7 +43,7 @@ export function FinalizeSection() {
     try {
       const res = await getEvaluationsForHr({ pageable: { page: 0, size: 10 } });
       const closeable = (res.data.content ?? []).filter(
-        (e) => e.status === 'PENDING_CLOSURE' || e.status === 'CLOSED',
+        (e) => e.status === 'PENDING_CLOSURE',
       );
       setRows(closeable.map(toRow));
     } catch {
@@ -98,8 +88,9 @@ export function FinalizeSection() {
         setSearchQuery={setSearch}
         jobFilter={jobFilter}
         setJobFilter={setJob}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatus}
+        statusFilter="all"
+        setStatusFilter={() => {}}
+        hideStatus={true}
         statusOptions={STATUS_OPTIONS}
         statusColorMap={STATUS_COLOR_MAP}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}

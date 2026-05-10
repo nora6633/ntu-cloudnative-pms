@@ -33,6 +33,7 @@ interface EmployeeTableProps<T extends BaseEmployee> {
   setJobFilter: (v: string) => void;
   statusFilter: string;
   setStatusFilter: (v: string) => void;
+  hideStatus?: boolean;
   statusOptions: string[];
   statusColorMap: Record<string, string>;
   onEmployeeClick: (employee: T) => void;
@@ -48,6 +49,7 @@ export function EmployeeTable<T extends BaseEmployee>({
   setJobFilter,
   statusFilter,
   setStatusFilter,
+  hideStatus = false,
   statusOptions,
   statusColorMap,
   onEmployeeClick,
@@ -102,18 +104,20 @@ export function EmployeeTable<T extends BaseEmployee>({
                 </Select>
               </div>
 
-              <div className="w-48">
-                <Label className="text-sm mb-2 block">Filter by Status</Label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger><SelectValue placeholder="All Status" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    {statusOptions.map((s) => (
-                      <SelectItem key={s} value={s}>{s}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {!hideStatus && (
+                <div className="w-48">
+                  <Label className="text-sm mb-2 block">Filter by Status</Label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger><SelectValue placeholder="All Status" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      {statusOptions.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
 
@@ -123,7 +127,7 @@ export function EmployeeTable<T extends BaseEmployee>({
                 <TableHead className="w-[300px]">Employee</TableHead>
                 <TableHead>Job Title</TableHead>
                 <TableHead>Submit Date</TableHead>
-                <TableHead>Status</TableHead>
+                {!hideStatus && <TableHead>Status</TableHead>}  
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -151,11 +155,13 @@ export function EmployeeTable<T extends BaseEmployee>({
                     </TableCell>
                     <TableCell>{employee.jobTitle}</TableCell>
                     <TableCell>{employee.submitDate}</TableCell>
+                    {!hideStatus && ( 
                     <TableCell>
                       <Badge className={getStatusColor(employee.status)}>
                         {employee.status}
                       </Badge>
                     </TableCell>
+                    )}
                   </TableRow>
                 ))
               )}
