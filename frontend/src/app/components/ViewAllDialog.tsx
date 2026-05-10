@@ -5,8 +5,9 @@ import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Star, Target, Calendar } from 'lucide-react';
-import type { EvaluationDTO } from '../../api';
+import { Star, Target, Calendar, Eye } from 'lucide-react';
+import type { EvaluationDTO, GoalDTO } from '../../api';
+import { ViewProgressDialog } from './ViewProgressDialog';
 
 function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase();
@@ -34,6 +35,8 @@ interface ViewAllDialogProps {
 
 export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps) {
   const [activeTab, setActiveTab] = useState('ratings');
+  const [selectedGoal, setSelectedGoal] = useState<GoalDTO | null>(null);
+  const [progressDialogOpen, setProgressDialogOpen] = useState(false);
 
   useEffect(() => { setActiveTab('ratings'); }, [evaluation?.id]);
 
@@ -52,8 +55,9 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
   const showFull     = status === 'PENDING_REVIEW_CONFIRMATION' || status === 'PENDING_CLOSURE' || status === 'CLOSED';
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
@@ -68,7 +72,7 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[60vh] pr-4">
+        <ScrollArea className="max-h-[54vh] pr-4">
           {showEmpty && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
@@ -112,6 +116,22 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
                       {goal.criteria.map((c) => (
                         <Badge key={c} variant="outline" className="text-xs">{c}</Badge>
                       ))}
+                    </div>
+                  )}
+                  {goal.progresses && goal.progresses.length > 0 && (
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => {
+                          setSelectedGoal(goal);
+                          setProgressDialogOpen(true);
+                        }}
+                      >
+                        <Eye className="w-4 h-4" />
+                        View Progress
+                      </Button>
                     </div>
                   )}
                   {showProgress && goal.progresses && goal.progresses.length > 0 && (
@@ -181,14 +201,19 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
                         </div>
                       </div>
                       {goal.progresses && goal.progresses.length > 0 && (
-                        <div className="mt-3 pt-3 border-t space-y-2">
-                          <p className="text-xs text-gray-500 font-medium">Progress log</p>
-                          {goal.progresses.map((p, pi) => (
-                            <div key={pi} className="border-l-2 border-blue-200 pl-3">
-                              <p className="text-xs text-gray-400">{p.timestamp ?? ''}</p>
-                              <p className="text-sm text-gray-700">{p.description}</p>
-                            </div>
-                          ))}
+                        <div className="mt-3 flex justify-end mb-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => {
+                              setSelectedGoal(goal);
+                              setProgressDialogOpen(true);
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                            View Progress
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -204,5 +229,7 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
         </div>
       </DialogContent>
     </Dialog>
+    <ViewProgressDialog open={progressDialogOpen} onClose={() => setProgressDialogOpen(false)} goal={selectedGoal} />
+    </>
   );
 }

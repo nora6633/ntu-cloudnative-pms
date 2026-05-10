@@ -4,9 +4,10 @@ import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Star, Calendar } from 'lucide-react';
+import { Star, Calendar, Eye } from 'lucide-react';
 import { Badge } from './ui/badge';
-import type { EvaluationDTO } from '../../api';
+import type { EvaluationDTO, GoalDTO } from '../../api';
+import { ViewProgressDialog } from './ViewProgressDialog';
 
 function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase();
@@ -32,6 +33,8 @@ interface FinalizeDialogProps {
 
 export function FinalizeDialog({ open, onClose, evaluation, onApprove, onReject }: FinalizeDialogProps) {
   const [activeTab, setActiveTab] = useState('ratings');
+  const [selectedGoal, setSelectedGoal] = useState<GoalDTO | null>(null);
+  const [progressDialogOpen, setProgressDialogOpen] = useState(false);
 
   useEffect(() => { setActiveTab('ratings'); }, [evaluation?.id]);
 
@@ -47,6 +50,7 @@ export function FinalizeDialog({ open, onClose, evaluation, onApprove, onReject 
   const handleReject  = () => { onReject(evaluation.id!);  onClose(); };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
         <DialogHeader>
@@ -68,7 +72,7 @@ export function FinalizeDialog({ open, onClose, evaluation, onApprove, onReject 
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[58vh] pr-4">
+        <ScrollArea className="max-h-[55vh] pr-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="ratings">Ratings</TabsTrigger>
@@ -123,16 +127,21 @@ export function FinalizeDialog({ open, onClose, evaluation, onApprove, onReject 
                     </div>
                   )}
                   {goal.progresses && goal.progresses.length > 0 && (
-                    <div className="mt-3 pt-3 border-t space-y-2">
-                      <p className="text-xs text-gray-500 font-medium">Progress log</p>
-                      {goal.progresses.map((p, pi) => (
-                        <div key={pi} className="border-l-2 border-blue-200 pl-3">
-                          <p className="text-xs text-gray-400">{p.timestamp ?? ''}</p>
-                          <p className="text-sm text-gray-700">{p.description}</p>
+                        <div className="mt-3 flex justify-end mb-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => {
+                              setSelectedGoal(goal);
+                              setProgressDialogOpen(true);
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                            View Progress
+                          </Button>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      )}
                 </div>
               ))}
             </TabsContent>
@@ -146,5 +155,7 @@ export function FinalizeDialog({ open, onClose, evaluation, onApprove, onReject 
         </div>
       </DialogContent>
     </Dialog>
+    <ViewProgressDialog open={progressDialogOpen} onClose={() => setProgressDialogOpen(false)} goal={selectedGoal} />
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle} from './ui/dialog';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
@@ -35,7 +35,7 @@ export function ReviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh]">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
@@ -49,7 +49,7 @@ export function ReviewDialog({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[50vh] pr-4">
+        <ScrollArea className="max-h-[58vh] pr-4">
           <div className="space-y-4 mt-4">
             <h3 className="font-semibold text-lg">Goals for Review</h3>
             {goals.length === 0 ? (
@@ -97,11 +97,11 @@ export function ReviewDialog({
           </div>
         </ScrollArea>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <div className="flex justify-end gap-3 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button variant="destructive" onClick={handleReject}>Reject</Button>
           <Button onClick={handleApprove}>Approve</Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
