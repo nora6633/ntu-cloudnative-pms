@@ -14,7 +14,7 @@ import { StartEvaluationSection }    from './sections/StartEvaluationSection';
 import { FinalizeSection }           from './sections/FinalizeSection';
 import { ViewAllSection }            from './sections/ViewAllSection';
 import { HistorySection }            from './sections/HistorySection';
-import { INITIAL_TEMPLATES, INITIAL_AUDIT_LOGS } from './data';
+import { INITIAL_TEMPLATES } from './data';
 import type { Template } from './types';
 import { useAuth }                   from '../auth/AuthContext';
 import type { Role }                 from '../auth/AuthContext';
@@ -143,21 +143,7 @@ export default function Home() {
         {safeSection === 'view_all'         && <ViewAllSection />}
         {safeSection === 'history'          && <HistorySection />}
         {safeSection === 'template'         && <TemplateSectionWrapper />}
-        {safeSection === 'audit'            && (
-          <AuditSection
-            auditLogs={INITIAL_AUDIT_LOGS}
-            timeInterval="all"
-            setTimeInterval={() => {}}
-            actorFilter="all"
-            setActorFilter={() => {}}
-            actionFilter="all"
-            setActionFilter={() => {}}
-            moduleFilter="all"
-            setModuleFilter={() => {}}
-            recordIdFilter=""
-            setRecordIdFilter={() => {}}
-          />
-        )}
+        {safeSection === 'audit'            && <AuditSection />}
         {safeSection === 'register'         && <RegisterSection />}
       </div>
     </div>

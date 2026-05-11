@@ -1,64 +1,95 @@
-import { Label } from "../components/ui/label";
-import { Input } from "../components/ui/input";
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Label } from '../components/ui/label';
+import { Input } from '../components/ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "../components/ui/select";
-import { AuditLogTable } from "../components/AuditLogTable";
-import type { AuditLog } from "../types";
+} from '../components/ui/select';
+import { AuditLogTable } from '../components/AuditLogTable';
+import {
+  getAuditLogs,
+  getAuditModules,
+  type AuditActionType,
+  type PageAuditLogDTO,
+} from '../../api';
 
-interface AuditSectionProps {
-  auditLogs: AuditLog[];
-  timeInterval: string;
-  setTimeInterval: (v: string) => void;
-  actorFilter: string;
-  setActorFilter: (v: string) => void;
-  actionFilter: string;
-  setActionFilter: (v: string) => void;
-  moduleFilter: string;
-  setModuleFilter: (v: string) => void;
-  recordIdFilter: string;
-  setRecordIdFilter: (v: string) => void;
+const PAGE_SIZE = 10;
+
+type TimeInterval = 'all' | '1h' | '24h' | '7d' | '30d';
+
+const TIME_INTERVAL_HOURS: Record<Exclude<TimeInterval, 'all'>, number> = {
+  '1h': 1,
+  '24h': 24,
+  '7d': 24 * 7,
+  '30d': 24 * 30,
+};
+
+function fromForInterval(interval: TimeInterval): string | undefined {
+  if (interval === 'all') return undefined;
+  const hours = TIME_INTERVAL_HOURS[interval];
+  return new Date(Date.now() - hours * 3600 * 1000).toISOString();
 }
 
-export function AuditSection({
-  auditLogs,
-  timeInterval,
-  setTimeInterval,
-  actorFilter,
-  setActorFilter,
-  actionFilter,
-  setActionFilter,
-  moduleFilter,
-  setModuleFilter,
-  recordIdFilter,
-  setRecordIdFilter,
-}: AuditSectionProps) {
-  const uniqueActors = Array.from(new Set(auditLogs.map((log) => log.actor)));
-  const uniqueModules = Array.from(new Set(auditLogs.map((log) => log.affectedModule)));
+const EMPTY_PAGE: PageAuditLogDTO = {
+  content: [],
+  totalElements: 0,
+  totalPages: 0,
+  size: PAGE_SIZE,
+  number: 0,
+  first: true,
+  last: true,
+  numberOfElements: 0,
+  empty: true,
+};
 
-  const filteredLogs = auditLogs.filter((log) => {
-    const matchesActor = actorFilter === "all" || log.actor === actorFilter;
-    const matchesAction = actionFilter === "all" || log.actionType === actionFilter;
-    const matchesModule = moduleFilter === "all" || log.affectedModule === moduleFilter;
-    const matchesRecordId =
-      !recordIdFilter ||
-      log.affectedRecordId.toLowerCase().includes(recordIdFilter.toLowerCase());
+export function AuditSection() {
+  const [timeInterval, setTimeInterval] = useState<TimeInterval>('all');
+  const [actorFilter, setActorFilter] = useState('');
+  const [actionFilter, setActionFilter] = useState<'all' | AuditActionType>('all');
+  const [moduleFilter, setModuleFilter] = useState('all');
+  const [recordIdFilter, setRecordIdFilter] = useState('');
 
-    let matchesTime = true;
-    if (timeInterval !== "all") {
-      const logDate = new Date(log.timestamp);
-      const now = new Date();
-      const hoursDiff = (now.getTime() - logDate.getTime()) / (1000 * 60 * 60);
-      switch (timeInterval) {
-        case "1h":  matchesTime = hoursDiff <= 1;   break;
-        case "24h": matchesTime = hoursDiff <= 24;  break;
-        case "7d":  matchesTime = hoursDiff <= 168; break;
-        case "30d": matchesTime = hoursDiff <= 720; break;
-      }
-    }
+  const [page, setPage] = useState(0);
+  const [data, setData] = useState<PageAuditLogDTO>(EMPTY_PAGE);
+  const [modules, setModules] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    return matchesActor && matchesAction && matchesModule && matchesRecordId && matchesTime;
-  });
+  // Reset to page 0 whenever filters change, otherwise paging into a
+  // page that no longer exists for the new filter feels broken.
+  useEffect(() => {
+    setPage(0);
+  }, [timeInterval, actorFilter, actionFilter, moduleFilter, recordIdFilter]);
+
+  const params = useMemo(() => ({
+    actor: actorFilter.trim() || undefined,
+    actionType: actionFilter === 'all' ? undefined : actionFilter,
+    module: moduleFilter === 'all' ? undefined : moduleFilter,
+    recordId: recordIdFilter.trim() || undefined,
+    from: fromForInterval(timeInterval),
+    page,
+    size: PAGE_SIZE,
+    sort: 'rev,desc',
+  }), [timeInterval, actorFilter, actionFilter, moduleFilter, recordIdFilter, page]);
+
+  const fetchLogs = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    getAuditLogs(params)
+      .then((res) => setData(res.data))
+      .catch((e: Error) => {
+        setError(e.message || 'Failed to load audit logs.');
+        setData(EMPTY_PAGE);
+      })
+      .finally(() => setLoading(false));
+  }, [params]);
+
+  useEffect(() => { fetchLogs(); }, [fetchLogs]);
+
+  useEffect(() => {
+    getAuditModules()
+      .then((res) => setModules(res.data))
+      .catch(() => setModules([]));
+  }, []);
 
   return (
     <div className="p-8">
@@ -73,7 +104,7 @@ export function AuditSection({
           <div className="grid grid-cols-5 gap-4">
             <div>
               <Label className="text-sm mb-2 block">Time Interval</Label>
-              <Select value={timeInterval} onValueChange={setTimeInterval}>
+              <Select value={timeInterval} onValueChange={(v) => setTimeInterval(v as TimeInterval)}>
                 <SelectTrigger><SelectValue placeholder="All Time" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Time</SelectItem>
@@ -86,21 +117,20 @@ export function AuditSection({
             </div>
 
             <div>
-              <Label className="text-sm mb-2 block">Actor</Label>
-              <Select value={actorFilter} onValueChange={setActorFilter}>
-                <SelectTrigger><SelectValue placeholder="All Actors" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Actors</SelectItem>
-                  {uniqueActors.map((actor) => (
-                    <SelectItem key={actor} value={actor}>{actor}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label className="text-sm mb-2 block">Actor (username)</Label>
+              <Input
+                placeholder="Filter by username…"
+                value={actorFilter}
+                onChange={(e) => setActorFilter(e.target.value)}
+              />
             </div>
 
             <div>
               <Label className="text-sm mb-2 block">Action Type</Label>
-              <Select value={actionFilter} onValueChange={setActionFilter}>
+              <Select
+                value={actionFilter}
+                onValueChange={(v) => setActionFilter(v as 'all' | AuditActionType)}
+              >
                 <SelectTrigger><SelectValue placeholder="All Actions" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Actions</SelectItem>
@@ -117,8 +147,8 @@ export function AuditSection({
                 <SelectTrigger><SelectValue placeholder="All Modules" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Modules</SelectItem>
-                  {uniqueModules.map((module) => (
-                    <SelectItem key={module} value={module}>{module}</SelectItem>
+                  {modules.map((m) => (
+                    <SelectItem key={m} value={m}>{m}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -127,7 +157,7 @@ export function AuditSection({
             <div>
               <Label className="text-sm mb-2 block">Record ID</Label>
               <Input
-                placeholder="Search record ID..."
+                placeholder="Search record ID…"
                 value={recordIdFilter}
                 onChange={(e) => setRecordIdFilter(e.target.value)}
               />
@@ -135,7 +165,17 @@ export function AuditSection({
           </div>
         </div>
 
-        <AuditLogTable logs={filteredLogs} />
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <AuditLogTable
+          page={data}
+          loading={loading}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );
