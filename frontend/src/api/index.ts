@@ -137,3 +137,59 @@ export const approveEvaluation = (id: number) =>
 
 export const rejectEvaluation = (id: number) =>
   apiFetch<string>(getRejectEvaluationUrl(id), { method: 'POST' });
+
+// ── Audit log ─────────────────────────────────────────────────────────────
+// Hand-written until orval picks up the new endpoint from the OpenAPI spec.
+
+export type AuditActionType = 'CREATE' | 'UPDATE' | 'DELETE';
+
+export interface AuditLogDTO {
+  rev: number;
+  timestamp: string;
+  username: string;
+  ipAddress: string;
+  module: string;
+  recordId: string;
+  actionType: AuditActionType;
+  changeSummary: string;
+}
+
+export interface PageAuditLogDTO {
+  content: AuditLogDTO[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
+
+export interface AuditLogParams {
+  actor?: string;
+  actionType?: AuditActionType;
+  module?: string;
+  recordId?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
+const buildQuery = (params: Record<string, unknown>): string => {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === '') continue;
+    search.append(key, String(value));
+  }
+  const qs = search.toString();
+  return qs ? `?${qs}` : '';
+};
+
+export const getAuditLogs = (params: AuditLogParams = {}) =>
+  apiFetch<PageAuditLogDTO>(`/audit-logs${buildQuery(params as Record<string, unknown>)}`);
+
+export const getAuditModules = () =>
+  apiFetch<string[]>('/audit-logs/modules');
