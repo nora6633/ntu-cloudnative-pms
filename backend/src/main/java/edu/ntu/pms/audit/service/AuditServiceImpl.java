@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.ntu.pms.audit.CustomRevisionEntity;
 import edu.ntu.pms.audit.dto.AuditLogDTO;
@@ -61,6 +62,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<AuditLogDTO> getAuditLogs(AuditLogFilter filter, Pageable pageable) {
         AuditReader reader = AuditReaderFactory.get(em);
 
