@@ -56,6 +56,11 @@ export function ReviewSection() {
 
   useEffect(() => { load(); }, [load]);
 
+  const handleClose = () => {
+    setDialog(false);
+    load();
+  };
+
   const handleSave = async (id: number, items: EvaluationItemDTO[]) => {
     try {      await draftReview(id, items);
       alert('Draft saved successfully.');
@@ -101,7 +106,7 @@ export function ReviewSection() {
 
       <EmployeeReviewDialog
         open={dialogOpen}
-        onClose={() => setDialog(false)}
+        onClose={handleClose}
         evaluation={selected?._evaluation ?? null}
         onSave={handleSave}
         onSubmit={handleSubmit}

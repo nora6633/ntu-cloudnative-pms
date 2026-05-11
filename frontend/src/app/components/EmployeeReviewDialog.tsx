@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Star, Target, Calendar, Edit, Eye } from 'lucide-react';
+import { Star, Target, Calendar, Eye } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import type { EvaluationDTO, EvaluationItemDTO, GoalDTO} from '../../api';
@@ -30,7 +30,6 @@ export function EmployeeReviewDialog({
   onSubmit,
 }: EmployeeReviewDialogProps) {
   const [items, setItems] = useState<EvaluationItemDTO[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<GoalDTO | null>(null);
   const [progressDialogOpen, setProgressDialogOpen] = useState(false);
 
@@ -38,16 +37,14 @@ export function EmployeeReviewDialog({
     if (evaluation) {
       setItems(evaluation.evaluationItems ?? []);
     }
-    setIsEditing(false);
   }, [evaluation, open]);
 
   if (!evaluation || evaluation.id == null) return null;
 
   const name = evaluation.employeeName ?? '—';
   const goals = evaluation.goals ?? [];
-  const isSubmitted = evaluation.status === 'PENDING_REVIEW_CONFIRMATION' || evaluation.status === 'PENDING_CLOSURE' || evaluation.status === 'CLOSED';
-  const isReadOnly = isSubmitted && !isEditing;
   const allRated = items.length > 0 && items.every((it) => (it.rating ?? 0) > 0);
+  const allCommented = items.length > 0 && items.every((it) => !!it.feedback?.trim());
 
   const setRating = (id: number, rating: number) =>
     setItems((prev) => prev.map((it) => it.id === id ? { ...it, rating } : it));
@@ -57,18 +54,17 @@ export function EmployeeReviewDialog({
 
   const handleSave = () => onSave(evaluation.id!, items);
   const handleSubmit = () => {
-    if (allRated) { onSubmit(evaluation.id!, items); onClose(); }
+    if (allRated && allCommented) { onSubmit(evaluation.id!, items); onClose(); }
   };
 
-  const StarRating = ({ item, readOnly }: { item: EvaluationItemDTO; readOnly: boolean }) => (
+  const StarRating = ({ item }: { item: EvaluationItemDTO }) => (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
-          disabled={readOnly}
-          onClick={() => !readOnly && setRating(item.id, star)}
-          className={readOnly ? 'cursor-default' : 'cursor-pointer hover:scale-110 transition-transform'}
+          onClick={() => setRating(item.id, star)}
+          className={'cursor-pointer hover:scale-110 transition-transform'}
         >
           <Star className={`w-6 h-6 ${star <= (item.rating ?? 0) ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-gray-300'}`} />
         </button>
@@ -92,11 +88,6 @@ export function EmployeeReviewDialog({
                 <p className="text-sm text-gray-600 mt-1">{evaluation.employeeJobTitle}</p>
               </div>
             </div>
-            {isSubmitted && !isEditing && (
-              <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-                <Edit className="w-4 h-4 mr-2" />Edit
-              </Button>
-            )}
           </div>
         </DialogHeader>
 
@@ -121,14 +112,13 @@ export function EmployeeReviewDialog({
                         <p className="text-sm text-gray-600">{item.description}</p>
                       </div>
                       <div className="ml-4">
-                        <StarRating item={item} readOnly={isReadOnly} />
+                        <StarRating item={item} />
                       </div>
                     </div>
                     <Textarea
                       placeholder="Add your comments..."
                       value={item.feedback ?? ''}
                       onChange={(e) => setFeedback(item.id, e.target.value)}
-                      disabled={isReadOnly}
                       rows={2}
                       className="mt-2"
                     />
@@ -192,12 +182,8 @@ export function EmployeeReviewDialog({
 
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          {!isReadOnly && (
-            <>
-              <Button variant="outline" onClick={handleSave}>Save</Button>
-              <Button onClick={handleSubmit} disabled={!allRated}>Submit</Button>
-            </>
-          )}
+          <Button variant="outline" onClick={handleSave}>Save</Button>
+          <Button onClick={handleSubmit} disabled={!allRated|| !allCommented}>Submit</Button>
         </div>
       </DialogContent>
     </Dialog>
