@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import edu.ntu.pms.evaluation.entity.Evaluation;
+import edu.ntu.pms.evaluation.entity.Goal;
 import edu.ntu.pms.evaluation.exception.OverseenDepartmentNotFoundException;
 import edu.ntu.pms.security.AuthenticatedUser;
 import edu.ntu.pms.user.entity.Department;
@@ -61,6 +62,29 @@ public class EvaluationAuthorizationServiceTests {
     void checkEmployeeAccess_deniesWhenNotOwner() {
         when(auth.get()).thenReturn(User.builder().id(2L).username("other").build());
         assertThrows(AccessDeniedException.class, () -> svc.checkEmployeeAccess(eval));
+    }
+
+    @Test
+    void checkEmployeeAccess_goal_allowsWhenOwner() {
+        when(auth.get()).thenReturn(employee);
+        Goal goal = new Goal();
+        goal.setEvaluation(eval);
+        assertDoesNotThrow(() -> svc.checkEmployeeAccess(goal));
+    }
+
+    @Test
+    void checkEmployeeAccess_goal_deniesWhenNotOwner() {
+        when(auth.get()).thenReturn(User.builder().id(2L).username("other").build());
+        Goal goal = new Goal();
+        goal.setEvaluation(eval);
+        assertThrows(AccessDeniedException.class, () -> svc.checkEmployeeAccess(goal));
+    }
+
+    @Test
+    void checkEmployeeAccess_goal_throwsWhenNoEvaluation() {
+        when(auth.get()).thenReturn(employee);
+        Goal goal = new Goal(); // No evaluation set
+        assertThrows(IllegalStateException.class, () -> svc.checkEmployeeAccess(goal));
     }
 
     @Test
