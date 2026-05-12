@@ -24,7 +24,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import edu.ntu.pms.audit.dto.AuditLogDTO;
 import edu.ntu.pms.audit.dto.AuditLogFilter;
 import edu.ntu.pms.audit.service.AuditService;
-import edu.ntu.pms.user.Role;
+import edu.ntu.pms.user.enums.Role;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
@@ -36,20 +36,25 @@ import edu.ntu.pms.user.repository.UserRepository;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
-        "spring.datasource.url=jdbc:h2:mem:audit_service_testdb;DB_CLOSE_DELAY=-1",
-        "spring.datasource.driver-class-name=org.h2.Driver",
-        "spring.datasource.username=sa",
-        "spring.datasource.password=",
-        "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-        "spring.jpa.hibernate.ddl-auto=create-drop"
+    "spring.datasource.url=jdbc:h2:mem:audit_service_testdb;DB_CLOSE_DELAY=-1",
+    "spring.datasource.driver-class-name=org.h2.Driver",
+    "spring.datasource.username=sa",
+    "spring.datasource.password=",
+    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
+    "spring.jpa.hibernate.ddl-auto=create-drop"
 })
 class AuditServiceIntegrationTest {
 
-    @Autowired private AuditService auditService;
-    @Autowired private UserRepository userRepository;
-    @Autowired private JobRepository jobRepository;
-    @Autowired private DepartmentRepository departmentRepository;
-    @Autowired private TransactionTemplate tx;
+    @Autowired
+    private AuditService auditService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    private TransactionTemplate tx;
 
     @AfterEach
     void clearAuth() {
