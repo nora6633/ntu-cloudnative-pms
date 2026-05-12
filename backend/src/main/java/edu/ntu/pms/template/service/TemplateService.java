@@ -6,10 +6,13 @@ import org.springframework.stereotype.Service;
 
 import edu.ntu.pms.evaluation.entity.EvaluationItem;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
+import edu.ntu.pms.template.entity.Template;
 import edu.ntu.pms.user.entity.Job;
 
 @Service
 public interface TemplateService {
+
+    List<Template> getAllTemplatesByJobId(Long jobId);
 
     /**
      * Create evaluation items for a given job based on a specified template and evaluation type.

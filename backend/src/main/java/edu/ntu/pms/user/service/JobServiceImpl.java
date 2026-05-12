@@ -20,7 +20,12 @@ public class JobServiceImpl implements JobService{
 
     @Override
     public List<Job> getAllJobs() {
-        return jobRepo.findAll();
+        return jobRepo.findAllByOrderByTitleAsc();
+    }
+
+    @Override
+    public List<Job> getAllJobsWithTemplates() {
+        return jobRepo.findAllWithTemplatesOrderByTitleAsc();
     }
 
     /**

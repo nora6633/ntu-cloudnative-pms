@@ -44,20 +44,6 @@ jobs:
     name: Integration Tests
     runs-on: ubuntu-22.04
 
-    services:
-      mysql:
-        image: mysql:8.4
-        env:
-          MYSQL_ROOT_PASSWORD: pms_test
-          MYSQL_DATABASE: pms_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     defaults:
       run:
         working-directory: backend
@@ -73,10 +59,6 @@ jobs:
           cache: maven
 
       - name: Run integration tests
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pms_test
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: pms_test
         run: ./mvnw --no-transfer-progress -Dgroups=integration test
 
       - name: Upload integration test report

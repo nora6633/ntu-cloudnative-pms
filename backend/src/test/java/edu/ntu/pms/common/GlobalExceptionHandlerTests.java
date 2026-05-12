@@ -57,6 +57,11 @@ class GlobalExceptionHandlerTests {
         public void throwRuntimeEx() {
             throw new RuntimeException("boom");
         }
+
+        @GetMapping("/test-data-integrity")
+        public void throwDataIntegrityEx() {
+            throw new org.springframework.dao.DataIntegrityViolationException("some sql error");
+        }
     }
 
 
@@ -95,5 +100,14 @@ class GlobalExceptionHandlerTests {
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
                 .andExpect(jsonPath("$.title").value("Server Error"));
+    }
+
+    @Test
+    void shouldReturnProblemDetail_WhenDataIntegrityViolationThrown() throws Exception {
+        mockMvc.perform(get("/test-data-integrity"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+                .andExpect(jsonPath("$.title").value("Data Integrity Error"))
+                .andExpect(jsonPath("$.detail").value("Data integrity violation"));
     }
 }

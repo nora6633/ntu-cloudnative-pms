@@ -9,23 +9,22 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import edu.ntu.pms.H2IntegrationTest;
 import edu.ntu.pms.template.repository.TemplateRepository;
-import edu.ntu.pms.user.Role;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
+import edu.ntu.pms.user.enums.Role;
 import edu.ntu.pms.user.repository.DepartmentRepository;
 import edu.ntu.pms.user.repository.JobRepository;
 import edu.ntu.pms.user.repository.UserRepository;
 
 @Tag("integration")
 @SpringBootTest
-@TestPropertySource(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
+@H2IntegrationTest
 class DataSeederTest {
 
     @Autowired
@@ -61,7 +60,7 @@ class DataSeederTest {
     @Test
     void shouldCreateJobs() {
         List<Job> jobs = jobRepository.findAll();
-        
+
         assertNotNull(jobs);
         assertEquals(4, jobs.size());
         assertTrue(jobs.stream().anyMatch(j -> j.getTitle().equals(DataSeeder.JOB_JUNIOR_SOFTWARE_ENGINEER)));
@@ -73,7 +72,7 @@ class DataSeederTest {
     @Test
     void shouldCreateDepartments() {
         List<Department> departments = departmentRepository.findAll();
-        
+
         assertNotNull(departments);
         assertEquals(2, departments.size());
         assertTrue(departments.stream().anyMatch(d -> d.getName().equals(DataSeeder.DEPT_ENGINEERING)));
@@ -83,21 +82,21 @@ class DataSeederTest {
     @Test
     void shouldHaveAdminUserWithCorrectRole() {
         User admin = userRepository.findByUsername("admin").orElseThrow();
-        
+
         assertEquals(Role.ADMIN, admin.getRole());
     }
 
     @Test
     void shouldHaveManagerUserWithCorrectRole() {
         User manager = userRepository.findByUsername("manager").orElseThrow();
-        
+
         assertEquals(Role.MANAGER, manager.getRole());
     }
 
     @Test
     void shouldHaveEmployeeUserWithCorrectRole() {
         User employee = userRepository.findByUsername("employee").orElseThrow();
-        
+
         assertEquals(Role.EMPLOYEE, employee.getRole());
     }
 
@@ -105,7 +104,7 @@ class DataSeederTest {
     void shouldHaveHRUsersWithCorrectRole() {
         User seniorHr = userRepository.findByUsername("seniorhr").orElseThrow();
         User juniorHr = userRepository.findByUsername("juniorhr").orElseThrow();
-        
+
         assertEquals(Role.HR, seniorHr.getRole());
         assertEquals(Role.HR, juniorHr.getRole());
     }
@@ -113,7 +112,7 @@ class DataSeederTest {
     @Test
     void shouldHaveAllUsersWithJobsAssigned() {
         List<User> users = userRepository.findAll();
-        
+
         for (User user : users) {
             assertNotNull(user.getJob(), "User " + user.getUsername() + " should have a job assigned");
         }
@@ -122,7 +121,7 @@ class DataSeederTest {
     @Test
     void shouldHaveAllUsersWithDepartmentsAssigned() {
         List<User> users = userRepository.findAll();
-        
+
         for (User user : users) {
             assertNotNull(user.getDepartment(), "User " + user.getUsername() + " should have a department assigned");
         }
@@ -131,7 +130,7 @@ class DataSeederTest {
     @Test
     void shouldHaveManagerUserWithOverseenDepartment() {
         User manager = userRepository.findByUsername("manager").orElseThrow();
-        
+
         assertNull(manager.getOverseenDepartment(), "Manager should not oversee a department");
     }
 
@@ -146,7 +145,7 @@ class DataSeederTest {
     @Test
     void shouldHaveSeniorHRWithOverseenDepartment() {
         User seniorHr = userRepository.findByUsername("seniorhr").orElseThrow();
-        
+
         assertNotNull(seniorHr.getOverseenDepartment(), "Senior HR should oversee a department");
         assertEquals(DataSeeder.DEPT_HUMAN_RESOURCES, seniorHr.getOverseenDepartment().getName());
     }
@@ -154,7 +153,7 @@ class DataSeederTest {
     @Test
     void shouldHaveEmployeeWithSupervisor() {
         User employee = userRepository.findByUsername("employee").orElseThrow();
-        
+
         assertNotNull(employee.getSupervisor(), "Employee should have a supervisor");
         assertEquals("manager", employee.getSupervisor().getUsername());
     }
@@ -162,7 +161,7 @@ class DataSeederTest {
     @Test
     void shouldHaveJuniorHRWithSupervisor() {
         User juniorHr = userRepository.findByUsername("juniorhr").orElseThrow();
-        
+
         assertNotNull(juniorHr.getSupervisor(), "Junior HR should have a supervisor");
         assertEquals("seniorhr", juniorHr.getSupervisor().getUsername());
     }
@@ -170,7 +169,7 @@ class DataSeederTest {
     @Test
     void shouldHaveAdminWithNoSupervisor() {
         User admin = userRepository.findByUsername("admin").orElseThrow();
-        
+
         assertNull(admin.getSupervisor(), "Admin should not have a supervisor");
     }
 
@@ -186,10 +185,14 @@ class DataSeederTest {
         dataSeeder.run();
 
         // Verify counts haven't changed
-        assertEquals(initialUserCount, userRepository.count(), "User count should remain the same after re-running seeder");
-        assertEquals(initialJobCount, jobRepository.count(), "Job count should remain the same after re-running seeder");
-        assertEquals(initialDeptCount, departmentRepository.count(), "Department count should remain the same after re-running seeder");
-        assertEquals(initialTemplateCount, templateRepository.count(), "Template count should remain the same after re-running seeder");
+        assertEquals(initialUserCount, userRepository.count(),
+                "User count should remain the same after re-running seeder");
+        assertEquals(initialJobCount, jobRepository.count(),
+                "Job count should remain the same after re-running seeder");
+        assertEquals(initialDeptCount, departmentRepository.count(),
+                "Department count should remain the same after re-running seeder");
+        assertEquals(initialTemplateCount, templateRepository.count(),
+                "Template count should remain the same after re-running seeder");
     }
 
     @Test
@@ -198,8 +201,8 @@ class DataSeederTest {
 
         for (Job job : jobRepository.findAll()) {
             Long templateCount = entityManager.createQuery(
-                            "select count(t) from Template t where t.job.id = :jobId",
-                            Long.class)
+                    "select count(t) from Template t where t.job.id = :jobId",
+                    Long.class)
                     .setParameter("jobId", job.getId())
                     .getSingleResult();
 
@@ -210,7 +213,7 @@ class DataSeederTest {
     @Test
     void shouldHaveManagerUserWithCorrectJobAndDepartment() {
         User manager = userRepository.findByUsername("manager").orElseThrow();
-        
+
         assertEquals(DataSeeder.JOB_SENIOR_SOFTWARE_ENGINEER, manager.getJob().getTitle());
         assertEquals(DataSeeder.DEPT_ENGINEERING, manager.getDepartment().getName());
     }
@@ -218,7 +221,7 @@ class DataSeederTest {
     @Test
     void shouldHaveEmployeeUserWithCorrectJobAndDepartment() {
         User employee = userRepository.findByUsername("employee").orElseThrow();
-        
+
         assertEquals(DataSeeder.JOB_JUNIOR_SOFTWARE_ENGINEER, employee.getJob().getTitle());
         assertEquals(DataSeeder.DEPT_ENGINEERING, employee.getDepartment().getName());
     }
@@ -226,7 +229,7 @@ class DataSeederTest {
     @Test
     void shouldHaveSeniorHRUserWithCorrectJobAndDepartment() {
         User seniorHr = userRepository.findByUsername("seniorhr").orElseThrow();
-        
+
         assertEquals(DataSeeder.JOB_SENIOR_HR, seniorHr.getJob().getTitle());
         assertEquals(DataSeeder.DEPT_HUMAN_RESOURCES, seniorHr.getDepartment().getName());
     }
@@ -234,7 +237,7 @@ class DataSeederTest {
     @Test
     void shouldHaveJuniorHRUserWithCorrectJobAndDepartment() {
         User juniorHr = userRepository.findByUsername("juniorhr").orElseThrow();
-        
+
         assertEquals(DataSeeder.JOB_JUNIOR_HR, juniorHr.getJob().getTitle());
         assertEquals(DataSeeder.DEPT_HUMAN_RESOURCES, juniorHr.getDepartment().getName());
     }
