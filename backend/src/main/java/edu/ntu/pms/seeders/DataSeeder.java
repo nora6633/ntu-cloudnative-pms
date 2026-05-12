@@ -11,10 +11,10 @@ import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.template.entity.Criterion;
 import edu.ntu.pms.template.entity.Template;
 import edu.ntu.pms.template.repository.TemplateRepository;
-import edu.ntu.pms.user.Role;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
+import edu.ntu.pms.user.enums.Role;
 import edu.ntu.pms.user.repository.DepartmentRepository;
 import edu.ntu.pms.user.repository.JobRepository;
 import edu.ntu.pms.user.repository.UserRepository;
@@ -37,8 +37,8 @@ public class DataSeeder implements CommandLineRunner {
     private final TemplateRepository templateRepo;
     private final PasswordEncoder encoder;
 
-    public DataSeeder(UserRepository userRepo, PasswordEncoder encoder, 
-        JobRepository jobRepo, DepartmentRepository deptRepo, TemplateRepository templateRepo) {
+    public DataSeeder(UserRepository userRepo, PasswordEncoder encoder,
+            JobRepository jobRepo, DepartmentRepository deptRepo, TemplateRepository templateRepo) {
         this.userRepo = userRepo;
         this.jobRepo = jobRepo;
         this.deptRepo = deptRepo;
@@ -56,17 +56,15 @@ public class DataSeeder implements CommandLineRunner {
     private void seedJobsAndDepartments() {
         if (jobRepo.count() == 0) {
             jobRepo.saveAll(List.of(
-                Job.builder().title(JOB_JUNIOR_SOFTWARE_ENGINEER).build(),
-                Job.builder().title(JOB_SENIOR_SOFTWARE_ENGINEER).build(),
-                Job.builder().title(JOB_JUNIOR_HR).build(),
-                Job.builder().title(JOB_SENIOR_HR).build()
-            ));
+                    Job.builder().title(JOB_JUNIOR_SOFTWARE_ENGINEER).build(),
+                    Job.builder().title(JOB_SENIOR_SOFTWARE_ENGINEER).build(),
+                    Job.builder().title(JOB_JUNIOR_HR).build(),
+                    Job.builder().title(JOB_SENIOR_HR).build()));
         }
         if (deptRepo.count() == 0) {
             deptRepo.saveAll(List.of(
-                Department.builder().name(DEPT_ENGINEERING).build(),
-                Department.builder().name(DEPT_HUMAN_RESOURCES).build()
-            ));
+                    Department.builder().name(DEPT_ENGINEERING).build(),
+                    Department.builder().name(DEPT_HUMAN_RESOURCES).build()));
         }
     }
 
@@ -84,17 +82,17 @@ public class DataSeeder implements CommandLineRunner {
 
         seedUser("admin", "admin123", Role.ADMIN, seniorHrJob,
                 humanResources, null, null, Collections.emptyList());
-        
-        User manager = seedUser("manager", "manager123", Role.MANAGER, seniorSoftwareEngineer, 
+
+        User manager = seedUser("manager", "manager123", Role.MANAGER, seniorSoftwareEngineer,
                 engineering, null, null, Collections.emptyList());
 
         seedUser("employee", "employee123", Role.EMPLOYEE, juniorSoftwareEngineer,
                 engineering, null, manager, Collections.emptyList());
 
-        User seniorHr = seedUser("seniorhr", "seniorhr123", Role.HR, seniorHrJob, 
+        User seniorHr = seedUser("seniorhr", "seniorhr123", Role.HR, seniorHrJob,
                 humanResources, humanResources, null, Collections.emptyList());
-        
-        seedUser("juniorhr", "juniorhr123", Role.HR, juniorHrJob, 
+
+        seedUser("juniorhr", "juniorhr123", Role.HR, juniorHrJob,
                 humanResources, engineering, seniorHr, Collections.emptyList());
     }
 
@@ -113,7 +111,7 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private User seedUser(String username, String rawPassword, Role role, Job job, Department department,
-        Department overseenDepartment, User supervisor, List<User> subordinates) {
+            Department overseenDepartment, User supervisor, List<User> subordinates) {
         return userRepo.save(User.builder()
                 .username(username)
                 .passwordHash(encoder.encode(rawPassword))
@@ -129,12 +127,12 @@ public class DataSeeder implements CommandLineRunner {
     private void seedTemplates() {
         if (templateRepo.count() > 0)
             return;
-            
+
         Job juniorSoftwareEngineer = findJobByTitle(JOB_JUNIOR_SOFTWARE_ENGINEER);
         Job seniorSoftwareEngineer = findJobByTitle(JOB_SENIOR_SOFTWARE_ENGINEER);
         Job juniorHrJob = findJobByTitle(JOB_JUNIOR_HR);
         Job seniorHrJob = findJobByTitle(JOB_SENIOR_HR);
-        
+
         seedAnnualTemplate(juniorSoftwareEngineer, seniorSoftwareEngineer, juniorHrJob, seniorHrJob);
         seedQuarterTemplate(juniorSoftwareEngineer, seniorSoftwareEngineer, juniorHrJob, seniorHrJob);
         seedProbationTemplate(juniorSoftwareEngineer, seniorSoftwareEngineer, juniorHrJob, seniorHrJob);
@@ -149,75 +147,70 @@ public class DataSeeder implements CommandLineRunner {
         templateRepo.save(template);
     }
 
-    private void seedAnnualTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob, Job seniorHrJob) {
+    private void seedAnnualTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob,
+            Job seniorHrJob) {
         seedTemplate(juniorSoftwareEngineer, EvaluationType.ANNUAL, List.of(
-            new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
-            new Criterion("Team Collaboration", "Evaluate how well the employee collaborates with team members."),
-            new Criterion("Problem Solving", "Evaluate the employee's ability to solve technical problems.")
-        ));
+                new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
+                new Criterion("Team Collaboration", "Evaluate how well the employee collaborates with team members."),
+                new Criterion("Problem Solving", "Evaluate the employee's ability to solve technical problems.")));
 
         seedTemplate(seniorSoftwareEngineer, EvaluationType.ANNUAL, List.of(
-            new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
-            new Criterion("Team Leadership", "Evaluate how well the employee leads and mentors team members."),
-            new Criterion("Project Management", "Evaluate the employee's ability to manage projects and meet deadlines.")
-        ));
+                new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
+                new Criterion("Team Leadership", "Evaluate how well the employee leads and mentors team members."),
+                new Criterion("Project Management",
+                        "Evaluate the employee's ability to manage projects and meet deadlines.")));
 
         seedTemplate(juniorHrJob, EvaluationType.ANNUAL, List.of(
-            new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
-            new Criterion("Recruitment", "Evaluate the employee's effectiveness in recruitment processes."),
-            new Criterion("HR Compliance", "Evaluate the employee's knowledge and adherence to HR policies and regulations.")
-        ));
+                new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
+                new Criterion("Recruitment", "Evaluate the employee's effectiveness in recruitment processes."),
+                new Criterion("HR Compliance",
+                        "Evaluate the employee's knowledge and adherence to HR policies and regulations.")));
 
         seedTemplate(seniorHrJob, EvaluationType.ANNUAL, List.of(
-            new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
-            new Criterion("HR Strategy", "Evaluate the employee's ability to develop and implement HR strategies."),
-            new Criterion("Leadership", "Evaluate the employee's leadership skills and ability to manage HR teams.")
-        ));
+                new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
+                new Criterion("HR Strategy", "Evaluate the employee's ability to develop and implement HR strategies."),
+                new Criterion("Leadership",
+                        "Evaluate the employee's leadership skills and ability to manage HR teams.")));
     }
 
-    private void seedQuarterTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob, Job seniorHrJob) {
+    private void seedQuarterTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob,
+            Job seniorHrJob) {
         seedTemplate(juniorSoftwareEngineer, EvaluationType.QUARTER, List.of(
-            new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
-            new Criterion("Team Collaboration", "Evaluate how well the employee collaborates with team members.")
-        ));
+                new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
+                new Criterion("Team Collaboration", "Evaluate how well the employee collaborates with team members.")));
 
         seedTemplate(seniorSoftwareEngineer, EvaluationType.QUARTER, List.of(
-            new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
-            new Criterion("Team Leadership", "Evaluate how well the employee leads and mentors team members.")
-        ));
+                new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
+                new Criterion("Team Leadership", "Evaluate how well the employee leads and mentors team members.")));
 
         seedTemplate(juniorHrJob, EvaluationType.QUARTER, List.of(
-            new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
-            new Criterion("Recruitment", "Evaluate the employee's effectiveness in recruitment processes.")
-        ));
+                new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
+                new Criterion("Recruitment", "Evaluate the employee's effectiveness in recruitment processes.")));
 
         seedTemplate(seniorHrJob, EvaluationType.QUARTER, List.of(
-            new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
-            new Criterion("HR Strategy", "Evaluate the employee's ability to develop and implement HR strategies.")
-        ));
+                new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
+                new Criterion("HR Strategy",
+                        "Evaluate the employee's ability to develop and implement HR strategies.")));
     }
 
-    private void seedProbationTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob, Job seniorHrJob) {
+    private void seedProbationTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob,
+            Job seniorHrJob) {
         seedTemplate(juniorSoftwareEngineer, EvaluationType.PROBATION, List.of(
-            new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
-            new Criterion("Team Collaboration", "Evaluate how well the employee collaborates with team members.")
-        ));
+                new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
+                new Criterion("Team Collaboration", "Evaluate how well the employee collaborates with team members.")));
 
         seedTemplate(seniorSoftwareEngineer, EvaluationType.PROBATION, List.of(
-            new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
-            new Criterion("Team Leadership", "Evaluate how well the employee leads and mentors team members.")
-        ));
+                new Criterion("Code Quality", "Assess the quality of code produced by the employee."),
+                new Criterion("Team Leadership", "Evaluate how well the employee leads and mentors team members.")));
 
         seedTemplate(juniorHrJob, EvaluationType.PROBATION, List.of(
-            new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
-            new Criterion("Recruitment", "Evaluate the employee's effectiveness in recruitment processes.")
-        ));
+                new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
+                new Criterion("Recruitment", "Evaluate the employee's effectiveness in recruitment processes.")));
 
         seedTemplate(seniorHrJob, EvaluationType.PROBATION, List.of(
-            new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
-            new Criterion("HR Strategy", "Evaluate the employee's ability to develop and implement HR strategies.")
-        ));
+                new Criterion("Employee Relations", "Assess the employee's ability to manage employee relations."),
+                new Criterion("HR Strategy",
+                        "Evaluate the employee's ability to develop and implement HR strategies.")));
     }
-
 
 }

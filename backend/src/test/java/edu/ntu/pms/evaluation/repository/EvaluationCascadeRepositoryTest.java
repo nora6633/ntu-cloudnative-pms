@@ -18,10 +18,10 @@ import edu.ntu.pms.evaluation.entity.EvaluationItem;
 import edu.ntu.pms.evaluation.entity.Goal;
 import edu.ntu.pms.evaluation.enums.EvaluationStatus;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
-import edu.ntu.pms.user.Role;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
+import edu.ntu.pms.user.enums.Role;
 
 @Tag("integration")
 @DataJpaTest
@@ -108,12 +108,13 @@ public class EvaluationCascadeRepositoryTest {
         evaluationRepository.save(eval);
         entityManager.flush();
 
-        // Assert: Verify that the items were persisted and are associated with the evaluation
+        // Assert: Verify that the items were persisted and are associated with the
+        // evaluation
         List<EvaluationItem> items = evaluationRepository.findAll().getFirst().getEvaluationItems();
         assertThat(items).hasSize(2);
         assertThat(items).allSatisfy(i -> assertThat(i.getEvaluation()).isNotNull());
     }
- 
+
     @Test
     void savingEvaluationPersistsGoalsWhenCascadeEnabled() {
         // Arrange: Create an evaluation with two goals and save it
@@ -132,7 +133,8 @@ public class EvaluationCascadeRepositoryTest {
         evaluationRepository.save(eval);
         entityManager.flush();
 
-        // Assert: Verify that the goals were persisted and are associated with the evaluation
+        // Assert: Verify that the goals were persisted and are associated with the
+        // evaluation
         List<Goal> goals = evaluationRepository.findAll().getFirst().getGoals();
         assertThat(goals).hasSize(2);
         assertThat(goals).allSatisfy(g -> assertThat(g.getEvaluation()).isNotNull());

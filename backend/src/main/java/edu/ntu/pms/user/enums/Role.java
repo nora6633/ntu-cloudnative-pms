@@ -1,4 +1,4 @@
-package edu.ntu.pms.user;
+package edu.ntu.pms.user.enums;
 
 public enum Role {
     ADMIN,
