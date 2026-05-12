@@ -9,6 +9,13 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: false
+    properties:
+      hibernate:
+        envers:
+          audit_table_suffix: _AUD
+          revision_field_name: REV
+          revision_type_field_name: REVTYPE
+          store_data_at_delete: true
 
 app:
   jwt:

@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import edu.ntu.pms.audit.dto.AuditLogDTO;
@@ -35,14 +34,6 @@ import edu.ntu.pms.user.repository.UserRepository;
 @Tag("integration")
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-    "spring.datasource.url=jdbc:h2:mem:audit_service_testdb;DB_CLOSE_DELAY=-1",
-    "spring.datasource.driver-class-name=org.h2.Driver",
-    "spring.datasource.username=sa",
-    "spring.datasource.password=",
-    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-    "spring.jpa.hibernate.ddl-auto=create-drop"
-})
 class AuditServiceIntegrationTest {
 
     @Autowired
