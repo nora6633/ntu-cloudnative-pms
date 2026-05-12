@@ -5,28 +5,27 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import api from '../api/axiosInstance';
 import { AuthContext, type AuthUser } from './AuthContext';
+import { me as apiMe, login as apiLogin, logout as apiLogout } from '../api';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api
-      .get<AuthUser>('/auth/me')
-      .then((res) => setUser(res.data))
+    apiMe()
+      .then((res) => setUser(res.status === 200 ? (res.data as AuthUser) : null))
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
 
   const login = useCallback(async (username: string, password: string) => {
-    const res = await api.post<AuthUser>('/auth/login', { username, password });
-    setUser(res.data);
+    const res = await apiLogin({ username, password });
+    setUser(res.status === 200 ? (res.data as AuthUser) : null);
   }, []);
 
   const logout = useCallback(async () => {
-    await api.post('/auth/logout');
+    await apiLogout();
     setUser(null);
   }, []);
 
