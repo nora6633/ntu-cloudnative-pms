@@ -122,7 +122,7 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
                       ))}
                     </div>
                   )}
-                  {goal.progresses && goal.progresses.length > 0 && (
+                  {showProgress && goal.progresses && goal.progresses.length > 0 && (
                     <div className="mt-3 flex justify-end">
                       <Button
                         variant="outline"
@@ -136,17 +136,6 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
                         <Eye className="w-4 h-4" />
                         View Progress
                       </Button>
-                    </div>
-                  )}
-                  {showProgress && goal.progresses && goal.progresses.length > 0 && (
-                    <div className="mt-3 pt-3 border-t space-y-2">
-                      <p className="text-xs text-gray-500 font-medium">Progress log</p>
-                      {goal.progresses.map((p, pi) => (
-                        <div key={pi} className="border-l-2 border-blue-200 pl-3">
-                          <p className="text-xs text-gray-400">{p.timestamp ?? ''}</p>
-                          <p className="text-sm text-gray-700">{p.description}</p>
-                        </div>
-                      ))}
                     </div>
                   )}
                 </div>

@@ -36,7 +36,7 @@ interface EmployeeTableProps<T extends BaseEmployee> {
   statusFilter: string;
   setStatusFilter: (v: string) => void;
   hideStatus?: boolean;
-  statusOptions: string[];
+  //statusOptions: string[];
   statusColorMap: Record<string, string>;
   onEmployeeClick: (employee: T) => void;
 }
@@ -54,12 +54,13 @@ export function EmployeeTable<T extends BaseEmployee>({
   statusFilter,
   setStatusFilter,
   hideStatus = false,
-  statusOptions,
+  //statusOptions,
   statusColorMap,
   onEmployeeClick,
 }: EmployeeTableProps<T>) {
   const uniqueJobTitles = Array.from(new Set(employees.map((e) => e.jobTitle)));
   const uniqueTypeTitles = Array.from(new Set(employees.map((e) => e.typeTitle)));
+  const uniqueStatusOptions = Array.from(new Set(employees.map((e) => e.status)));
 
   const filtered = employees.filter((employee) => {
     const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -130,7 +131,7 @@ export function EmployeeTable<T extends BaseEmployee>({
                     <SelectTrigger><SelectValue placeholder="All Status" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Status</SelectItem>
-                      {statusOptions.map((s) => (
+                      {uniqueStatusOptions.map((s) => (
                         <SelectItem key={s} value={s}>{s}</SelectItem>
                       ))}
                     </SelectContent>

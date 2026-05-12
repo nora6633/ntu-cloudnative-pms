@@ -18,15 +18,6 @@ function displayStatus(status: string | undefined): string {
   }
 }
 
-const STATUS_OPTIONS = [
-  'Initial',
-  'Pending Goal Approval',
-  'Working',
-  'Review',
-  'Pending Review Confirmation',
-  'Pending Closure',
-  'Closed',
-];
 
 const STATUS_COLOR_MAP: Record<string, string> = {
   'Initial':                      'bg-gray-100 text-gray-700',
@@ -98,7 +89,7 @@ export function ViewAllSection() {
         statusFilter={statusFilter}
         setStatusFilter={setStatus}
         hideStatus={false}
-        statusOptions={STATUS_OPTIONS}
+        //statusOptions={STATUS_OPTIONS}
         statusColorMap={STATUS_COLOR_MAP}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
       />

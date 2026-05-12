@@ -94,7 +94,7 @@ export function ReviewSection() {
         statusFilter="all"
         setStatusFilter={() => {}}
         hideStatus={true}
-        statusOptions={[]}
+        //statusOptions={[]}
         statusColorMap={{}}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
       />
