@@ -20,10 +20,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import edu.ntu.pms.user.Role;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
+import edu.ntu.pms.user.enums.Role;
 import edu.ntu.pms.user.repository.DepartmentRepository;
 import edu.ntu.pms.user.repository.JobRepository;
 import edu.ntu.pms.user.repository.UserRepository;
@@ -43,12 +43,17 @@ import jakarta.persistence.PersistenceContext;
 })
 class AuditLogIntegrationTest {
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private JobRepository jobRepository;
-    @Autowired private DepartmentRepository departmentRepository;
-    @Autowired private TransactionTemplate tx;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    private TransactionTemplate tx;
 
-    @PersistenceContext private EntityManager em;
+    @PersistenceContext
+    private EntityManager em;
 
     @AfterEach
     void clearAuth() {

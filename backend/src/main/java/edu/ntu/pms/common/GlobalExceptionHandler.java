@@ -24,7 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    
+
     // Handle "Unauthorized" (401) - No or invalid token
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException ex) {
@@ -48,9 +48,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // Handle Validation Errors (@Valid) We override this to turn messy field errors into a readable 'detail'
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, 
-            HttpHeaders headers, 
-            HttpStatusCode status, 
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
             WebRequest request) {
 
         List<String> errors = ex.getBindingResult()
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneralException(Exception ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-            HttpStatus.INTERNAL_SERVER_ERROR, 
+                HttpStatus.INTERNAL_SERVER_ERROR,
             "An unexpected error occurred on the server."
         );
         problem.setTitle("Server Error");
@@ -81,8 +81,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgumentException(IllegalArgumentException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST, 
-            ex.getMessage() // Use the exception message as the detail for better clarity
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage() // Use the exception message as the detail for better clarity
         );
         problem.setTitle("Bad Request");
         return problem;
@@ -91,10 +91,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail handleIllegalStateException(IllegalStateException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST, 
-            ex.getMessage() // Use the exception message as the detail for better clarity
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage() // Use the exception message as the detail for better clarity
         );
         problem.setTitle("Bad Request");
+        return problem;
+    }
+
+    // Catch DataIntegrityViolationException to return a 400 Bad Request instead of
+    // 500 Internal Server Error when data constraints fail
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolationException(
+            org.springframework.dao.DataIntegrityViolationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Data integrity violation");
+        problem.setTitle("Data Integrity Error");
         return problem;
     }
 }
