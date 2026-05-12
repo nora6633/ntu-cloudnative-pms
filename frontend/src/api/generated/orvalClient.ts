@@ -6,6 +6,20 @@
  */
 export type AdminOnly200 = {[key: string]: string};
 
+export type GetAuditLogsParams = {
+actor?: string;
+actionType?: string;
+module?: string;
+recordId?: string;
+from?: string;
+to?: string;
+pageable: Pageable;
+};
+
+export type GetEvaluationsForHrParams = {
+pageable: Pageable;
+};
+
 export type GetEvaluationsForManagerParams = {
 pageable: Pageable;
 };
@@ -15,6 +29,28 @@ pageable: Pageable;
 };
 
 export type SayHello200 = {[key: string]: string};
+
+export type AuditLogDTOActionType = typeof AuditLogDTOActionType[keyof typeof AuditLogDTOActionType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AuditLogDTOActionType = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+} as const;
+
+export interface AuditLogDTO {
+  actionType?: AuditLogDTOActionType;
+  changeSummary?: string;
+  ipAddress?: string;
+  /** Audited entity type */
+  module?: string;
+  recordId?: string;
+  rev?: number;
+  timestamp?: string;
+  username?: string;
+}
 
 export interface SortObject {
   empty?: boolean;
@@ -29,6 +65,20 @@ export interface PageableObject {
   pageSize?: number;
   sort?: SortObject;
   unpaged?: boolean;
+}
+
+export interface PageAuditLogDTO {
+  content?: AuditLogDTO[];
+  empty?: boolean;
+  first?: boolean;
+  last?: boolean;
+  number?: number;
+  numberOfElements?: number;
+  pageable?: PageableObject;
+  size?: number;
+  sort?: SortObject;
+  totalElements?: number;
+  totalPages?: number;
 }
 
 export type EvaluationDTOType = typeof EvaluationDTOType[keyof typeof EvaluationDTOType];
@@ -93,9 +143,75 @@ export interface Pageable {
   sort?: string[];
 }
 
-export type GetEvaluationsForHrParams = {
-pageable: Pageable;
-};
+/**
+ * Job information together with its available evaluation templates
+ */
+export interface JobTemplatesDTO {
+  /** Job ID */
+  id?: number;
+  /** Templates available for this job */
+  templates?: TemplateDTO[];
+  /** Job title */
+  title?: string;
+}
+
+/**
+ * Minimal job information for template selection
+ */
+export interface JobSummaryDTO {
+  /** Job ID */
+  id?: number;
+  /** Job title */
+  title?: string;
+}
+
+export type ProblemDetailProperties = {[key: string]: unknown};
+
+export interface ProblemDetail {
+  detail?: string;
+  instance?: string;
+  properties?: ProblemDetailProperties;
+  status?: number;
+  title?: string;
+  type?: string;
+}
+
+/**
+ * Evaluation type of this template
+ */
+export type TemplateDTOEvaluationType = typeof TemplateDTOEvaluationType[keyof typeof TemplateDTOEvaluationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TemplateDTOEvaluationType = {
+  ANNUAL: 'ANNUAL',
+  QUARTER: 'QUARTER',
+  PROBATION: 'PROBATION',
+} as const;
+
+/**
+ * A single evaluation criterion within a template
+ */
+export interface CriterionDTO {
+  /** Criterion description */
+  description?: string;
+  /** Criterion title */
+  title?: string;
+}
+
+/**
+ * Evaluation template details for a specific job
+ */
+export interface TemplateDTO {
+  /** Ordered list of evaluation criteria in this template */
+  criteria?: CriterionDTO[];
+  /** Evaluation type of this template */
+  evaluationType?: TemplateDTOEvaluationType;
+  /** Template ID */
+  id?: number;
+  /** Associated job ID */
+  jobId?: number;
+}
 
 export type UserResponseRole = typeof UserResponseRole[keyof typeof UserResponseRole];
 
@@ -151,6 +267,24 @@ export interface EvaluationCycleDTO {
   jobToTemplateIdMap: EvaluationCycleDTOJobToTemplateIdMap;
 }
 
+export interface EvaluationItemDTO {
+  /**
+   * Description of the evaluation item
+   * @minLength 1
+   */
+  description: string;
+  /** Feedback for the evaluation item */
+  feedback?: string;
+  id: number;
+  /**
+   * Name of the evaluation item
+   * @minLength 1
+   */
+  name: string;
+  /** Rating for the evaluation item */
+  rating?: number;
+}
+
 export interface ProgressDTO {
   /** @minLength 1 */
   description: string;
@@ -190,24 +324,98 @@ export interface GoalDTO {
   resource: string;
 }
 
-export interface EvaluationItemDTO {
+export interface CreateProgressDTO {
   /**
-   * Description of the evaluation item
-   * @minLength 1
+   * The description of the progress update
+   * @minLength 0
+   * @maxLength 1000
    */
   description: string;
-  /** Feedback for the evaluation item */
-  feedback?: string;
-  id: number;
-  /**
-   * Name of the evaluation item
-   * @minLength 1
-   */
-  name: string;
-  /** Rating for the evaluation item */
-  rating?: number;
 }
 
+export type UserDTORole = typeof UserDTORole[keyof typeof UserDTORole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserDTORole = {
+  ADMIN: 'ADMIN',
+  EMPLOYEE: 'EMPLOYEE',
+  MANAGER: 'MANAGER',
+  HR: 'HR',
+} as const;
+
+export interface UserDTO {
+  departmentId: number;
+  id?: number;
+  jobId: number;
+  overseenDepartmentId?: number;
+  /**
+   * @minLength 8
+   * @maxLength 2147483647
+   */
+  password: string;
+  probationTemplateId?: number;
+  requireProbation?: boolean;
+  role: UserDTORole;
+  supervisorId?: number;
+  /** @minLength 1 */
+  username: string;
+}
+
+
+export type registrationResponse = {
+  data: UserDTO;
+  status: number;
+}
+
+export const getRegistrationUrl = () => {
+
+
+  return `/users/register`
+}
+
+export const registration = async (userDTO: UserDTO, options?: RequestInit): Promise<registrationResponse> => {
+  const res = await fetch(getRegistrationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    body: JSON.stringify(
+      userDTO,)
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+
+export type addProgressResponse = {
+  data: GoalDTO;
+  status: number;
+}
+
+export const getAddProgressUrl = (id: number,) => {
+
+
+  return `/goals/${id}/progress`
+}
+
+export const addProgress = async (id: number,
+    createProgressDTO: CreateProgressDTO, options?: RequestInit): Promise<addProgressResponse> => {
+  const res = await fetch(getAddProgressUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    body: JSON.stringify(
+      createProgressDTO,)
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
 
 
 export type submitReviewResponse = {
@@ -223,10 +431,10 @@ export const getSubmitReviewUrl = (id: number,) => {
 
 export const submitReview = async (id: number, options?: RequestInit): Promise<submitReviewResponse> => {
   const res = await fetch(getSubmitReviewUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -249,10 +457,10 @@ export const getSubmitForProgressReviewUrl = (id: number,) => {
 
 export const submitForProgressReview = async (id: number, options?: RequestInit): Promise<submitForProgressReviewResponse> => {
   const res = await fetch(getSubmitForProgressReviewUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -275,10 +483,10 @@ export const getSubmitForGoalApprovalUrl = (id: number,) => {
 
 export const submitForGoalApproval = async (id: number, options?: RequestInit): Promise<submitForGoalApprovalResponse> => {
   const res = await fetch(getSubmitForGoalApprovalUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -301,10 +509,10 @@ export const getRejectReviewUrl = (id: number,) => {
 
 export const rejectReview = async (id: number, options?: RequestInit): Promise<rejectReviewResponse> => {
   const res = await fetch(getRejectReviewUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -327,10 +535,10 @@ export const getRejectGoalsUrl = (id: number,) => {
 
 export const rejectGoals = async (id: number, options?: RequestInit): Promise<rejectGoalsResponse> => {
   const res = await fetch(getRejectGoalsUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -353,10 +561,10 @@ export const getRejectEvaluationUrl = (id: number,) => {
 
 export const rejectEvaluation = async (id: number, options?: RequestInit): Promise<rejectEvaluationResponse> => {
   const res = await fetch(getRejectEvaluationUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -380,7 +588,7 @@ export const getDraftReviewUrl = (id: number,) => {
 export const draftReview = async (id: number,
     evaluationItemDTO: EvaluationItemDTO[], options?: RequestInit): Promise<draftReviewResponse> => {
   const res = await fetch(getDraftReviewUrl(id),
-  {      
+  {
     ...options,
     method: 'POST',
     body: JSON.stringify(
@@ -408,7 +616,7 @@ export const getDraftGoalsUrl = (id: number,) => {
 export const draftGoals = async (id: number,
     goalDTO: GoalDTO[], options?: RequestInit): Promise<draftGoalsResponse> => {
   const res = await fetch(getDraftGoalsUrl(id),
-  {      
+  {
     ...options,
     method: 'POST',
     body: JSON.stringify(
@@ -435,10 +643,10 @@ export const getApproveReviewUrl = (id: number,) => {
 
 export const approveReview = async (id: number, options?: RequestInit): Promise<approveReviewResponse> => {
   const res = await fetch(getApproveReviewUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -461,10 +669,10 @@ export const getApproveGoalsUrl = (id: number,) => {
 
 export const approveGoals = async (id: number, options?: RequestInit): Promise<approveGoalsResponse> => {
   const res = await fetch(getApproveGoalsUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -487,10 +695,10 @@ export const getApproveEvaluationUrl = (id: number,) => {
 
 export const approveEvaluation = async (id: number, options?: RequestInit): Promise<approveEvaluationResponse> => {
   const res = await fetch(getApproveEvaluationUrl(id),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -513,7 +721,7 @@ export const getStartEvaluationCycleUrl = () => {
 
 export const startEvaluationCycle = async (evaluationCycleDTO: EvaluationCycleDTO, options?: RequestInit): Promise<startEvaluationCycleResponse> => {
   const res = await fetch(getStartEvaluationCycleUrl(),
-  {      
+  {
     ...options,
     method: 'POST',
     body: JSON.stringify(
@@ -540,10 +748,10 @@ export const getLogoutUrl = () => {
 
 export const logout = async ( options?: RequestInit): Promise<logoutResponse> => {
   const res = await fetch(getLogoutUrl(),
-  {      
+  {
     ...options,
     method: 'POST'
-    
+
   }
 
   )
@@ -566,11 +774,101 @@ export const getLoginUrl = () => {
 
 export const login = async (loginRequest: LoginRequest, options?: RequestInit): Promise<loginResponse> => {
   const res = await fetch(getLoginUrl(),
-  {      
+  {
     ...options,
     method: 'POST',
     body: JSON.stringify(
       loginRequest,)
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+
+/**
+ * Returns all evaluation templates associated with the specified job so HR can choose the correct template for creation or management flows.
+ * @summary List templates by job ID
+ */
+export type getAllTemplateByJobIdResponse = {
+  data: TemplateDTO[];
+  status: number;
+}
+
+export const getGetAllTemplateByJobIdUrl = (jobId: number,) => {
+
+
+  return `/templates/jobs/${jobId}`
+}
+
+export const getAllTemplateByJobId = async (jobId: number, options?: RequestInit): Promise<getAllTemplateByJobIdResponse> => {
+  const res = await fetch(getGetAllTemplateByJobIdUrl(jobId),
+  {
+    ...options,
+    method: 'GET'
+
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+
+/**
+ * Returns all jobs that HR can use when selecting a target job for template management.
+ * @summary List jobs for template selection
+ */
+export type getAllJobsResponse = {
+  data: JobSummaryDTO[];
+  status: number;
+}
+
+export const getGetAllJobsUrl = () => {
+
+
+  return `/jobs`
+}
+
+export const getAllJobs = async ( options?: RequestInit): Promise<getAllJobsResponse> => {
+  const res = await fetch(getGetAllJobsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+
+/**
+ * Returns all jobs and their associated templates in one response so HR can choose templates for evaluation-cycle setup without making per-job requests.
+ * @summary List jobs together with their templates
+ */
+export type getAllJobsWithTemplatesResponse = {
+  data: JobTemplatesDTO[];
+  status: number;
+}
+
+export const getGetAllJobsWithTemplatesUrl = () => {
+
+
+  return `/jobs/with-templates`
+}
+
+export const getAllJobsWithTemplates = async ( options?: RequestInit): Promise<getAllJobsWithTemplatesResponse> => {
+  const res = await fetch(getGetAllJobsWithTemplatesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
   }
 
   )
@@ -593,10 +891,10 @@ export const getSayHelloUrl = () => {
 
 export const sayHello = async ( options?: RequestInit): Promise<sayHelloResponse> => {
   const res = await fetch(getSayHelloUrl(),
-  {      
+  {
     ...options,
     method: 'GET'
-    
+
   }
 
   )
@@ -628,10 +926,10 @@ export const getGetMyEvaluationsUrl = (params: GetMyEvaluationsParams,) => {
 
 export const getMyEvaluations = async (params: GetMyEvaluationsParams, options?: RequestInit): Promise<getMyEvaluationsResponse> => {
   const res = await fetch(getGetMyEvaluationsUrl(params),
-  {      
+  {
     ...options,
     method: 'GET'
-    
+
   }
 
   )
@@ -663,10 +961,10 @@ export const getGetEvaluationsForManagerUrl = (params: GetEvaluationsForManagerP
 
 export const getEvaluationsForManager = async (params: GetEvaluationsForManagerParams, options?: RequestInit): Promise<getEvaluationsForManagerResponse> => {
   const res = await fetch(getGetEvaluationsForManagerUrl(params),
-  {      
+  {
     ...options,
     method: 'GET'
-    
+
   }
 
   )
@@ -698,10 +996,10 @@ export const getGetEvaluationsForHrUrl = (params: GetEvaluationsForHrParams,) =>
 
 export const getEvaluationsForHr = async (params: GetEvaluationsForHrParams, options?: RequestInit): Promise<getEvaluationsForHrResponse> => {
   const res = await fetch(getGetEvaluationsForHrUrl(params),
-  {      
+  {
     ...options,
     method: 'GET'
-    
+
   }
 
   )
@@ -724,10 +1022,71 @@ export const getMeUrl = () => {
 
 export const me = async ( options?: RequestInit): Promise<meResponse> => {
   const res = await fetch(getMeUrl(),
-  {      
+  {
     ...options,
     method: 'GET'
-    
+
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+
+export type getAuditLogsResponse = {
+  data: PageAuditLogDTO;
+  status: number;
+}
+
+export const getGetAuditLogsUrl = (params: GetAuditLogsParams,) => {
+
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value === null) {
+      normalizedParams.append(key, 'null');
+    } else if (value !== undefined) {
+      normalizedParams.append(key, value.toString());
+    }
+  });
+
+  return `/audit-logs?${normalizedParams.toString()}`
+}
+
+export const getAuditLogs = async (params: GetAuditLogsParams, options?: RequestInit): Promise<getAuditLogsResponse> => {
+  const res = await fetch(getGetAuditLogsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+
+export type getModulesResponse = {
+  data: string[];
+  status: number;
+}
+
+export const getGetModulesUrl = () => {
+
+
+  return `/audit-logs/modules`
+}
+
+export const getModules = async ( options?: RequestInit): Promise<getModulesResponse> => {
+  const res = await fetch(getGetModulesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
   }
 
   )
@@ -750,10 +1109,10 @@ export const getAdminOnlyUrl = () => {
 
 export const adminOnly = async ( options?: RequestInit): Promise<adminOnlyResponse> => {
   const res = await fetch(getAdminOnlyUrl(),
-  {      
+  {
     ...options,
     method: 'GET'
-    
+
   }
 
   )
@@ -761,5 +1120,3 @@ export const adminOnly = async ( options?: RequestInit): Promise<adminOnlyRespon
 
   return { status: res.status, data }
 }
-
-

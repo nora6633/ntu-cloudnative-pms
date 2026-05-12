@@ -17,15 +17,31 @@ import {
   getLoginUrl,
   getLogoutUrl,
   getMeUrl,
+  getRegistrationUrl,
+  getAddProgressUrl,
+  getGetAllTemplateByJobIdUrl,
+  getGetAllJobsUrl,
+  getGetAllJobsWithTemplatesUrl,
+  getGetAuditLogsUrl,
+  getGetModulesUrl,
+  getAdminOnlyUrl,
   type GetMyEvaluationsParams,
   type GetEvaluationsForManagerParams,
   type GetEvaluationsForHrParams,
+  type GetAuditLogsParams,
   type SliceEvaluationDTO,
   type GoalDTO,
   type EvaluationItemDTO,
   type EvaluationCycleDTO,
   type UserResponse,
   type LoginRequest,
+  type UserDTO,
+  type CreateProgressDTO,
+  type TemplateDTO,
+  type JobSummaryDTO,
+  type JobTemplatesDTO,
+  type PageAuditLogDTO,
+  type AdminOnly200,
 } from './generated/orvalClient';
 
 export type {
@@ -39,6 +55,13 @@ export type {
   SliceEvaluationDTO,
   UserResponse,
   LoginRequest,
+  UserDTO,
+  CreateProgressDTO,
+  TemplateDTO,
+  JobSummaryDTO,
+  JobTemplatesDTO,
+  PageAuditLogDTO,
+  AdminOnly200,
 } from './generated/orvalClient';
 
 
@@ -53,10 +76,10 @@ async function apiFetch<T>(
     headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
     ...init,
   });
-  
+
   const contentType = res.headers.get('content-type');
   let data: T;
-  
+
   if (!res.ok) {
     let errorMessage = `API Error: ${res.status}`;
     if (contentType?.includes('application/json')) {
@@ -73,13 +96,13 @@ async function apiFetch<T>(
     }
     throw new Error(errorMessage);
   }
-  
+
   if (contentType?.includes('application/json')) {
     data = (await res.json()) as T;
   } else {
     data = (await res.text()) as T;
   }
-  
+
   return { status: res.status, data };
 }
 
@@ -89,6 +112,9 @@ export const login = (body: LoginRequest) =>
   apiFetch<UserResponse>(getLoginUrl(), { method: 'POST', body: JSON.stringify(body) });
 
 export const logout = () => apiFetch<void>(getLogoutUrl(), { method: 'POST' });
+
+export const registration = (body: UserDTO) =>
+  apiFetch<UserDTO>(getRegistrationUrl(), { method: 'POST', body: JSON.stringify(body) });
 
 export const getMyEvaluations = (params: GetMyEvaluationsParams) =>
   apiFetch<SliceEvaluationDTO>(getGetMyEvaluationsUrl(params));
@@ -120,6 +146,9 @@ export const rejectGoals = (id: number) =>
 export const submitForProgressReview = (id: number) =>
   apiFetch<string>(getSubmitForProgressReviewUrl(id), { method: 'POST' });
 
+export const addProgress = (id: number, body: CreateProgressDTO) =>
+  apiFetch<GoalDTO>(getAddProgressUrl(id), { method: 'POST', body: JSON.stringify(body) });
+
 export const draftReview = (id: number, items: EvaluationItemDTO[]) =>
   apiFetch<string>(getDraftReviewUrl(id), { method: 'POST', body: JSON.stringify(items) });
 
@@ -137,3 +166,21 @@ export const approveEvaluation = (id: number) =>
 
 export const rejectEvaluation = (id: number) =>
   apiFetch<string>(getRejectEvaluationUrl(id), { method: 'POST' });
+
+export const getAllTemplateByJobId = (jobId: number) =>
+  apiFetch<TemplateDTO[]>(getGetAllTemplateByJobIdUrl(jobId));
+
+export const getAllJobs = () =>
+  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl());
+
+export const getAllJobsWithTemplates = () =>
+  apiFetch<JobTemplatesDTO[]>(getGetAllJobsWithTemplatesUrl());
+
+export const getAuditLogs = (params: GetAuditLogsParams) =>
+  apiFetch<PageAuditLogDTO>(getGetAuditLogsUrl(params));
+
+export const getModules = () =>
+  apiFetch<string[]>(getGetModulesUrl());
+
+export const adminOnly = () =>
+  apiFetch<AdminOnly200>(getAdminOnlyUrl());
