@@ -13,7 +13,9 @@ module?: string;
 recordId?: string;
 from?: string;
 to?: string;
-pageable: Pageable;
+page?: number;
+size?: number;
+sort?: string;
 };
 
 export type GetEvaluationsForHrParams = {
