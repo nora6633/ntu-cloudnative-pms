@@ -30,12 +30,26 @@ public class JobServiceImplTests {
                 Job.builder().id(1L).title("J1").build(),
                 Job.builder().id(2L).title("J2").build()
         );
-        when(jobRepo.findAll()).thenReturn(jobs);
+        when(jobRepo.findAllByOrderByTitleAsc()).thenReturn(jobs);
 
         List<Job> result = svc.getAllJobs();
 
         assertSame(jobs, result);
-        verify(jobRepo).findAll();
+        verify(jobRepo).findAllByOrderByTitleAsc();
+    }
+
+    @Test
+    void getAllJobsWithTemplates_returnsRepoList() {
+        List<Job> jobs = List.of(
+                Job.builder().id(1L).title("J1").build(),
+                Job.builder().id(2L).title("J2").build()
+        );
+        when(jobRepo.findAllWithTemplatesOrderByTitleAsc()).thenReturn(jobs);
+
+        List<Job> result = svc.getAllJobsWithTemplates();
+
+        assertSame(jobs, result);
+        verify(jobRepo).findAllWithTemplatesOrderByTitleAsc();
     }
 
     @Test

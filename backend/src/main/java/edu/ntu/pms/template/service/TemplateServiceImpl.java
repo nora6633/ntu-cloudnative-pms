@@ -5,15 +5,37 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import edu.ntu.pms.common.ResourceNotFoundException;
 import edu.ntu.pms.evaluation.entity.EvaluationItem;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.template.entity.Template;
+import edu.ntu.pms.template.repository.TemplateRepository;
 import edu.ntu.pms.user.entity.Job;
+import edu.ntu.pms.user.repository.JobRepository;
 
 @Service
 public class TemplateServiceImpl implements TemplateService {
-    
+
+    private final TemplateRepository templateRepository;
+    private final JobRepository jobRepository;
+
+    public TemplateServiceImpl(TemplateRepository templateRepository, JobRepository jobRepository) {
+        this.templateRepository = templateRepository;
+        this.jobRepository = jobRepository;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Template> getAllTemplatesByJobId(Long jobId) {
+        if (!jobRepository.existsById(jobId)) {
+            throw new ResourceNotFoundException("Job", jobId);
+        }
+
+        return templateRepository.findAllByJobIdOrderByIdAsc(jobId);
+    }
+
     /**
      * Create evaluation items for a given job based on a specified template and evaluation type.
      *
