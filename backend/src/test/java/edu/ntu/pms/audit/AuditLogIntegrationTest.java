@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,13 @@ class AuditLogIntegrationTest {
     private DepartmentRepository departmentRepository;
     @Autowired
     private TransactionTemplate tx;
+    @Autowired
+    private edu.ntu.pms.seeders.DataSeeder dataSeeder;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        dataSeeder.run();
+    }
 
     @PersistenceContext
     private EntityManager em;
