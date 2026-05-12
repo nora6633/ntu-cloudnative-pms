@@ -52,7 +52,7 @@ export function FinalizeDialog({ open, onClose, evaluation, onApprove, onReject 
   return (
     <>
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
@@ -76,7 +76,7 @@ export function FinalizeDialog({ open, onClose, evaluation, onApprove, onReject 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="ratings">Ratings</TabsTrigger>
-              <TabsTrigger value="goals">Goals & Progress</TabsTrigger>
+              <TabsTrigger value="goals">Goal Records</TabsTrigger>
             </TabsList>
 
             <TabsContent value="ratings" className="space-y-4 mt-6">

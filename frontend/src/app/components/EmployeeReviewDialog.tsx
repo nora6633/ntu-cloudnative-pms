@@ -95,7 +95,7 @@ export function EmployeeReviewDialog({
           <Tabs defaultValue="feedback" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="feedback">Feedback</TabsTrigger>
-              <TabsTrigger value="record">Goal Record</TabsTrigger>
+              <TabsTrigger value="record">Goal Records</TabsTrigger>
             </TabsList>
 
             <TabsContent value="feedback" className="space-y-6 mt-6">

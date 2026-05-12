@@ -6,11 +6,6 @@ import type { EvaluationDTO, EvaluationItemDTO } from '../../api';
 import { getEvaluationsForManager, draftReview, submitReview } from '../../api';
 
 
-const STATUS_OPTIONS = ['Review Drafting'];
-
-const STATUS_COLOR_MAP: Record<string, string> = {
-  'Review Drafting': 'bg-gray-100 text-gray-800',
-};
 
 interface EvalRow extends BaseEmployee {
   _evaluation: EvaluationDTO;
@@ -99,8 +94,8 @@ export function ReviewSection() {
         statusFilter="all"
         setStatusFilter={() => {}}
         hideStatus={true}
-        statusOptions={STATUS_OPTIONS}
-        statusColorMap={STATUS_COLOR_MAP}
+        statusOptions={[]}
+        statusColorMap={{}}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
       />
 

@@ -57,7 +57,7 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
+        <DialogContent className="sm:max-w-[900px] max-h-[90vh]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
@@ -99,10 +99,14 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
                       <p className="text-sm text-gray-600 mt-1">{goal.relevance}</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t">
+                  <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t">
                     <div>
                       <div className="text-xs text-gray-500 mb-1">Metric</div>
                       <p className="text-sm font-medium">{goal.metric}</p>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 mb-1">Resources</div>
+                      <p className="text-sm font-medium">{goal.resource}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
@@ -188,10 +192,14 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
                     <div key={goal.id ?? i} className="border rounded-lg p-4 bg-gray-50">
                       <h4 className="font-semibold text-gray-900">{goal.definition}</h4>
                       <p className="text-sm text-gray-600 mt-1">{goal.relevance}</p>
-                      <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t">
+                      <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t">
                         <div>
                           <div className="text-xs text-gray-500 mb-1">Metric</div>
                           <p className="text-sm font-medium">{goal.metric}</p>
+                        </div>
+                        <div>
+                        <div className="text-xs text-gray-500 mb-1">Resources</div>
+                          <p className="text-sm font-medium">{goal.resource}</p>
                         </div>
                         <div>
                           <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">

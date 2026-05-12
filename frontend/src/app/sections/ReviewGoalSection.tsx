@@ -5,11 +5,6 @@ import type { BaseEmployee } from '../components/EmployeeTable';
 import type { EvaluationDTO } from '../../api';
 import { getEvaluationsForManager, approveGoals, rejectGoals } from '../../api';
 
-const STATUS_OPTIONS = ['Pending Goal Approval'];
-
-const STATUS_COLOR_MAP: Record<string, string> = {
-  'Pending Goal Approval': 'bg-yellow-100 text-yellow-800',
-};
 
 interface EvalRow extends BaseEmployee {
   _evaluation: EvaluationDTO;
@@ -83,8 +78,8 @@ export function ReviewGoalSection() {
         statusFilter="all"
         setStatusFilter={() => {}}
         hideStatus={true}
-        statusOptions={STATUS_OPTIONS}
-        statusColorMap={STATUS_COLOR_MAP}
+        statusOptions={[]}
+        statusColorMap={{}}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
       />
       <ReviewDialog
