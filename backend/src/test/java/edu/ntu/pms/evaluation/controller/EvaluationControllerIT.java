@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +11,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.Cookie;
 
-import edu.ntu.pms.seeders.DataSeeder;
 import edu.ntu.pms.auth.JwtService;
 import edu.ntu.pms.user.entity.User;
 import edu.ntu.pms.user.repository.UserRepository;
@@ -35,6 +34,7 @@ import java.util.stream.Collectors;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class EvaluationControllerIT {
 
     @Autowired
@@ -52,17 +52,8 @@ class EvaluationControllerIT {
     @Autowired
     private JwtService jwtService;
 
-    @Autowired
-    private DataSeeder dataSeeder;
-
     @Value("${app.cookie.name}")
     private String cookieName;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        // Ensure test data is present
-        dataSeeder.run();
-    }
 
     @Test
     void hrCanFetchHrEvaluations() throws Exception {
