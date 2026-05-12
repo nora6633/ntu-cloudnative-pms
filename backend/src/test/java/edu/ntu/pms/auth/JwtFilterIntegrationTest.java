@@ -19,6 +19,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import edu.ntu.pms.H2IntegrationTest;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Tag("integration")
 @SpringBootTest
 @AutoConfigureMockMvc
+@H2IntegrationTest
 class JwtFilterIntegrationTest {
     @Autowired
     private MockMvc mockMvc;

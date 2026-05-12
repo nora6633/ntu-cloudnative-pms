@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@H2IntegrationTest
 @Tag("integration")
 class PmsApplicationTests {
 

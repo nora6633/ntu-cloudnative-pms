@@ -19,6 +19,7 @@ import edu.ntu.pms.evaluation.enums.EvaluationType;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
+import edu.ntu.pms.user.enums.Role;
 
 @DataJpaTest
 class GoalRepositoryTest {
@@ -43,14 +44,14 @@ class GoalRepositoryTest {
         User employee = User.builder()
                 .username("emp")
                 .passwordHash("x")
-                .role(edu.ntu.pms.user.Role.EMPLOYEE)
+                .role(Role.EMPLOYEE)
                 .department(dept)
                 .job(job)
                 .build();
         User supervisor = User.builder()
                 .username("sup")
                 .passwordHash("x")
-                .role(edu.ntu.pms.user.Role.MANAGER)
+                .role(Role.MANAGER)
                 .department(dept)
                 .job(job)
                 .build();
@@ -91,7 +92,7 @@ class GoalRepositoryTest {
         // Check if EntityGraph loaded evaluation and employee successfully
         assertThat(foundGoal.getEvaluation()).isNotNull();
         assertThat(foundGoal.getEvaluation().getEmployee().getUsername()).isEqualTo("emp");
-        
+
         // Check if EntityGraph loaded progresses successfully
         assertThat(foundGoal.getProgresses()).hasSize(1);
         assertThat(foundGoal.getProgresses().get(0).getDescription()).isEqualTo("Started working");

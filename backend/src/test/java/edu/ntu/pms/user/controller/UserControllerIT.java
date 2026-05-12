@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +18,7 @@ import jakarta.servlet.http.Cookie;
 
 import edu.ntu.pms.seeders.DataSeeder;
 import edu.ntu.pms.auth.JwtService;
+import edu.ntu.pms.H2IntegrationTest;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
@@ -29,7 +29,7 @@ import edu.ntu.pms.user.repository.UserRepository;
 @Tag("integration")
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
+@H2IntegrationTest
 @Transactional
 class UserControllerIT {
 
