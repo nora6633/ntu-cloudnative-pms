@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import edu.ntu.pms.H2IntegrationTest;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
@@ -31,7 +31,7 @@ import jakarta.persistence.PersistenceContext;
 
 @Tag("integration")
 @SpringBootTest
-@ActiveProfiles("test")
+@H2IntegrationTest
 class AuditLogIntegrationTest {
 
     @Autowired

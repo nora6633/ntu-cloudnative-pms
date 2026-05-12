@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.Cookie;
 
+import edu.ntu.pms.H2IntegrationTest;
 import edu.ntu.pms.seeders.DataSeeder;
 import edu.ntu.pms.auth.JwtService;
 import edu.ntu.pms.user.entity.User;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Tag("integration")
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@H2IntegrationTest
 @Transactional
 class EvaluationControllerIT {
 

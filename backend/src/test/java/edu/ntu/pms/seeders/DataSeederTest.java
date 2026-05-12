@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import edu.ntu.pms.H2IntegrationTest;
 import edu.ntu.pms.template.repository.TemplateRepository;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
@@ -24,7 +24,7 @@ import edu.ntu.pms.user.repository.UserRepository;
 
 @Tag("integration")
 @SpringBootTest
-@ActiveProfiles("test")
+@H2IntegrationTest
 class DataSeederTest {
 
     @Autowired
