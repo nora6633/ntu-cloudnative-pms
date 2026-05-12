@@ -1,4 +1,4 @@
-import type { AuditLog, Template } from '../types';
+import type { Template } from '../types';
 
 // ── Lookup data for RegisterSection (no user registration API) ────────────
 export const EMPLOYEE_NAMES = [
@@ -72,23 +72,4 @@ export const INITIAL_TEMPLATES: Template[] = [
       { id: '4-4', title: 'Mentorship', description: 'Actively invests in the growth of teammates through pairing, code review feedback, and knowledge sharing.' },
     ],
   },
-];
-
-// ── Audit mock data (no audit API) ────────────────────────────────────────
-export const INITIAL_AUDIT_LOGS: AuditLog[] = [
-  { id: '1',  timestamp: '2026-04-21 14:35:22', actor: 'sarah.johnson@company.com',  actorRole: 'Software Engineer',    actionType: 'CREATE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2847', changeSummary: 'Created new goal: Complete React Advanced Course' },
-  { id: '2',  timestamp: '2026-04-21 13:22:15', actor: 'admin@company.com',           actorRole: 'Administrator',         actionType: 'UPDATE', affectedModule: 'Users',     affectedRecordId: 'USER-1523', changeSummary: 'Updated user role from Employee to Senior Engineer' },
-  { id: '3',  timestamp: '2026-04-21 12:18:45', actor: 'michael.brown@company.com',  actorRole: 'Product Manager',       actionType: 'DELETE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2741', changeSummary: 'Deleted goal: Outdated quarterly objective' },
-  { id: '4',  timestamp: '2026-04-21 11:05:33', actor: 'emily.davis@company.com',    actorRole: 'UX Designer',           actionType: 'CREATE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2846', changeSummary: 'Created new goal: Design System Update' },
-  { id: '5',  timestamp: '2026-04-21 10:42:18', actor: 'admin@company.com',           actorRole: 'Administrator',         actionType: 'UPDATE', affectedModule: 'Reviews',   affectedRecordId: 'REV-5623',  changeSummary: 'Approved goal review for Sarah Johnson' },
-  { id: '6',  timestamp: '2026-04-21 09:30:27', actor: 'david.wilson@company.com',   actorRole: 'Engineering Manager',   actionType: 'CREATE', affectedModule: 'Users',     affectedRecordId: 'USER-1524', changeSummary: 'Registered new employee: Jessica Martinez' },
-  { id: '7',  timestamp: '2026-04-21 08:15:52', actor: 'sarah.johnson@company.com',  actorRole: 'Software Engineer',    actionType: 'UPDATE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2847', changeSummary: 'Updated goal progress' },
-  { id: '8',  timestamp: '2026-04-20 16:55:41', actor: 'admin@company.com',           actorRole: 'Administrator',         actionType: 'DELETE', affectedModule: 'Users',     affectedRecordId: 'USER-1401', changeSummary: 'Removed inactive user account' },
-  { id: '9',  timestamp: '2026-04-20 15:22:09', actor: 'james.anderson@company.com', actorRole: 'Marketing Manager',     actionType: 'CREATE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2845', changeSummary: 'Created new goal: Q2 Marketing Campaign' },
-  { id: '10', timestamp: '2026-04-20 14:10:33', actor: 'emily.davis@company.com',    actorRole: 'UX Designer',           actionType: 'UPDATE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2846', changeSummary: 'Updated target value from 15 to 20 components' },
-  { id: '11', timestamp: '2026-04-20 13:45:21', actor: 'admin@company.com',           actorRole: 'Administrator',         actionType: 'UPDATE', affectedModule: 'Reviews',   affectedRecordId: 'REV-5621',  changeSummary: 'Rejected goal review for David Wilson' },
-  { id: '12', timestamp: '2026-04-20 12:30:15', actor: 'michael.brown@company.com',  actorRole: 'Product Manager',       actionType: 'CREATE', affectedModule: 'Templates', affectedRecordId: 'TMPL-341',  changeSummary: 'Created new goal template: Product Launch' },
-  { id: '13', timestamp: '2026-04-20 11:18:44', actor: 'sarah.johnson@company.com',  actorRole: 'Software Engineer',    actionType: 'UPDATE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2847', changeSummary: 'Updated goal deadline' },
-  { id: '14', timestamp: '2026-04-20 10:05:52', actor: 'david.wilson@company.com',   actorRole: 'Engineering Manager',   actionType: 'DELETE', affectedModule: 'Goals',     affectedRecordId: 'GOAL-2732', changeSummary: 'Deleted duplicate goal entry' },
-  { id: '15', timestamp: '2026-04-20 09:42:31', actor: 'admin@company.com',           actorRole: 'Administrator',         actionType: 'CREATE', affectedModule: 'Users',     affectedRecordId: 'USER-1525', changeSummary: 'Registered new employee: Robert Chen' },
 ];

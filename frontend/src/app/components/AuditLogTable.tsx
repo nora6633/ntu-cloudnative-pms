@@ -1,54 +1,31 @@
-import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface AuditLog {
-  id: string;
-  timestamp: string;
-  actor: string;
-  actorRole: string;
-  actionType: "CREATE" | "UPDATE" | "DELETE";
-  affectedModule: string;
-  affectedRecordId: string;
-  changeSummary: string;
-}
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type { AuditLogDTOActionType, PageAuditLogDTO } from '../../api';
 
 interface AuditLogTableProps {
-  logs: AuditLog[];
+  page: PageAuditLogDTO;
+  loading?: boolean;
+  onPageChange: (page: number) => void;
 }
 
-const ITEMS_PER_PAGE = 10;
+const ACTION_COLORS: Record<AuditLogDTOActionType, string> = {
+  CREATE: 'bg-green-100 text-green-800',
+  UPDATE: 'bg-blue-100 text-blue-800',
+  DELETE: 'bg-red-100 text-red-800',
+};
 
-export function AuditLogTable({ logs }: AuditLogTableProps) {
-  const [currentPage, setCurrentPage] = useState(1);
+function formatTimestamp(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+}
 
-  const totalPages = Math.ceil(logs.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentLogs = logs.slice(startIndex, endIndex);
-
-  const getActionColor = (action: string) => {
-    switch (action) {
-      case "CREATE":
-        return "bg-green-100 text-green-800";
-      case "UPDATE":
-        return "bg-blue-100 text-blue-800";
-      case "DELETE":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
+export function AuditLogTable({ page, loading, onPageChange }: AuditLogTableProps) {
+  const { content, number, totalPages, totalElements, size } = page;
+  const startIndex = number * size;
+  const endIndex = startIndex + content.length;
 
   return (
     <div className="space-y-4">
@@ -56,40 +33,43 @@ export function AuditLogTable({ logs }: AuditLogTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[180px]">Timestamp (UTC)</TableHead>
-              <TableHead className="w-[200px]">Actor</TableHead>
+              <TableHead className="w-[200px]">Timestamp (UTC)</TableHead>
+              <TableHead className="w-[180px]">Actor</TableHead>
+              <TableHead className="w-[120px]">IP Address</TableHead>
               <TableHead className="w-[120px]">Action Type</TableHead>
               <TableHead className="w-[150px]">Affected Module</TableHead>
-              <TableHead className="w-[150px]">Record ID</TableHead>
+              <TableHead className="w-[110px]">Record ID</TableHead>
               <TableHead>Change Summary</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentLogs.length === 0 ? (
+            {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  Loading…
+                </TableCell>
+              </TableRow>
+            ) : content.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                   No audit logs found
                 </TableCell>
               </TableRow>
             ) : (
-              currentLogs.map((log) => (
-                <TableRow key={log.id}>
+              content.map((log) => (
+                <TableRow key={`${log.module}-${log.recordId}-${log.rev}`}>
                   <TableCell className="font-mono text-xs">
-                    {log.timestamp}
+                    {formatTimestamp(log.timestamp)}
                   </TableCell>
+                  <TableCell className="font-medium text-sm">{log.username}</TableCell>
+                  <TableCell className="font-mono text-xs text-gray-600">{log.ipAddress}</TableCell>
                   <TableCell>
-                    <div>
-                      <div className="font-medium text-sm">{log.actor}</div>
-                      <div className="text-xs text-gray-500">{log.actorRole}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getActionColor(log.actionType)}>
+                    <Badge className={ACTION_COLORS[log.actionType] ?? 'bg-gray-100 text-gray-800'}>
                       {log.actionType}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{log.affectedModule}</TableCell>
-                  <TableCell className="font-mono text-xs">{log.affectedRecordId}</TableCell>
+                  <TableCell className="font-medium">{log.module}</TableCell>
+                  <TableCell className="font-mono text-xs">{log.recordId}</TableCell>
                   <TableCell className="text-sm text-gray-700">{log.changeSummary}</TableCell>
                 </TableRow>
               ))
@@ -98,29 +78,29 @@ export function AuditLogTable({ logs }: AuditLogTableProps) {
         </Table>
       </div>
 
-      {logs.length > 0 && (
+      {totalElements > 0 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600">
-            Showing {startIndex + 1} to {Math.min(endIndex, logs.length)} of {logs.length} entries
+            Showing {startIndex + 1} to {endIndex} of {totalElements} entries
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
+              onClick={() => onPageChange(Math.max(number - 1, 0))}
+              disabled={number === 0 || loading}
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
               Previous
             </Button>
             <div className="text-sm text-gray-600">
-              Page {currentPage} of {totalPages}
+              Page {number + 1} of {Math.max(totalPages, 1)}
             </div>
             <Button
               variant="outline"
               size="sm"
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
+              onClick={() => onPageChange(Math.min(number + 1, totalPages - 1))}
+              disabled={number >= totalPages - 1 || loading}
             >
               Next
               <ChevronRight className="w-4 h-4 ml-1" />

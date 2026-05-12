@@ -62,6 +62,7 @@ export type {
   JobTemplatesDTO,
   PageAuditLogDTO,
   AdminOnly200,
+  AuditLogDTOActionType,
 } from './generated/orvalClient';
 
 

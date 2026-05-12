@@ -14,17 +14,6 @@ export type EvalCycleTab = 'Annual' | 'Quarter' | 'Probation';
 // ── API Types ──────────────────────────────────────────────────────────────
 export type { GoalDTO as Goal, EvaluationDTO as EvaluationGoal } from "../../api/generated/orvalClient";
 
-// ── Audit (no API — kept mocked) ──────────────────────────────────────────
-export interface AuditLog {
-  id: string;
-  timestamp: string;
-  actor: string;
-  actorRole: string;
-  actionType: 'CREATE' | 'UPDATE' | 'DELETE';
-  affectedModule: string;
-  affectedRecordId: string;
-  changeSummary: string;
-}
 
 // ── Templates (no API — kept mocked) ─────────────────────────────────────
 export interface TemplateCriterion {
