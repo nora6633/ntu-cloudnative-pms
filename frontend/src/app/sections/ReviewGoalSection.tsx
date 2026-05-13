@@ -51,13 +51,23 @@ export function ReviewGoalSection() {
   useEffect(() => { load(); }, [load]);
 
   const handleApprove = async (id: number) => {
-    await approveGoals(id);
-    await load();
+    try{
+      await approveGoals(id);
+    }catch{
+      alert('Failed to approve goals.');
+    }finally{
+      await load();
+    }
   };
 
   const handleReject = async (id: number) => {
-    await rejectGoals(id);
-    await load();
+    try{
+      await rejectGoals(id);
+    }catch{
+      alert('Failed to reject goals.');
+    }finally{
+      await load();
+    }
   };
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading…</p></div>;
