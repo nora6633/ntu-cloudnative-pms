@@ -2,12 +2,6 @@
 
 接 Hibernate Envers，從零做到能在 DB 撈出「誰在什麼時候改了什麼」。下面是大致的脈絡跟 demo 怎麼跑。
 
-## 做了什麼
-
-- **PR #1** 主體（已 merge 進 `feature/evaluation`）
-- **PR #11** 把 dependency 換成 `spring-data-envers`（已 merge）
-- **PR #10** 補測試（review 中）
-
 主體那條做的事：
 
 - Entity 加 `@Audited`：`User`、`Evaluation`、`EvaluationItem`、`Goal`、`Progress`、`Template`、`Criterion` 七個。`Department` 跟 `Job` 不 audit，純查找用。
@@ -110,19 +104,6 @@ DESCRIBE users_aud;
 ```
 
 欄位列表沒 `password_hash`，`@NotAudited` 有效。
-
----
-
-## 可能被問
-
-**怎麼程式上查歷史？**
-現在 `AuditReader.find(User.class, id, revisionNumber)`，`AuditLogIntegrationTest` 裡就有範例。之後 repository extends `RevisionRepository` 會更乾淨。
-
-**效能影響？**
-寫操作多一個 audit row 的 insert，影響不大；讀完全沒被 envers 攔。
-
-**`position` 欄位是什麼？**
-`@ElementCollection` 加 `@OrderColumn` 帶出來的，給 envers audit PK 用。三張子表 `template_criteria` / `goal_criteria` / `goal_progresses` 各多一欄。dev `ddl-auto=update` 會自動加，prod 要寫 migration。
 
 ---
 
