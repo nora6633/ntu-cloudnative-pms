@@ -3,7 +3,7 @@ import { Star, Eye, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import type { EvalCycleTab } from '../types';
+import type { EvaluationDTOType } from '../../api';
 import type { EvaluationDTO, GoalDTO } from '../../api';
 import { getMyEvaluations } from '../../api';
 import { ViewProgressDialog } from '../components/ViewProgressDialog';
@@ -186,10 +186,8 @@ export function HistorySection() {
   if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading…</p></div>;
   if (error)   return <div className="flex items-center justify-center min-h-screen"><p className="text-red-500">{error}</p></div>;
 
-  const byType = (tab: EvalCycleTab) => {
-    const dtoType = tab === 'Annual' ? 'ANNUAL' : tab === 'Quarter' ? 'QUARTER' : 'PROBATION';
-    return evaluations.filter((e) => e.type === dtoType);
-  };
+  const byType = (tab: EvaluationDTOType) =>
+    evaluations.filter((e) => e.type === tab);
 
   return (
     <div className="p-8">
@@ -199,14 +197,14 @@ export function HistorySection() {
           <p className="text-gray-600 mt-1">Your past evaluation records — ratings, goals, and progress</p>
         </div>
 
-        <Tabs defaultValue="Annual">
+        <Tabs defaultValue="ANNUAL">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="Annual">Annual</TabsTrigger>
-            <TabsTrigger value="Quarter">Quarter</TabsTrigger>
-            <TabsTrigger value="Probation">Probation</TabsTrigger>
+            <TabsTrigger value="ANNUAL">Annual</TabsTrigger>
+            <TabsTrigger value="QUARTER">Quarter</TabsTrigger>
+            <TabsTrigger value="PROBATION">Probation</TabsTrigger>
           </TabsList>
 
-          {(['Annual', 'Quarter', 'Probation'] as EvalCycleTab[]).map((tab) => (
+          {(['ANNUAL', 'QUARTER', 'PROBATION'] as EvaluationDTOType[]).map((tab) => (
             <TabsContent key={tab} value={tab} className="mt-6">
               <RecordList records={byType(tab)} />
             </TabsContent>
