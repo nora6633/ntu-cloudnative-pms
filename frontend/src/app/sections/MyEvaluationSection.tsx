@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, ListTodo, Plus, Target, Trophy, Star } from 'lucide-react';
+import { ListTodo, Plus, Target, Trophy, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { GoalCard } from '../components/GoalCard';
@@ -264,7 +264,6 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="icon"><Bell className="w-5 h-5" /></Button>
               <Button variant="outline" size="icon" onClick={() => setCriteriaOpen(true)}>
                 <ListTodo className="w-5 h-5" />
               </Button>
@@ -461,6 +460,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         onClose={() => setGoalDialogOpen(false)}
         onSave={goalDialogMode === 'create' ? handleCreateGoal : handleUpdateGoal}
         existingGoal={editingGoal}
+        criteria={items}
         mode={goalDialogMode}
       />
       <UpdateProgressDialog
@@ -508,7 +508,7 @@ export function MyEvaluationSection() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const currentEval = evaluations.find((e) => e.type === TYPE_MAP[activeTab]) ?? null;
+  const currentEval = evaluations.find((e) => e.type === TYPE_MAP[activeTab] && e.status !== 'CLOSED') ?? null;
 
   if (loading) {
     return (
