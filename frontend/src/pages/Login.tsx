@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../auth/AuthContext';
 
+import './Login.css';
+
 interface LocationState {
   from?: { pathname?: string };
 }
@@ -24,43 +26,55 @@ export default function Login() {
     try {
       await login(username, password);
       navigate(from, { replace: true });
-    } catch {
-      setError('Invalid username or password');
+    } catch (e: any) {
+      setError(e.message || 'Invalid username or password');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <section style={{ maxWidth: 360, margin: '4rem auto' }}>
-      <h1>Login</h1>
-      <form onSubmit={onSubmit}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <label>
-            Username
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <h1>Login</h1>
+          <p>Please enter your details to sign in</p>
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <form onSubmit={onSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
             <input
+              id="username"
+              type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
+              placeholder="Enter your username"
               required
             />
-          </label>
-          <label>
-            Password
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
+              placeholder="••••••••"
               required
             />
-          </label>
-          {error && <p style={{ color: 'crimson' }}>{error}</p>}
-          <button type="submit" disabled={submitting}>
+          </div>
+
+          <button className="login-button" type="submit" disabled={submitting}>
             {submitting ? 'Signing in...' : 'Sign in'}
           </button>
-        </div>
-      </form>
-    </section>
+        </form>
+      </div>
+    </div>
   );
 }

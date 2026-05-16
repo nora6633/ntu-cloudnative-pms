@@ -47,40 +47,40 @@ class JobControllerTests {
 
     @Test
     void getAllJobs_returnsOkAndJson() throws Exception {
-        Job hrJob = Job.builder().id(2L).title("Junior HR").build();
-        Job engineerJob = Job.builder().id(1L).title("Junior Software Engineer").build();
+        Job hrJob = Job.builder().id(2L).title("HR (Junior)").build();
+        Job engineerJob = Job.builder().id(1L).title("Software Engineer (Junior)").build();
 
         when(jobService.getAllJobs()).thenReturn(List.of(hrJob, engineerJob));
         when(templateMapper.toJobSummaryDto(hrJob))
-                .thenReturn(new JobSummaryDTO(2L, "Junior HR"));
+                .thenReturn(new JobSummaryDTO(2L, "HR (Junior)"));
         when(templateMapper.toJobSummaryDto(engineerJob))
-                .thenReturn(new JobSummaryDTO(1L, "Junior Software Engineer"));
+                .thenReturn(new JobSummaryDTO(1L, "Software Engineer (Junior)"));
 
         mockMvc.perform(get("/jobs"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(2))
-                .andExpect(jsonPath("$[0].title").value("Junior HR"));
+                .andExpect(jsonPath("$[0].title").value("HR (Junior)"));
 
         verify(jobService).getAllJobs();
     }
 
     @Test
     void getAllJobsWithTemplates_returnsOkAndJson() throws Exception {
-        Job job = Job.builder().id(1L).title("Junior Software Engineer").build();
+        Job job = Job.builder().id(1L).title("Software Engineer (Junior)").build();
         Template template = Template.builder()
                 .id(10L)
                 .job(job)
                 .evaluationType(EvaluationType.ANNUAL)
                 .criteria(List.of(new Criterion("Code Quality", "Assess code quality")))
                 .build();
-        job = Job.builder().id(1L).title("Junior Software Engineer").templates(List.of(template)).build();
+        job = Job.builder().id(1L).title("Software Engineer (Junior)").templates(List.of(template)).build();
         template.setJob(job);
 
         when(jobService.getAllJobsWithTemplates()).thenReturn(List.of(job));
         when(templateMapper.toJobTemplatesDto(job)).thenReturn(new JobTemplatesDTO(
                 1L,
-                "Junior Software Engineer",
+                "Software Engineer (Junior)",
                 List.of(new TemplateDTO(
                         10L,
                         1L,
@@ -91,7 +91,7 @@ class JobControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].title").value("Junior Software Engineer"))
+                .andExpect(jsonPath("$[0].title").value("Software Engineer (Junior)"))
                 .andExpect(jsonPath("$[0].templates[0].id").value(10))
                 .andExpect(jsonPath("$[0].templates[0].evaluationType").value("ANNUAL"));
 

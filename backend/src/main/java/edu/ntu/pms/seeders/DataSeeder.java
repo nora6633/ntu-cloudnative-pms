@@ -22,10 +22,10 @@ import edu.ntu.pms.user.repository.UserRepository;
 @Component
 public class DataSeeder implements CommandLineRunner {
     // Job Titles
-    public static final String JOB_JUNIOR_SOFTWARE_ENGINEER = "Junior Software Engineer";
-    public static final String JOB_SENIOR_SOFTWARE_ENGINEER = "Senior Software Engineer";
-    public static final String JOB_JUNIOR_HR = "Junior HR";
-    public static final String JOB_SENIOR_HR = "Senior HR";
+    public static final String JOB_JUNIOR_SOFTWARE_ENGINEER = "Software Engineer (Junior)";
+    public static final String JOB_SENIOR_SOFTWARE_ENGINEER = "Software Engineer (Senior)";
+    public static final String JOB_JUNIOR_HR = "HR (Junior)";
+    public static final String JOB_SENIOR_HR = "HR (Senior)";
 
     // Department Names
     public static final String DEPT_ENGINEERING = "Engineering";
