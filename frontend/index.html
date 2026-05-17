@@ -10,6 +10,8 @@
 
     <body>
       <div id="root"></div>
+      <!-- Served by nginx at runtime with VITE_API_URL substituted; no-op in dev (window.__ENV__ stays undefined, falls back to import.meta.env) -->
+      <script src="/config.js"></script>
       <script type="module" src="/src/main.tsx"></script>
     </body>
   </html>
