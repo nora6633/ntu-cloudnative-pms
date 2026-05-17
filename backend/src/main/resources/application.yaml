@@ -1,6 +1,9 @@
 spring:
   application:
     name: pms
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -51,3 +54,5 @@ app:
     name: AUTH_TOKEN
     secure: ${COOKIE_SECURE:false}
     same-site: Lax
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
