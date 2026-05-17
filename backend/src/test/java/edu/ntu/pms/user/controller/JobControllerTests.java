@@ -71,6 +71,7 @@ class JobControllerTests {
         Template template = Template.builder()
                 .id(10L)
                 .job(job)
+                .name("Engineering Annual Review")
                 .evaluationType(EvaluationType.ANNUAL)
                 .criteria(List.of(new Criterion("Code Quality", "Assess code quality")))
                 .build();
@@ -84,6 +85,7 @@ class JobControllerTests {
                 List.of(new TemplateDTO(
                         10L,
                         1L,
+                        "Engineering Annual Review",
                         EvaluationType.ANNUAL,
                         List.of(new CriterionDTO("Code Quality", "Assess code quality"))))));
 
@@ -93,6 +95,7 @@ class JobControllerTests {
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].title").value("Junior Software Engineer"))
                 .andExpect(jsonPath("$[0].templates[0].id").value(10))
+                .andExpect(jsonPath("$[0].templates[0].name").value("Engineering Annual Review"))
                 .andExpect(jsonPath("$[0].templates[0].evaluationType").value("ANNUAL"));
 
         verify(jobService).getAllJobsWithTemplates();

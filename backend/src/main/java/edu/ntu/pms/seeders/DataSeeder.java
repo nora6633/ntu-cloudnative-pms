@@ -141,10 +141,19 @@ public class DataSeeder implements CommandLineRunner {
     private void seedTemplate(Job job, EvaluationType type, List<Criterion> criteria) {
         Template template = Template.builder()
                 .job(job)
+                .name(job.getTitle() + " " + formatType(type) + " Template")
                 .evaluationType(type)
                 .criteria(criteria)
                 .build();
         templateRepo.save(template);
+    }
+
+    private String formatType(EvaluationType type) {
+        return switch (type) {
+            case ANNUAL -> "Annual";
+            case QUARTER -> "Quarter";
+            case PROBATION -> "Probation";
+        };
     }
 
     private void seedAnnualTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob,

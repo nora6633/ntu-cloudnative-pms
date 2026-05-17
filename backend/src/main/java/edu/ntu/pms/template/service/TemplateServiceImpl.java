@@ -7,10 +7,15 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.ntu.pms.common.ResourceConflictException;
 import edu.ntu.pms.common.ResourceNotFoundException;
 import edu.ntu.pms.evaluation.entity.EvaluationItem;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
+import edu.ntu.pms.template.dto.CreateTemplateRequest;
+import edu.ntu.pms.template.dto.UpdateTemplateRequest;
+import edu.ntu.pms.template.entity.Criterion;
 import edu.ntu.pms.template.entity.Template;
+import edu.ntu.pms.template.mapper.TemplateMapper;
 import edu.ntu.pms.template.repository.TemplateRepository;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.repository.JobRepository;
@@ -20,10 +25,15 @@ public class TemplateServiceImpl implements TemplateService {
 
     private final TemplateRepository templateRepository;
     private final JobRepository jobRepository;
+    private final TemplateMapper templateMapper;
 
-    public TemplateServiceImpl(TemplateRepository templateRepository, JobRepository jobRepository) {
+    public TemplateServiceImpl(
+            TemplateRepository templateRepository,
+            JobRepository jobRepository,
+            TemplateMapper templateMapper) {
         this.templateRepository = templateRepository;
         this.jobRepository = jobRepository;
+        this.templateMapper = templateMapper;
     }
 
     @Override
@@ -34,6 +44,48 @@ public class TemplateServiceImpl implements TemplateService {
         }
 
         return templateRepository.findAllByJobIdOrderByIdAsc(jobId);
+    }
+
+    @Override
+    @Transactional
+    public Template createTemplate(CreateTemplateRequest request) {
+        Job job = jobRepository.findById(request.jobId())
+                .orElseThrow(() -> new ResourceNotFoundException("Job", request.jobId()));
+
+        if (templateRepository.existsByJobIdAndNameIgnoreCase(job.getId(), request.name().trim())) {
+            throw new ResourceConflictException("Template with name '" + request.name().trim()
+                    + "' already exists for job ID " + job.getId());
+        }
+
+        Template template = Template.builder()
+                .job(job)
+                .name(request.name().trim())
+                .evaluationType(request.evaluationType())
+                .criteria(toCriteria(request.criteria()))
+                .build();
+
+        return templateRepository.save(template);
+    }
+
+    @Override
+    @Transactional
+    public Template updateTemplate(Long templateId, UpdateTemplateRequest request) {
+        Template template = templateRepository.findById(templateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Template", templateId));
+
+        String trimmedName = request.name().trim();
+        if (templateRepository.existsByJobIdAndNameIgnoreCaseAndIdNot(
+                template.getJob().getId(),
+                trimmedName,
+                templateId)) {
+            throw new ResourceConflictException("Template with name '" + trimmedName
+                    + "' already exists for job ID " + template.getJob().getId());
+        }
+
+        template.setName(trimmedName);
+        template.setEvaluationType(request.evaluationType());
+        template.setCriteria(toCriteria(request.criteria()));
+        return templateRepository.save(template);
     }
 
     /**
@@ -69,5 +121,11 @@ public class TemplateServiceImpl implements TemplateService {
                         .description(criterion.getDescription())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private List<Criterion> toCriteria(List<edu.ntu.pms.template.dto.CriterionDTO> criteria) {
+        return criteria.stream()
+                .map(templateMapper::toCriterion)
+                .toList();
     }
 }

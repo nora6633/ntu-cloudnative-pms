@@ -20,13 +20,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "templates")
+@Table(name = "templates", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_templates_job_name", columnNames = { "job_id", "name" })
+})
 @Audited
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,6 +45,9 @@ public class Template {
     @ManyToOne(optional = false)
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
+
+    @Column(nullable = false, length = 150)
+    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
