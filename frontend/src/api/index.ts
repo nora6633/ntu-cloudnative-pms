@@ -66,7 +66,10 @@ export type {
 } from './generated/orvalClient';
 
 
-const baseUrl = () => (import.meta.env.VITE_API_URL as string) ?? '';
+// Runtime injection (production) takes precedence over the build-time value (dev)
+const baseUrl = () =>
+  (window as Window & { __ENV__?: { VITE_API_URL?: string } }).__ENV__?.VITE_API_URL
+  ?? import.meta.env.VITE_API_URL;
 
 async function apiFetch<T>(
   url: string,

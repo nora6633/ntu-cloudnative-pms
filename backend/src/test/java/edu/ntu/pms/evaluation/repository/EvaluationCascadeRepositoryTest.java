@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 
 import edu.ntu.pms.evaluation.entity.Evaluation;
 import edu.ntu.pms.evaluation.entity.EvaluationItem;
@@ -25,6 +26,7 @@ import edu.ntu.pms.user.enums.Role;
 
 @Tag("integration")
 @DataJpaTest
+@ActiveProfiles("test")
 public class EvaluationCascadeRepositoryTest {
 
     @Autowired
