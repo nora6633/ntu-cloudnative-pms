@@ -139,10 +139,14 @@ export function EmployeeReviewDialog({
                       <p className="text-sm text-gray-600 mt-1">{goal.relevance}</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t">
+                  <div className="grid grid-cols-3 gap-5 mt-3 pt-3 border-t">
                     <div>
                       <div className="text-xs text-gray-500 mb-1">Metric</div>
                       <p className="text-sm font-medium">{goal.metric}</p>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 mb-1">Resources</div>
+                      <p className="text-sm font-medium">{goal.resource}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">

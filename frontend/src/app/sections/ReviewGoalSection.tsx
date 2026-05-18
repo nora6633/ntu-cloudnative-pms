@@ -2,9 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { EmployeeTable } from '../components/EmployeeTable';
 import { ReviewDialog } from '../components/ReviewDialog';
 import type { BaseEmployee } from '../components/EmployeeTable';
+import { NotificationDialog } from '../components/NotificationDialog';
 import type { EvaluationDTO } from '../../api';
 import { getEvaluationsForManager, approveGoals, rejectGoals } from '../../api';
 
+const MESSAGES = {
+  rejectGoals:{
+    successTitle: 'Rejected goals',
+    successMsg: 'You have rejected the goals',
+    errorMsg: 'Failed to reject the goals. Please try again.',
+  },
+  approveGoals:{
+    successTitle: 'Approved goals',
+    successMsg: 'You have approved the goals',
+    errorMsg: 'Failed to approve the goals. Please try again.',
+  },
+};
 
 interface EvalRow extends BaseEmployee {
   _evaluation: EvaluationDTO;
@@ -32,6 +45,18 @@ export function ReviewGoalSection() {
   const [selected, setSelected] = useState<EvalRow | null>(null);
   const [dialogOpen, setDialog] = useState(false);
 
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationTitle, setNotificationTitle] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState<'success'|'error'>('success');
+
+  const showNotification = (title: string, message: string, type: 'success' | 'error') => {
+    setNotificationTitle(title);
+    setNotificationMessage(message);
+    setNotificationType(type);
+    setNotificationOpen(true);
+  };
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -53,8 +78,9 @@ export function ReviewGoalSection() {
   const handleApprove = async (id: number) => {
     try{
       await approveGoals(id);
+      showNotification(MESSAGES.approveGoals.successTitle, MESSAGES.approveGoals.successMsg, 'success')
     }catch{
-      alert('Failed to approve goals.');
+      showNotification('Error', MESSAGES.approveGoals.errorMsg, 'error')
     }finally{
       await load();
     }
@@ -63,8 +89,9 @@ export function ReviewGoalSection() {
   const handleReject = async (id: number) => {
     try{
       await rejectGoals(id);
+      showNotification(MESSAGES.rejectGoals.successTitle, MESSAGES.rejectGoals.successMsg, 'success')
     }catch{
-      alert('Failed to reject goals.');
+      showNotification('Error', MESSAGES.rejectGoals.errorMsg, 'error')
     }finally{
       await load();
     }
@@ -98,6 +125,14 @@ export function ReviewGoalSection() {
         evaluation={selected?._evaluation ?? null}
         onApprove={handleApprove}
         onReject={handleReject}
+      />
+      <NotificationDialog
+        open={notificationOpen}
+        onOpenChange={setNotificationOpen}
+        type={notificationType}
+        title={notificationTitle}
+        message={notificationMessage}
+        onConfirm={load}
       />
     </>
   );

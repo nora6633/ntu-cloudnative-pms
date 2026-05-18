@@ -7,20 +7,22 @@ import { Textarea } from './ui/textarea';
 interface UpdateProgressDialogProps {
   open: boolean;
   onClose: () => void;
-  onAddProgress: (description: string) => void;
+  onAddProgress: (description: string) => void | Promise<void>;
+  loading?: boolean;
 }
 
 export function UpdateProgressDialog({
   open,
   onClose,
   onAddProgress,
+  loading = false,
 }: UpdateProgressDialogProps) {
   const [description, setDescription] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!description.trim()) return;
-    onAddProgress(description.trim());
+    await onAddProgress(description.trim());
     setDescription('');
     onClose();
   };
@@ -45,11 +47,11 @@ export function UpdateProgressDialog({
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!description.trim()}>
-              Add Update
+            <Button type="submit" disabled={!description.trim() || loading}>
+              {loading ? 'Adding Update…' : 'Add Update'}
             </Button>
           </div>
         </form>
