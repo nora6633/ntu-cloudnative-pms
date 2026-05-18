@@ -81,8 +81,6 @@ export function FinalizeSection() {
       showNotification(MESSAGES.approveFeedback.successTitle, MESSAGES.approveFeedback.successMsg, 'success')
     } catch {
       showNotification('Error', MESSAGES.approveFeedback.errorMsg, 'error')
-    } finally {
-      await load();
     }
   };
 
@@ -92,8 +90,6 @@ export function FinalizeSection() {
       showNotification(MESSAGES.rejectFeedback.successTitle, MESSAGES.rejectFeedback.successMsg, 'success')
     } catch {
       showNotification('Error', MESSAGES.rejectFeedback.errorMsg, 'error')
-    } finally {
-      await load();
     }
   };
 

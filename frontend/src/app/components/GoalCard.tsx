@@ -4,6 +4,7 @@ import { Target, Calendar, MessageSquare } from 'lucide-react';
 import type { GoalDTO } from '../../api';
 
 interface GoalCardProps {
+  status: string;
   goal: GoalDTO;
   onAddProgress: (goal: GoalDTO) => void;
   onViewDetails: (goal: GoalDTO) => void;

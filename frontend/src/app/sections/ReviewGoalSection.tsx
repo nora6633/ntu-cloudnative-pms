@@ -81,8 +81,6 @@ export function ReviewGoalSection() {
       showNotification(MESSAGES.approveGoals.successTitle, MESSAGES.approveGoals.successMsg, 'success')
     }catch{
       showNotification('Error', MESSAGES.approveGoals.errorMsg, 'error')
-    }finally{
-      await load();
     }
   };
 
@@ -92,8 +90,6 @@ export function ReviewGoalSection() {
       showNotification(MESSAGES.rejectGoals.successTitle, MESSAGES.rejectGoals.successMsg, 'success')
     }catch{
       showNotification('Error', MESSAGES.rejectGoals.errorMsg, 'error')
-    }finally{
-      await load();
     }
   };
 
