@@ -20,6 +20,9 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # substituting env vars via envsubst — covers both NGINX_PORT and VITE_API_URL
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
-ENV NGINX_PORT=80
+ENV PORT=80
 ENV VITE_API_URL=
-EXPOSE ${NGINX_PORT}
+# Backend internal URL for the nginx proxy (e.g. Railway private networking URL).
+# When set, /api/* requests are proxied to this URL — no cross-origin cookie issues.
+ENV BACKEND_URL=
+EXPOSE ${PORT}
