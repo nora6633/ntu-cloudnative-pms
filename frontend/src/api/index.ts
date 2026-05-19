@@ -194,8 +194,8 @@ export const updateTemplate = (templateId: number, body: UpdateTemplateRequest) 
     body: JSON.stringify(body),
   });
 
-export const getAllJobs = () =>
-  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl());
+export const getAllJobs = (init?: RequestInit) =>
+  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl(), init);
 
 export const getAllJobsWithTemplates = (init?: RequestInit) =>
   apiFetch<JobTemplatesDTO[]>(getGetAllJobsWithTemplatesUrl(), init);

@@ -8,7 +8,7 @@ class JobTemplatesDTOTests {
 
     @Test
     void testRecordAccessors() {
-        TemplateDTO template = new TemplateDTO(10L, 1L, null, List.of());
+        TemplateDTO template = new TemplateDTO(10L, 1L, "Template Name", null, List.of());
 
         JobTemplatesDTO dto = new JobTemplatesDTO(1L, "Software Engineer (Junior)", List.of(template));
 

@@ -16,7 +16,7 @@ class JobDTOTests {
 
     @Test
     void testJobTemplatesDTO() {
-        TemplateDTO t1 = new TemplateDTO(10L, 1L, EvaluationType.ANNUAL, List.of());
+        TemplateDTO t1 = new TemplateDTO(10L, 1L, "Engineering Annual Review", EvaluationType.ANNUAL, List.of());
         JobTemplatesDTO dto = new JobTemplatesDTO(1L, "Software Engineer (Junior)", List.of(t1));
         
         assertEquals(1L, dto.id());
