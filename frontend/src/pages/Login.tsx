@@ -26,8 +26,18 @@ export default function Login() {
     try {
       await login(username, password);
       navigate(from, { replace: true });
-    } catch (e: any) {
-      setError(e.message || 'Invalid username or password');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      if (errorMessage === 'Invalid credentials') {
+        setError('Invalid username or password');
+      } else if (
+        errorMessage.toLowerCase().includes('failed to fetch') ||
+        errorMessage.toLowerCase().includes('network')
+      ) {
+        setError('Network error. Please try again later.');
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
+      }
     } finally {
       setSubmitting(false);
     }
