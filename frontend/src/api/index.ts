@@ -94,7 +94,7 @@ async function apiFetch<T>(
 
   if (!res.ok) {
     let errorMessage = `API Error: ${res.status}`;
-    if (contentType?.includes('application/json')) {
+    if (contentType?.includes('json')) {
       try {
         const errorBody = await res.json();
         errorMessage = errorBody.detail || errorBody.message || errorMessage;
@@ -109,7 +109,7 @@ async function apiFetch<T>(
     throw new Error(errorMessage);
   }
 
-  if (contentType?.includes('application/json')) {
+  if (contentType?.includes('json')) {
     data = (await res.json()) as T;
   } else {
     data = (await res.text()) as T;
