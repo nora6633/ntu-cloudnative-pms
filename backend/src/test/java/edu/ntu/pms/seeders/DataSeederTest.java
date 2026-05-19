@@ -3,6 +3,8 @@ package edu.ntu.pms.seeders;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -13,6 +15,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 import edu.ntu.pms.H2IntegrationTest;
+import edu.ntu.pms.evaluation.enums.EvaluationType;
+import edu.ntu.pms.template.entity.Template;
 import edu.ntu.pms.template.repository.TemplateRepository;
 import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
@@ -207,6 +211,27 @@ class DataSeederTest {
                     .getSingleResult();
 
             assertEquals(3L, templateCount, "Each job should have three seeded templates");
+        }
+    }
+
+    @Test
+    void shouldSeedTemplateNamesForEachJobAndEvaluationType() {
+        for (Job job : jobRepository.findAll()) {
+            List<Template> templates = templateRepository.findAllByJobIdOrderByIdAsc(job.getId());
+
+            Set<String> templateNames = templates.stream()
+                    .map(Template::getName)
+                    .collect(Collectors.toSet());
+            Set<EvaluationType> evaluationTypes = templates.stream()
+                    .map(Template::getEvaluationType)
+                    .collect(Collectors.toSet());
+
+            assertEquals(Set.of(
+                    job.getTitle() + " Annual Template",
+                    job.getTitle() + " Quarter Template",
+                    job.getTitle() + " Probation Template"), templateNames);
+            assertEquals(Set.of(EvaluationType.ANNUAL, EvaluationType.QUARTER, EvaluationType.PROBATION),
+                    evaluationTypes);
         }
     }
 
