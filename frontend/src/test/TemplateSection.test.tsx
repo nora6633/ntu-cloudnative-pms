@@ -6,6 +6,7 @@ import {
   createTemplate,
   getAllJobs,
   getAllTemplateByJobId,
+  updateTemplate,
 } from '../api';
 
 vi.mock('../api', () => ({
@@ -141,6 +142,72 @@ describe('TemplateSection', () => {
 
     expect(screen.getByText('Edit Template')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Engineering Annual Review')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();
+  });
+
+  it('saves changes for an existing template and refreshes the hydrated selection', async () => {
+    const updatedTemplate = {
+      ...ENGINEERING_TEMPLATE,
+      name: 'Engineering Annual Review Updated',
+      criteria: [{ title: 'Architecture', description: 'System design quality' }],
+    };
+
+    vi.mocked(getAllJobs).mockResolvedValue({ data: JOBS } as any);
+    vi.mocked(getAllTemplateByJobId)
+      .mockResolvedValueOnce({ data: [ENGINEERING_TEMPLATE] } as any)
+      .mockResolvedValueOnce({ data: [updatedTemplate] } as any);
+    vi.mocked(updateTemplate).mockResolvedValue({ data: updatedTemplate } as any);
+
+    await renderSection();
+    await selectJob('1');
+    await userEvent.click(await screen.findByRole('button', { name: /Engineering Annual Review/i }));
+
+    const nameInput = screen.getByLabelText('Template Name');
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Engineering Annual Review Updated');
+
+    const titleInput = screen.getByLabelText('Title');
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, 'Architecture');
+
+    const descriptionInput = screen.getByLabelText('Description');
+    await userEvent.clear(descriptionInput);
+    await userEvent.type(descriptionInput, 'System design quality');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() =>
+      expect(updateTemplate).toHaveBeenCalledWith(11, {
+        name: 'Engineering Annual Review Updated',
+        evaluationType: 'ANNUAL',
+        criteria: [{ title: 'Architecture', description: 'System design quality' }],
+      }),
+    );
+    expect(getAllTemplateByJobId).toHaveBeenCalledTimes(2);
+    expect(await screen.findByText('Template updated successfully.')).toBeInTheDocument();
+    expect(await screen.findByDisplayValue('Engineering Annual Review Updated')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Engineering Annual Review Updated/i })).toBeInTheDocument();
+    expect(await screen.findByDisplayValue('Architecture')).toBeInTheDocument();
+  });
+
+  it('keeps form state when save changes fails', async () => {
+    vi.mocked(getAllJobs).mockResolvedValue({ data: JOBS } as any);
+    vi.mocked(getAllTemplateByJobId).mockResolvedValue({ data: [ENGINEERING_TEMPLATE] } as any);
+    vi.mocked(updateTemplate).mockRejectedValue(new Error('Failed to fetch'));
+
+    await renderSection();
+    await selectJob('1');
+    await userEvent.click(await screen.findByRole('button', { name: /Engineering Annual Review/i }));
+
+    const nameInput = screen.getByLabelText('Template Name');
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Broken Save Name');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    expect(await screen.findByText('Failed to fetch')).toBeInTheDocument();
+    expect(getAllTemplateByJobId).toHaveBeenCalledTimes(1);
+    expect(screen.getByDisplayValue('Broken Save Name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();
   });
 

@@ -178,7 +178,7 @@ public class TemplateServiceImplTests {
                 .criteria(List.of(new Criterion("Old", "Old desc")))
                 .build();
         UpdateTemplateRequest request = new UpdateTemplateRequest(
-                "New Name",
+                " New Name ",
                 EvaluationType.ANNUAL,
                 List.of(
                         new CriterionDTO("First", "A"),
@@ -194,6 +194,7 @@ public class TemplateServiceImplTests {
         assertEquals(EvaluationType.ANNUAL, result.getEvaluationType());
         assertEquals(List.of("First", "Second"),
                 result.getCriteria().stream().map(Criterion::getTitle).toList());
+        verify(templateRepository).save(template);
     }
 
     @Test
@@ -205,5 +206,27 @@ public class TemplateServiceImplTests {
                         "Missing",
                         EvaluationType.ANNUAL,
                         List.of(new CriterionDTO("Criterion", "Desc")))));
+    }
+
+    @Test
+    void updateTemplate_throwsConflictWhenDuplicateNameExists() {
+        Job job = Job.builder().id(1L).title("Software Engineer").build();
+        Template template = Template.builder()
+                .id(10L)
+                .job(job)
+                .name("Old Name")
+                .evaluationType(EvaluationType.QUARTER)
+                .criteria(List.of(new Criterion("Old", "Old desc")))
+                .build();
+        UpdateTemplateRequest request = new UpdateTemplateRequest(
+                " Existing Name ",
+                EvaluationType.ANNUAL,
+                List.of(new CriterionDTO("Criterion", "Desc")));
+
+        when(templateRepository.findById(10L)).thenReturn(Optional.of(template));
+        when(templateRepository.existsByJobIdAndNameIgnoreCaseAndIdNot(1L, "Existing Name", 10L)).thenReturn(true);
+
+        assertThrows(ResourceConflictException.class, () -> svc.updateTemplate(10L, request));
+        verify(templateRepository, never()).save(any());
     }
 }
