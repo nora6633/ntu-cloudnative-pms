@@ -3,6 +3,8 @@ package edu.ntu.pms.template.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,10 +20,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import edu.ntu.pms.auth.JwtService;
+import edu.ntu.pms.common.ResourceConflictException;
 import edu.ntu.pms.common.ResourceNotFoundException;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
+import edu.ntu.pms.template.dto.CreateTemplateRequest;
 import edu.ntu.pms.template.dto.CriterionDTO;
 import edu.ntu.pms.template.dto.TemplateDTO;
+import edu.ntu.pms.template.dto.UpdateTemplateRequest;
 import edu.ntu.pms.template.entity.Criterion;
 import edu.ntu.pms.template.mapper.TemplateMapper;
 import edu.ntu.pms.template.entity.Template;
@@ -50,6 +55,7 @@ class TemplateControllerTests {
         Template template = Template.builder()
                 .id(10L)
                 .job(job)
+                .name("Engineering Annual Review")
                 .evaluationType(EvaluationType.ANNUAL)
                 .criteria(List.of(
                         new Criterion("Code Quality", "Assess code quality"),
@@ -60,6 +66,7 @@ class TemplateControllerTests {
         when(templateMapper.toTemplateDto(template)).thenReturn(new TemplateDTO(
                 10L,
                 1L,
+                "Engineering Annual Review",
                 EvaluationType.ANNUAL,
                 List.of(
                         new CriterionDTO("Code Quality", "Assess code quality"),
@@ -70,6 +77,7 @@ class TemplateControllerTests {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(10))
                 .andExpect(jsonPath("$[0].jobId").value(1))
+                .andExpect(jsonPath("$[0].name").value("Engineering Annual Review"))
                 .andExpect(jsonPath("$[0].evaluationType").value("ANNUAL"))
                 .andExpect(jsonPath("$[0].criteria[0].title").value("Code Quality"));
 
@@ -88,5 +96,100 @@ class TemplateControllerTests {
                 .andExpect(jsonPath("$.detail").value(containsString("Job with ID 999 not found")));
 
         verify(templateService).getAllTemplatesByJobId(999L);
+    }
+
+    @Test
+    void createTemplate_returnsCreatedAndJson() throws Exception {
+        Job job = Job.builder().id(1L).title("Junior Software Engineer").build();
+        Template template = Template.builder()
+                .id(10L)
+                .job(job)
+                .name("Engineering Annual Review")
+                .evaluationType(EvaluationType.ANNUAL)
+                .criteria(List.of(new Criterion("Code Quality", "Assess code quality")))
+                .build();
+        TemplateDTO dto = new TemplateDTO(
+                10L,
+                1L,
+                "Engineering Annual Review",
+                EvaluationType.ANNUAL,
+                List.of(new CriterionDTO("Code Quality", "Assess code quality")));
+
+        when(templateService.createTemplate(any(CreateTemplateRequest.class))).thenReturn(template);
+        when(templateMapper.toTemplateDto(template)).thenReturn(dto);
+
+        mockMvc.perform(post("/templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "jobId": 1,
+                                  "name": "Engineering Annual Review",
+                                  "evaluationType": "ANNUAL",
+                                  "criteria": [
+                                    { "title": "Code Quality", "description": "Assess code quality" }
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Engineering Annual Review"))
+                .andExpect(jsonPath("$.evaluationType").value("ANNUAL"));
+    }
+
+    @Test
+    void createTemplate_whenDuplicate_returnsConflict() throws Exception {
+        when(templateService.createTemplate(any(CreateTemplateRequest.class)))
+                .thenThrow(new ResourceConflictException("Template with name 'Engineering Annual Review' already exists for job ID 1"));
+
+        mockMvc.perform(post("/templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "jobId": 1,
+                                  "name": "Engineering Annual Review",
+                                  "evaluationType": "ANNUAL",
+                                  "criteria": [
+                                    { "title": "Code Quality", "description": "Assess code quality" }
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.title").value("Conflict"));
+    }
+
+    @Test
+    void updateTemplate_returnsOkAndJson() throws Exception {
+        Job job = Job.builder().id(1L).title("Junior Software Engineer").build();
+        Template template = Template.builder()
+                .id(10L)
+                .job(job)
+                .name("Engineering Annual Review")
+                .evaluationType(EvaluationType.QUARTER)
+                .criteria(List.of(new Criterion("Collaboration", "Assess teamwork")))
+                .build();
+        TemplateDTO dto = new TemplateDTO(
+                10L,
+                1L,
+                "Engineering Annual Review",
+                EvaluationType.QUARTER,
+                List.of(new CriterionDTO("Collaboration", "Assess teamwork")));
+
+        when(templateService.updateTemplate(eq(10L), any(UpdateTemplateRequest.class))).thenReturn(template);
+        when(templateMapper.toTemplateDto(template)).thenReturn(dto);
+
+        mockMvc.perform(put("/templates/10")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Engineering Annual Review",
+                                  "evaluationType": "QUARTER",
+                                  "criteria": [
+                                    { "title": "Collaboration", "description": "Assess teamwork" }
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.name").value("Engineering Annual Review"))
+                .andExpect(jsonPath("$.evaluationType").value("QUARTER"));
     }
 }

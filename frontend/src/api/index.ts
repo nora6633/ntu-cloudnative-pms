@@ -20,6 +20,8 @@ import {
   getRegistrationUrl,
   getAddProgressUrl,
   getGetAllTemplateByJobIdUrl,
+  getCreateTemplateUrl,
+  getUpdateTemplateUrl,
   getGetAllJobsUrl,
   getGetAllJobsWithTemplatesUrl,
   getGetAuditLogsUrl,
@@ -38,8 +40,10 @@ import {
   type UserDTO,
   type CreateProgressDTO,
   type TemplateDTO,
+  type CreateTemplateRequest,
   type JobSummaryDTO,
   type JobTemplatesDTO,
+  type UpdateTemplateRequest,
   type PageAuditLogDTO,
   type AdminOnly200,
 } from './generated/orvalClient';
@@ -58,8 +62,12 @@ export type {
   UserDTO,
   CreateProgressDTO,
   TemplateDTO,
+  TemplateDTOEvaluationType,
+  CriterionDTO,
+  CreateTemplateRequest,
   JobSummaryDTO,
   JobTemplatesDTO,
+  UpdateTemplateRequest,
   PageAuditLogDTO,
   AdminOnly200,
   AuditLogDTOActionType,
@@ -173,6 +181,18 @@ export const rejectEvaluation = (id: number) =>
 
 export const getAllTemplateByJobId = (jobId: number) =>
   apiFetch<TemplateDTO[]>(getGetAllTemplateByJobIdUrl(jobId));
+
+export const createTemplate = (body: CreateTemplateRequest) =>
+  apiFetch<TemplateDTO>(getCreateTemplateUrl(), {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+export const updateTemplate = (templateId: number, body: UpdateTemplateRequest) =>
+  apiFetch<TemplateDTO>(getUpdateTemplateUrl(templateId), {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
 
 export const getAllJobs = () =>
   apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl());
