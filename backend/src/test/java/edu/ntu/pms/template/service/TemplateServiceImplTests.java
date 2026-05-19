@@ -75,17 +75,17 @@ public class TemplateServiceImplTests {
     void createEvaluationItemsForJob_createsItemsFromTemplate() {
         Criterion c1 = new Criterion("T1", "D1");
         Criterion c2 = new Criterion("T2", "D2");
+        Job job = Job.builder().id(1L).title("J").build();
 
         Template template = Template.builder()
                 .id(100L)
+                .job(job)
                 .name("Probation Template")
                 .evaluationType(EvaluationType.PROBATION)
                 .criteria(List.of(c1, c2))
                 .build();
 
-        Job job = Job.builder().id(1L).title("J").templates(List.of(template)).build();
-        // ensure template references job (not required by method but keeps object model consistent)
-        template.setJob(job);
+        when(templateRepository.findByIdAndJobId(100L, 1L)).thenReturn(Optional.of(template));
 
         List<EvaluationItem> items = svc.createEvaluationItemsForJob(job, 100L, EvaluationType.PROBATION);
 
@@ -98,7 +98,8 @@ public class TemplateServiceImplTests {
 
     @Test
     void createEvaluationItemsForJob_throwsWhenTemplateNotAssociated() {
-        Job job = Job.builder().id(2L).title("J2").templates(List.of()).build();
+        Job job = Job.builder().id(2L).title("J2").build();
+        when(templateRepository.findByIdAndJobId(999L, 2L)).thenReturn(Optional.empty());
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> svc.createEvaluationItemsForJob(job, 999L, EvaluationType.ANNUAL));
@@ -108,15 +109,16 @@ public class TemplateServiceImplTests {
 
     @Test
     void createEvaluationItemsForJob_throwsWhenTypeMismatch() {
+        Job job = Job.builder().id(3L).title("J3").build();
         Template template = Template.builder()
                 .id(42L)
+                .job(job)
                 .name("Annual Template")
                 .evaluationType(EvaluationType.ANNUAL)
                 .criteria(List.of(new Criterion("X","x")))
                 .build();
 
-        Job job = Job.builder().id(3L).title("J3").templates(List.of(template)).build();
-        template.setJob(job);
+        when(templateRepository.findByIdAndJobId(42L, 3L)).thenReturn(Optional.of(template));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> svc.createEvaluationItemsForJob(job, 42L, EvaluationType.PROBATION));

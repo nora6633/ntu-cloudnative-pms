@@ -1,7 +1,6 @@
 package edu.ntu.pms.template.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -98,19 +97,15 @@ public class TemplateServiceImpl implements TemplateService {
      */
     @Override
     public List<EvaluationItem> createEvaluationItemsForJob(Job job, Long templateId, EvaluationType type){
-        // Validate that the job has the specified template associated with it
-        Optional<Template> template = Optional.ofNullable(
-            job.getTemplates().stream()
-            .filter(t -> t.getId().equals(templateId))
-            .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Template " + templateId + " is not associated with Job " + job.getId())));
+        Template template = templateRepository.findByIdAndJobId(templateId, job.getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Template " + templateId + " is not associated with Job " + job.getId()));
 
-        // Validate that the template's evaluation type matches the provided type
-        if (template.get().getEvaluationType() != type) {
-            throw new IllegalArgumentException("Template " + template.get().getId() + " is not of type " + type);
+        if (template.getEvaluationType() != type) {
+            throw new IllegalArgumentException("Template " + template.getId() + " is not of type " + type);
         }
 
-        return createEvaluationItemsFromTemplate(template.get());
+        return createEvaluationItemsFromTemplate(template);
     }
     
     // Helper method to convert Template criteria to EvaluationItems

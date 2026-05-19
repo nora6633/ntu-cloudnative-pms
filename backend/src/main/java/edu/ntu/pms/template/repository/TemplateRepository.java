@@ -19,4 +19,7 @@ public interface TemplateRepository extends JpaRepository<Template, Long> {
 
     @EntityGraph(attributePaths = "criteria")
     Optional<Template> findById(Long id);
+
+    @EntityGraph(attributePaths = "criteria")
+    Optional<Template> findByIdAndJobId(Long id, Long jobId);
 }
