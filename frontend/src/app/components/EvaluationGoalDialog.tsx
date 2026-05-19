@@ -82,7 +82,7 @@ export function EvaluationGoalDialog({
         <div className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="definition">Goal Statement</Label>
+            <Label htmlFor="definition">Goal Statement <span className="text-red-500">*</span></Label>
             <Textarea
               id="definition"
               placeholder="A clear and concise statement of what you want to achieve..."
@@ -94,7 +94,7 @@ export function EvaluationGoalDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="metric">Metric</Label>
+            <Label htmlFor="metric">Metric <span className="text-red-500">*</span></Label>
             <Input
               id="metric"
               placeholder="e.g. Course completion, Review count, Projects delivered"
@@ -105,7 +105,7 @@ export function EvaluationGoalDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="deadline">Deadline</Label>
+            <Label htmlFor="deadline">Deadline <span className="text-red-500">*</span></Label>
             <Input
               id="deadline"
               type="date"
@@ -118,7 +118,7 @@ export function EvaluationGoalDialog({
 
           <div className="space-y-2">
             <Label htmlFor="criteria">
-              Evaluation Criteria
+              Evaluation Criteria <span className="text-red-500">*</span>
             </Label>
             {options.map((option) => (
               <button
@@ -137,7 +137,7 @@ export function EvaluationGoalDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="relevance">Relevance to Criteria</Label>
+            <Label htmlFor="relevance">Relevance to Criteria <span className="text-red-500">*</span></Label>
             <Textarea
               id="relevance"
               placeholder="Explain how this goal relates to your evaluation criteria..."
@@ -149,7 +149,7 @@ export function EvaluationGoalDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="resource">Required Resources</Label>
+            <Label htmlFor="resource">Required Resources <span className="text-red-500">*</span></Label>
             <Input
               id="resource"
               placeholder="e.g. Online course license, Manager support, Budget approval"

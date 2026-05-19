@@ -35,7 +35,7 @@ export function UpdateProgressDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="description">Progress Description</Label>
+            <Label htmlFor="description">Progress Description <span className="text-red-500">*</span></Label>
             <Textarea
               id="description"
               placeholder="Describe what you accomplished, any blockers you encountered, or next steps..."

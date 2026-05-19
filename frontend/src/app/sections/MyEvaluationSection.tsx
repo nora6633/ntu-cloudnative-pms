@@ -168,6 +168,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
   }
 
   const evalId = evaluation.id!;
+  const cycle = evaluation.cycle;
   const status = mapStatus(evaluation);
   const items  = evaluation.evaluationItems ?? [];
 
@@ -277,6 +278,9 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
               <p className={`mt-1 font-medium ${STATUS_COLORS[status]}`}>
                 Status: {STATUS_LABELS[status]}
               </p>
+              <p className={`mt-1 font-medium ${STATUS_COLORS[status]}`}>
+                Cycle: {cycle}
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <Button variant="outline" size="icon" onClick={() => setCriteriaOpen(true)}>
@@ -370,7 +374,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         {/* Working — progress tracking */}
         {status === 'Working' && (
           <div>
-            {activeGoals.length === 0
+              {activeGoals.length === 0
                 ? <div className="text-center py-12 text-gray-500">No goals yet.</div>
                 : <div className="grid gap-4">
                     {activeGoals.map((g) => (
