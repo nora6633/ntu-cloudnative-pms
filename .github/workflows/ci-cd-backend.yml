@@ -1,4 +1,4 @@
-name: CI / Backend
+name: CI/CD / Backend
 
 # Triggers only when backend files change — frontend changes won't run this workflow
 on:
@@ -11,7 +11,7 @@ on:
 # Cancel any in-progress run for the same branch when a new commit is pushed,
 # so we don't waste runner minutes on outdated builds
 concurrency:
-  group: ci-backend-${{ github.ref }}
+  group: ci-cd-backend-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -133,3 +133,19 @@ jobs:
           package-name: pms-backend
           package-type: container
           min-versions-to-keep: 10
+
+  # Triggers Railway to pull and run the new image — only after image is pushed AND all tests pass
+  deploy:
+    name: Deploy Backend to Railway
+    runs-on: ubuntu-22.04
+    needs: [build-docker, unit-tests, integration-tests]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli@4.58.0
+
+      - name: Redeploy backend
+        run: railway redeploy --service pms-backend --yes
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
