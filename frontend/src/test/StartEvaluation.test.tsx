@@ -229,7 +229,7 @@ describe('StartEvaluationSection', () => {
       const options = Array.from(trigger.querySelectorAll('option')).map(opt => opt.textContent);
       expect(options).toContain('Annual');
       expect(options).toContain('Quarter');
-      expect(options).toContain('Probation');
+      expect(options).not.toContain('Probation');
     });
 
     it('selects ANNUAL evaluation type', async () => {
@@ -270,22 +270,15 @@ describe('StartEvaluationSection', () => {
       });
     });
 
-    it('shows only PROBATION templates for Software Engineer when PROBATION is selected', async () => {
+    it('do not show PROBATION templates', async () => {
       await renderAndWait();
-
-      await selectOption(/evaluation type/i, /probation/i);
-
-      // Wait for templates to be filtered after evaluation type changes
-      await waitFor(() => {
-        const seGroup = screen.getByText('Software Engineer').closest('div.space-y-1\\.5') as HTMLElement;
-        const seSelect = seGroup?.querySelector('select');
-        
-        if (!seSelect) throw new Error('Could not find Software Engineer template select');
-        
-        const options = Array.from(seSelect.querySelectorAll('option')).map(opt => opt.textContent);
-        expect(options).toContain('PROBATION #21');
-        expect(options).not.toContain('ANNUAL #20');
-      });
+      const seGroup = screen.getByText('Software Engineer').closest('div.space-y-1\\.5') as HTMLElement;
+      const seSelect = seGroup?.querySelector('select');
+      if (!seSelect) throw new Error('Could not find Software Engineer template select');
+      const options = Array.from(seSelect.querySelectorAll('option')).map(opt => opt.textContent);
+      
+      expect(options).toContain('ANNUAL #20');
+      expect(options).not.toContain('PROBATION #21');
     });
 
     it('do not show template selection when no satisfied template', async () => {

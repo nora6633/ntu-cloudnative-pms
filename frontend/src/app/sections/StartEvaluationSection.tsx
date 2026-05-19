@@ -34,7 +34,6 @@ const MESSAGES = {
 const EVALUATION_TYPES: { label: string; value: EvaluationCycleDTOEvaluationType }[] = [
   { label: 'Annual',    value: 'ANNUAL'    },
   { label: 'Quarter',   value: 'QUARTER'   },
-  { label: 'Probation', value: 'PROBATION' },
 ];
 
 // ── Template preview dialog ────────────────────────────────────────────────
@@ -144,10 +143,13 @@ export function StartEvaluationSection() {
     };
   }, []);
   
+  const visibleTemplates = (templates: TemplateDTO[] | undefined) =>
+    (templates ?? []).filter((t) => t.evaluationType !== 'PROBATION');
+
   const templatesByJob = useMemo(() => {
     const map: Record<number, TemplateDTO[]> = {};
     for (const job of jobTemplates) {
-      map[job.id ?? 0] = (job.templates ?? [])
+      map[job.id ?? 0] = visibleTemplates(job.templates)
         .slice()
         .sort((a, b) => Number(b.id ?? 0) - Number(a.id ?? 0));
     }
@@ -162,7 +164,9 @@ export function StartEvaluationSection() {
       for (const job of jobTemplates) {
         const jobId = job.id;
         if (jobId == null) continue;
-        const opts = (job.templates ?? []).slice().sort((a, b) => Number(b.id ?? 0) - Number(a.id ?? 0))
+        const opts = visibleTemplates(job.templates)
+          .slice()
+          .sort((a, b) => Number(b.id ?? 0) - Number(a.id ?? 0))
           .filter((t) => evalType == null || t.evaluationType === evalType);
         if (opts[0]?.id != null) {
           const idStr = String(opts[0].id);
