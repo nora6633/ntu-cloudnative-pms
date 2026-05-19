@@ -1,5 +1,6 @@
 package edu.ntu.pms.template.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,8 +120,8 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private List<Criterion> toCriteria(List<edu.ntu.pms.template.dto.CriterionDTO> criteria) {
-        return criteria.stream()
+        return new ArrayList<>(criteria.stream()
                 .map(templateMapper::toCriterion)
-                .toList();
+                .toList());
     }
 }
