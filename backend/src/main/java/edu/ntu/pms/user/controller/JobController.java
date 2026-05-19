@@ -52,7 +52,7 @@ public class JobController {
                     content = @Content(schema = @Schema(implementation = org.springframework.http.ProblemDetail.class)))
     })
     @Tag(name = "hr")
-    @PreAuthorize("hasRole('ROLE_HR')")
+    @PreAuthorize("hasAnyRole('ROLE_HR', 'ROLE_ADMIN')")
     @GetMapping
     public List<JobSummaryDTO> getAllJobs() {
         return jobService.getAllJobs().stream()
@@ -79,7 +79,7 @@ public class JobController {
                     content = @Content(schema = @Schema(implementation = org.springframework.http.ProblemDetail.class)))
     })
     @Tag(name = "hr")
-    @PreAuthorize("hasRole('ROLE_HR')")
+    @PreAuthorize("hasAnyRole('ROLE_HR', 'ROLE_ADMIN')")
     @GetMapping("/with-templates")
     public List<JobTemplatesDTO> getAllJobsWithTemplates() {
         return jobService.getAllJobsWithTemplates().stream()

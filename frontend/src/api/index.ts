@@ -20,6 +20,8 @@ import {
   getRegistrationUrl,
   getAddProgressUrl,
   getGetAllTemplateByJobIdUrl,
+  getCreateTemplateUrl,
+  getUpdateTemplateUrl,
   getGetAllJobsUrl,
   getGetAllJobsWithTemplatesUrl,
   getGetAuditLogsUrl,
@@ -38,8 +40,10 @@ import {
   type UserDTO,
   type CreateProgressDTO,
   type TemplateDTO,
+  type CreateTemplateRequest,
   type JobSummaryDTO,
   type JobTemplatesDTO,
+  type UpdateTemplateRequest,
   type PageAuditLogDTO,
   type AdminOnly200,
 } from './generated/orvalClient';
@@ -58,15 +62,22 @@ export type {
   UserDTO,
   CreateProgressDTO,
   TemplateDTO,
+  TemplateDTOEvaluationType,
+  CriterionDTO,
+  CreateTemplateRequest,
   JobSummaryDTO,
   JobTemplatesDTO,
+  UpdateTemplateRequest,
   PageAuditLogDTO,
   AdminOnly200,
   AuditLogDTOActionType,
 } from './generated/orvalClient';
 
 
-const baseUrl = () => (import.meta.env.VITE_API_URL as string) ?? '';
+// Runtime injection (production) takes precedence over the build-time value (dev)
+const baseUrl = () =>
+  (window as Window & { __ENV__?: { VITE_API_URL?: string } }).__ENV__?.VITE_API_URL
+  ?? import.meta.env.VITE_API_URL;
 
 async function apiFetch<T>(
   url: string,
@@ -83,7 +94,7 @@ async function apiFetch<T>(
 
   if (!res.ok) {
     let errorMessage = `API Error: ${res.status}`;
-    if (contentType?.includes('application/json')) {
+    if (contentType?.includes('json')) {
       try {
         const errorBody = await res.json();
         errorMessage = errorBody.detail || errorBody.message || errorMessage;
@@ -98,7 +109,7 @@ async function apiFetch<T>(
     throw new Error(errorMessage);
   }
 
-  if (contentType?.includes('application/json')) {
+  if (contentType?.includes('json')) {
     data = (await res.json()) as T;
   } else {
     data = (await res.text()) as T;
@@ -168,14 +179,26 @@ export const approveEvaluation = (id: number) =>
 export const rejectEvaluation = (id: number) =>
   apiFetch<string>(getRejectEvaluationUrl(id), { method: 'POST' });
 
-export const getAllTemplateByJobId = (jobId: number) =>
-  apiFetch<TemplateDTO[]>(getGetAllTemplateByJobIdUrl(jobId));
+export const getAllTemplateByJobId = (jobId: number, init?: RequestInit) =>
+  apiFetch<TemplateDTO[]>(getGetAllTemplateByJobIdUrl(jobId), init);
 
-export const getAllJobs = () =>
-  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl());
+export const createTemplate = (body: CreateTemplateRequest) =>
+  apiFetch<TemplateDTO>(getCreateTemplateUrl(), {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
 
-export const getAllJobsWithTemplates = () =>
-  apiFetch<JobTemplatesDTO[]>(getGetAllJobsWithTemplatesUrl());
+export const updateTemplate = (templateId: number, body: UpdateTemplateRequest) =>
+  apiFetch<TemplateDTO>(getUpdateTemplateUrl(templateId), {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+
+export const getAllJobs = (init?: RequestInit) =>
+  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl(), init);
+
+export const getAllJobsWithTemplates = (init?: RequestInit) =>
+  apiFetch<JobTemplatesDTO[]>(getGetAllJobsWithTemplatesUrl(), init);
 
 export const getAuditLogs = (params: GetAuditLogsParams) =>
   apiFetch<PageAuditLogDTO>(getGetAuditLogsUrl(params));
@@ -185,3 +208,22 @@ export const getModules = () =>
 
 export const adminOnly = () =>
   apiFetch<AdminOnly200>(getAdminOnlyUrl());
+
+// ── Lookup APIs (not in Orval-generated client) ───────────────────────────
+
+export interface DepartmentDTO {
+  id: number;
+  name: string;
+}
+
+export interface UserSummaryDTO {
+  id: number;
+  username: string;
+  role: 'ADMIN' | 'EMPLOYEE' | 'MANAGER' | 'HR';
+}
+
+export const getDepartments = (init?: RequestInit) =>
+  apiFetch<DepartmentDTO[]>('/departments', init);
+
+export const getSupervisors = (init?: RequestInit) =>
+  apiFetch<UserSummaryDTO[]>('/users/supervisors', init);

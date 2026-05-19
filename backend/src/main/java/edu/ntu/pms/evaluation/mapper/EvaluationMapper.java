@@ -1,6 +1,5 @@
 package edu.ntu.pms.evaluation.mapper;
 
-import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -31,44 +30,62 @@ public interface EvaluationMapper {
 
     @Named("mapEmployeeName")
     default String mapEmployeeName(Evaluation e) {
-        if (e == null) return null;
-        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getEmployeeName();
+        if (e == null)
+            return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED)
+            return e.getEmployeeName();
         return e.getEmployee() != null ? e.getEmployee().getUsername() : null;
     }
 
     @Named("mapEmployeeJobTitle")
     default String mapEmployeeJobTitle(Evaluation e) {
-        if (e == null) return null;
-        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getEmployeeJobTitle();
-        return (e.getEmployee() != null && e.getEmployee().getJob() != null) ? e.getEmployee().getJob().getTitle() : null;
+        if (e == null)
+            return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED)
+            return e.getEmployeeJobTitle();
+        return (e.getEmployee() != null && e.getEmployee().getJob() != null) ? e.getEmployee().getJob().getTitle()
+                : null;
     }
 
     @Named("mapEmployeeDepartmentName")
     default String mapEmployeeDepartmentName(Evaluation e) {
-        if (e == null) return null;
-        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getEmployeeDepartmentName();
-        return (e.getEmployee() != null && e.getEmployee().getDepartment() != null) ? e.getEmployee().getDepartment().getName() : null;
+        if (e == null)
+            return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED)
+            return e.getEmployeeDepartmentName();
+        return (e.getEmployee() != null && e.getEmployee().getDepartment() != null)
+                ? e.getEmployee().getDepartment().getName()
+                : null;
     }
 
     @Named("mapSupervisorName")
     default String mapSupervisorName(Evaluation e) {
-        if (e == null) return null;
-        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getSupervisorName();
+        if (e == null)
+            return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED)
+            return e.getSupervisorName();
         return e.getSupervisor() != null ? e.getSupervisor().getUsername() : null;
     }
 
     @Named("mapSupervisorJobTitle")
     default String mapSupervisorJobTitle(Evaluation e) {
-        if (e == null) return null;
-        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getSupervisorJobTitle();
-        return (e.getSupervisor() != null && e.getSupervisor().getJob() != null) ? e.getSupervisor().getJob().getTitle() : null;
+        if (e == null)
+            return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED)
+            return e.getSupervisorJobTitle();
+        return (e.getSupervisor() != null && e.getSupervisor().getJob() != null) ? e.getSupervisor().getJob().getTitle()
+                : null;
     }
 
     @Named("mapSupervisorDepartmentName")
     default String mapSupervisorDepartmentName(Evaluation e) {
-        if (e == null) return null;
-        if (e.getStatus() == EvaluationStatus.CLOSED) return e.getSupervisorDepartmentName();
-        return (e.getSupervisor() != null && e.getSupervisor().getDepartment() != null) ? e.getSupervisor().getDepartment().getName() : null;
+        if (e == null)
+            return null;
+        if (e.getStatus() == EvaluationStatus.CLOSED)
+            return e.getSupervisorDepartmentName();
+        return (e.getSupervisor() != null && e.getSupervisor().getDepartment() != null)
+                ? e.getSupervisor().getDepartment().getName()
+                : null;
     }
 
     // Mid Level: MapStruct uses this automatically for the List<GoalDTO>
@@ -84,13 +101,14 @@ public interface EvaluationMapper {
 
     // For new goal
     @Mapping(target = "evaluation", ignore = true) // evaluation will be set in the service layer
+    @Mapping(target = "version", ignore = true)
     Goal toGoal(GoalDTO dto);
 
     // For updating existing goal - only update fields that are present in the DTO
     @Mapping(target = "id", ignore = true) // ID should not be updated
     @Mapping(target = "evaluation", ignore = true) // evaluation should not be updated
+    @Mapping(target = "version", ignore = true)
     void updateGoalFromDto(GoalDTO dto, @MappingTarget Goal entity);
-
 
     // Update only feedback and rating of an existing EvaluationItem.
     @Mapping(target = "id", ignore = true) // ID should not be updated

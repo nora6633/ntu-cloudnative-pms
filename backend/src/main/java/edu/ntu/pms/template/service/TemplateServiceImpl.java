@@ -1,16 +1,21 @@
 package edu.ntu.pms.template.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.ntu.pms.common.ResourceConflictException;
 import edu.ntu.pms.common.ResourceNotFoundException;
 import edu.ntu.pms.evaluation.entity.EvaluationItem;
 import edu.ntu.pms.evaluation.enums.EvaluationType;
+import edu.ntu.pms.template.dto.CreateTemplateRequest;
+import edu.ntu.pms.template.dto.UpdateTemplateRequest;
+import edu.ntu.pms.template.entity.Criterion;
 import edu.ntu.pms.template.entity.Template;
+import edu.ntu.pms.template.mapper.TemplateMapper;
 import edu.ntu.pms.template.repository.TemplateRepository;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.repository.JobRepository;
@@ -20,10 +25,15 @@ public class TemplateServiceImpl implements TemplateService {
 
     private final TemplateRepository templateRepository;
     private final JobRepository jobRepository;
+    private final TemplateMapper templateMapper;
 
-    public TemplateServiceImpl(TemplateRepository templateRepository, JobRepository jobRepository) {
+    public TemplateServiceImpl(
+            TemplateRepository templateRepository,
+            JobRepository jobRepository,
+            TemplateMapper templateMapper) {
         this.templateRepository = templateRepository;
         this.jobRepository = jobRepository;
+        this.templateMapper = templateMapper;
     }
 
     @Override
@@ -36,6 +46,48 @@ public class TemplateServiceImpl implements TemplateService {
         return templateRepository.findAllByJobIdOrderByIdAsc(jobId);
     }
 
+    @Override
+    @Transactional
+    public Template createTemplate(CreateTemplateRequest request) {
+        Job job = jobRepository.findById(request.jobId())
+                .orElseThrow(() -> new ResourceNotFoundException("Job", request.jobId()));
+
+        if (templateRepository.existsByJobIdAndNameIgnoreCase(job.getId(), request.name().trim())) {
+            throw new ResourceConflictException("Template with name '" + request.name().trim()
+                    + "' already exists for job ID " + job.getId());
+        }
+
+        Template template = Template.builder()
+                .job(job)
+                .name(request.name().trim())
+                .evaluationType(request.evaluationType())
+                .criteria(toCriteria(request.criteria()))
+                .build();
+
+        return templateRepository.save(template);
+    }
+
+    @Override
+    @Transactional
+    public Template updateTemplate(Long templateId, UpdateTemplateRequest request) {
+        Template template = templateRepository.findById(templateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Template", templateId));
+
+        String trimmedName = request.name().trim();
+        if (templateRepository.existsByJobIdAndNameIgnoreCaseAndIdNot(
+                template.getJob().getId(),
+                trimmedName,
+                templateId)) {
+            throw new ResourceConflictException("Template with name '" + trimmedName
+                    + "' already exists for job ID " + template.getJob().getId());
+        }
+
+        template.setName(trimmedName);
+        template.setEvaluationType(request.evaluationType());
+        template.setCriteria(toCriteria(request.criteria()));
+        return templateRepository.save(template);
+    }
+
     /**
      * Create evaluation items for a given job based on a specified template and evaluation type.
      *
@@ -46,19 +98,15 @@ public class TemplateServiceImpl implements TemplateService {
      */
     @Override
     public List<EvaluationItem> createEvaluationItemsForJob(Job job, Long templateId, EvaluationType type){
-        // Validate that the job has the specified template associated with it
-        Optional<Template> template = Optional.ofNullable(
-            job.getTemplates().stream()
-            .filter(t -> t.getId().equals(templateId))
-            .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Template " + templateId + " is not associated with Job " + job.getId())));
+        Template template = templateRepository.findByIdAndJobId(templateId, job.getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Template " + templateId + " is not associated with Job " + job.getId()));
 
-        // Validate that the template's evaluation type matches the provided type
-        if (template.get().getEvaluationType() != type) {
-            throw new IllegalArgumentException("Template " + template.get().getId() + " is not of type " + type);
+        if (template.getEvaluationType() != type) {
+            throw new IllegalArgumentException("Template " + template.getId() + " is not of type " + type);
         }
 
-        return createEvaluationItemsFromTemplate(template.get());
+        return createEvaluationItemsFromTemplate(template);
     }
     
     // Helper method to convert Template criteria to EvaluationItems
@@ -69,5 +117,11 @@ public class TemplateServiceImpl implements TemplateService {
                         .description(criterion.getDescription())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private List<Criterion> toCriteria(List<edu.ntu.pms.template.dto.CriterionDTO> criteria) {
+        return new ArrayList<>(criteria.stream()
+                .map(templateMapper::toCriterion)
+                .toList());
     }
 }

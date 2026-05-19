@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../auth/AuthContext';
 import { Button } from '../app/components/ui/button'
 
+import './Login.css';
+
 interface LocationState {
   from?: { pathname?: string };
 }
@@ -25,8 +27,18 @@ export default function Login() {
     try {
       await login(username, password);
       navigate(from, { replace: true });
-    } catch {
-      setError('Invalid username or password');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      if (errorMessage === 'Invalid credentials') {
+        setError('Invalid username or password');
+      } else if (
+        errorMessage.toLowerCase().includes('failed to fetch') ||
+        errorMessage.toLowerCase().includes('network')
+      ) {
+        setError('Network error. Please try again later.');
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -57,6 +69,7 @@ export default function Login() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
+              placeholder="Enter your username"
               required
             />
           </label>
@@ -69,6 +82,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
+              placeholder="••••••••"
               required
             />
           </label>

@@ -19,4 +19,8 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             order by j.title asc, t.id asc
             """)
     List<Job> findAllWithTemplatesOrderByTitleAsc();
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"employees", "employees.supervisor"})
+    @Query("select j from Job j")
+    List<Job> findAllWithEmployeesAndSupervisors();
 }

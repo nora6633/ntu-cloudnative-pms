@@ -20,6 +20,8 @@ public interface TemplateMapper {
 
     CriterionDTO toCriterionDto(Criterion criterion);
 
+    Criterion toCriterion(CriterionDTO criterionDto);
+
     @Mapping(source = "job.id", target = "jobId")
     TemplateDTO toTemplateDto(Template template);
 }

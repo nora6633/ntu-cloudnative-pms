@@ -14,6 +14,9 @@ public record TemplateDTO(
         @Schema(description = "Associated job ID", example = "1")
         Long jobId,
 
+        @Schema(description = "Template name", example = "Engineering Annual Review")
+        String name,
+
         @Schema(description = "Evaluation type of this template", example = "ANNUAL")
         EvaluationType evaluationType,
 

@@ -1,0 +1,38 @@
+# Production profile — activated by SPRING_PROFILES_ACTIVE=prod
+# Spring Boot merges this file on top of application.yaml.
+# Only values that differ from the base config need to be listed here.
+
+spring:
+  jpa:
+    hibernate:
+      # "update" in dev auto-migrates schema; "validate" crashes fast if schema drifts in prod
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        # Disable formatting/comments to reduce log noise in prod
+        format_sql: false
+        use_sql_comments: false
+  jackson:
+    serialization:
+      # Disable pretty-printing for smaller response payloads
+      indent_output: false
+
+logging:
+  level:
+    # Suppress framework noise; keep application logs at INFO
+    root: WARN
+    org.springframework: WARN
+    edu.ntu.pms: INFO
+
+springdoc:
+  # Disable API docs and Swagger UI — not safe to expose in production
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  cookie:
+    # Enforce HTTPS-only cookies in production (set to false in base config for local HTTP dev)
+    secure: true

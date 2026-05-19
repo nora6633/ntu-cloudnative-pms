@@ -22,10 +22,10 @@ import edu.ntu.pms.user.repository.UserRepository;
 @Component
 public class DataSeeder implements CommandLineRunner {
     // Job Titles
-    public static final String JOB_JUNIOR_SOFTWARE_ENGINEER = "Junior Software Engineer";
-    public static final String JOB_SENIOR_SOFTWARE_ENGINEER = "Senior Software Engineer";
-    public static final String JOB_JUNIOR_HR = "Junior HR";
-    public static final String JOB_SENIOR_HR = "Senior HR";
+    public static final String JOB_JUNIOR_SOFTWARE_ENGINEER = "Software Engineer (Junior)";
+    public static final String JOB_SENIOR_SOFTWARE_ENGINEER = "Software Engineer (Senior)";
+    public static final String JOB_JUNIOR_HR = "HR (Junior)";
+    public static final String JOB_SENIOR_HR = "HR (Senior)";
 
     // Department Names
     public static final String DEPT_ENGINEERING = "Engineering";
@@ -141,10 +141,19 @@ public class DataSeeder implements CommandLineRunner {
     private void seedTemplate(Job job, EvaluationType type, List<Criterion> criteria) {
         Template template = Template.builder()
                 .job(job)
+                .name(job.getTitle() + " " + formatType(type) + " Template")
                 .evaluationType(type)
                 .criteria(criteria)
                 .build();
         templateRepo.save(template);
+    }
+
+    private String formatType(EvaluationType type) {
+        return switch (type) {
+            case ANNUAL -> "Annual";
+            case QUARTER -> "Quarter";
+            case PROBATION -> "Probation";
+        };
     }
 
     private void seedAnnualTemplate(Job juniorSoftwareEngineer, Job seniorSoftwareEngineer, Job juniorHrJob,

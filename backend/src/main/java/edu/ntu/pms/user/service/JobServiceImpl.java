@@ -35,7 +35,7 @@ public class JobServiceImpl implements JobService{
      */
     @Override
     public List<Job> getAllJobsForCycleStart(Set<Long> jobIds) {
-        List<Job> jobs = jobRepo.findAll();
+        List<Job> jobs = jobRepo.findAllWithEmployeesAndSupervisors();
         Set<Long> jobIdsFromDb = jobs.stream().map(Job::getId).collect(Collectors.toSet());
 
         if (!jobIdsFromDb.equals(jobIds)){

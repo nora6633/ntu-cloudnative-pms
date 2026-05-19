@@ -20,18 +20,23 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "templates")
+@Table(name = "templates", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_templates_job_name", columnNames = { "job_id", "name" })
+})
 @Audited
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 public class Template {
     
     @Id
@@ -43,6 +48,9 @@ public class Template {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
+    @Column(nullable = false, length = 150)
+    private String name;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private EvaluationType evaluationType;
@@ -50,5 +58,5 @@ public class Template {
     @ElementCollection
     @CollectionTable(name = "template_criteria", joinColumns = @JoinColumn(name = "template_id"))
     @OrderColumn(name = "position")
-    List<Criterion> criteria;
+    private List<Criterion> criteria;
 }

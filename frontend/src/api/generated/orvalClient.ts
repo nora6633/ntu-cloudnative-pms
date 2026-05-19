@@ -202,6 +202,16 @@ export interface CriterionDTO {
 }
 
 /**
+ * Request payload for creating an evaluation template
+ */
+export interface CreateTemplateRequest {
+  criteria: CriterionDTO[];
+  evaluationType: TemplateDTOEvaluationType;
+  jobId: number;
+  name: string;
+}
+
+/**
  * Evaluation template details for a specific job
  */
 export interface TemplateDTO {
@@ -213,6 +223,17 @@ export interface TemplateDTO {
   id?: number;
   /** Associated job ID */
   jobId?: number;
+  /** Template name */
+  name?: string;
+}
+
+/**
+ * Request payload for updating an evaluation template
+ */
+export interface UpdateTemplateRequest {
+  criteria: CriterionDTO[];
+  evaluationType: TemplateDTOEvaluationType;
+  name: string;
 }
 
 export type UserResponseRole = typeof UserResponseRole[keyof typeof UserResponseRole];
@@ -811,6 +832,60 @@ export const getAllTemplateByJobId = async (jobId: number, options?: RequestInit
     ...options,
     method: 'GET'
 
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+/**
+ * Creates a new evaluation template for a job.
+ * @summary Create template
+ */
+export type createTemplateResponse = {
+  data: TemplateDTO;
+  status: number;
+}
+
+export const getCreateTemplateUrl = () => {
+  return `/templates`
+}
+
+export const createTemplate = async (createTemplateRequest: CreateTemplateRequest, options?: RequestInit): Promise<createTemplateResponse> => {
+  const res = await fetch(getCreateTemplateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    body: JSON.stringify(createTemplateRequest)
+  }
+
+  )
+  const data = await res.json()
+
+  return { status: res.status, data }
+}
+
+/**
+ * Updates an existing evaluation template without changing its owning job.
+ * @summary Update template
+ */
+export type updateTemplateResponse = {
+  data: TemplateDTO;
+  status: number;
+}
+
+export const getUpdateTemplateUrl = (templateId: number,) => {
+  return `/templates/${templateId}`
+}
+
+export const updateTemplate = async (templateId: number, updateTemplateRequest: UpdateTemplateRequest, options?: RequestInit): Promise<updateTemplateResponse> => {
+  const res = await fetch(getUpdateTemplateUrl(templateId),
+  {
+    ...options,
+    method: 'PUT',
+    body: JSON.stringify(updateTemplateRequest)
   }
 
   )
