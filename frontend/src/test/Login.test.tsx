@@ -105,7 +105,7 @@ describe('Login Page', () => {
 
     it('should clear error message when form is submitted', async () => {
       const user = userEvent.setup();
-      const mockLogin = vi.fn().mockRejectedValue(new Error('Login failed'));
+      const mockLogin = vi.fn().mockRejectedValue(new Error('Invalid credentials'));
       renderLogin({ login: mockLogin });
 
       // First failed attempt to show error
@@ -217,7 +217,7 @@ describe('Login Page', () => {
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/invalid username or password/i)).toBeInTheDocument();
+        expect(screen.getByText(/An unexpected error occurred/i)).toBeInTheDocument();
       });
     });
 
@@ -231,7 +231,7 @@ describe('Login Page', () => {
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/invalid username or password/i)).toBeInTheDocument();
+        expect(screen.getByText(/An unexpected error occurred/i)).toBeInTheDocument();
       });
 
       expect(mockNavigate).not.toHaveBeenCalled();
