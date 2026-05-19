@@ -51,7 +51,7 @@ class TemplateControllerTests {
 
     @Test
     void getAllTemplateByJobId_returnsOkAndJson() throws Exception {
-        Job job = Job.builder().id(1L).title("Junior Software Engineer").build();
+        Job job = Job.builder().id(1L).title("Software Engineer (Junior)").build();
         Template template = Template.builder()
                 .id(10L)
                 .job(job)

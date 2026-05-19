@@ -65,7 +65,7 @@ public class TemplateController {
                     content = @Content(schema = @Schema(implementation = org.springframework.http.ProblemDetail.class)))
     })
     @Tag(name = "hr")
-    @PreAuthorize("hasRole('ROLE_HR')")
+    @PreAuthorize("hasAnyRole('ROLE_HR', 'ROLE_ADMIN')")
     @GetMapping("/jobs/{jobId}")
     public List<TemplateDTO> getAllTemplateByJobId(
             @Parameter(description = "Target job ID whose templates should be returned", example = "1")

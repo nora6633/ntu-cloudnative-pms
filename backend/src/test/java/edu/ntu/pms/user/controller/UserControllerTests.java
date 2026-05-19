@@ -16,8 +16,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import edu.ntu.pms.auth.JwtService;
 import edu.ntu.pms.user.dto.UserDTO;
+import edu.ntu.pms.user.dto.UserSummaryDTO;
 import edu.ntu.pms.user.enums.Role;
 import edu.ntu.pms.user.service.UserService;
+import java.util.List;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -62,5 +64,22 @@ class UserControllerTests {
                 .content(invalidJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors", hasItem(containsString("password: Password must be at least 8 characters long"))));
+    }
+
+    @Test
+    void getSupervisors_ReturnsOkAndJson() throws Exception {
+        UserSummaryDTO manager = new UserSummaryDTO(2L, "manager", Role.MANAGER);
+        UserSummaryDTO hr = new UserSummaryDTO(3L, "hr_user", Role.HR);
+
+        when(userService.getSupervisors()).thenReturn(List.of(manager, hr));
+
+        mockMvc.perform(get("/users/supervisors"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].username", is("manager")))
+                .andExpect(jsonPath("$[1].username", is("hr_user")));
+
+        verify(userService).getSupervisors();
     }
 }

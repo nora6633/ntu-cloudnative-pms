@@ -58,7 +58,7 @@ public class JobServiceImplTests {
                 Job.builder().id(1L).title("J1").build(),
                 Job.builder().id(2L).title("J2").build()
         );
-        when(jobRepo.findAll()).thenReturn(jobs);
+        when(jobRepo.findAllWithEmployeesAndSupervisors()).thenReturn(jobs);
 
         Set<Long> ids = jobs.stream().map(Job::getId).collect(Collectors.toSet());
 
@@ -70,7 +70,7 @@ public class JobServiceImplTests {
     @Test
     void getAllJobsForCycleStart_throwsWhenMismatch() {
         List<Job> jobs = List.of(Job.builder().id(1L).title("J1").build());
-        when(jobRepo.findAll()).thenReturn(jobs);
+        when(jobRepo.findAllWithEmployeesAndSupervisors()).thenReturn(jobs);
 
         Set<Long> provided = Set.of(2L);
 

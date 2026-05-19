@@ -179,8 +179,8 @@ export const approveEvaluation = (id: number) =>
 export const rejectEvaluation = (id: number) =>
   apiFetch<string>(getRejectEvaluationUrl(id), { method: 'POST' });
 
-export const getAllTemplateByJobId = (jobId: number) =>
-  apiFetch<TemplateDTO[]>(getGetAllTemplateByJobIdUrl(jobId));
+export const getAllTemplateByJobId = (jobId: number, init?: RequestInit) =>
+  apiFetch<TemplateDTO[]>(getGetAllTemplateByJobIdUrl(jobId), init);
 
 export const createTemplate = (body: CreateTemplateRequest) =>
   apiFetch<TemplateDTO>(getCreateTemplateUrl(), {
@@ -194,11 +194,11 @@ export const updateTemplate = (templateId: number, body: UpdateTemplateRequest) 
     body: JSON.stringify(body),
   });
 
-export const getAllJobs = () =>
-  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl());
+export const getAllJobs = (init?: RequestInit) =>
+  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl(), init);
 
-export const getAllJobsWithTemplates = () =>
-  apiFetch<JobTemplatesDTO[]>(getGetAllJobsWithTemplatesUrl());
+export const getAllJobsWithTemplates = (init?: RequestInit) =>
+  apiFetch<JobTemplatesDTO[]>(getGetAllJobsWithTemplatesUrl(), init);
 
 export const getAuditLogs = (params: GetAuditLogsParams) =>
   apiFetch<PageAuditLogDTO>(getGetAuditLogsUrl(params));
@@ -208,3 +208,22 @@ export const getModules = () =>
 
 export const adminOnly = () =>
   apiFetch<AdminOnly200>(getAdminOnlyUrl());
+
+// ── Lookup APIs (not in Orval-generated client) ───────────────────────────
+
+export interface DepartmentDTO {
+  id: number;
+  name: string;
+}
+
+export interface UserSummaryDTO {
+  id: number;
+  username: string;
+  role: 'ADMIN' | 'EMPLOYEE' | 'MANAGER' | 'HR';
+}
+
+export const getDepartments = (init?: RequestInit) =>
+  apiFetch<DepartmentDTO[]>('/departments', init);
+
+export const getSupervisors = (init?: RequestInit) =>
+  apiFetch<UserSummaryDTO[]>('/users/supervisors', init);

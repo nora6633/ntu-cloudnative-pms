@@ -5,8 +5,9 @@ import org.mapstruct.Mapping;
 
 import edu.ntu.pms.user.dto.UserDTO;
 import edu.ntu.pms.user.entity.User;
+import edu.ntu.pms.user.enums.Role;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = {Role.class})
 public interface UserMapper {
 
     @Mapping(source = "job.id", target = "jobId")
@@ -17,4 +18,13 @@ public interface UserMapper {
     @Mapping(target = "requireProbation", ignore = true)
     @Mapping(target = "probationTemplateId", ignore = true)
     UserDTO toDto(User user);
+
+    @Mapping(target = "job.id", source = "jobId")
+    @Mapping(target = "department.id", source = "departmentId")
+    @Mapping(target = "overseenDepartment.id", source = "overseenDepartmentId")
+    @Mapping(target = "supervisor.id", source = "supervisorId")
+    @Mapping(target = "passwordHash", ignore = true) // Handled in Service
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "subordinates", ignore = true)
+    User toEntity(UserDTO dto);
 }

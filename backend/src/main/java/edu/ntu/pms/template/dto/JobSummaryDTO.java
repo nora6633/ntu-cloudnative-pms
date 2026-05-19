@@ -7,7 +7,7 @@ public record JobSummaryDTO(
         @Schema(description = "Job ID", example = "1")
         Long id,
 
-        @Schema(description = "Job title", example = "Junior Software Engineer")
+        @Schema(description = "Job title", example = "Software Engineer (Junior)")
         String title
 ) {
 }
