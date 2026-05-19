@@ -10,18 +10,22 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import edu.ntu.pms.template.entity.Template;
+import edu.ntu.pms.template.repository.TemplateRepository;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.repository.JobRepository;
 
 public class JobServiceImplTests {
 
     private JobRepository jobRepo;
+    private TemplateRepository templateRepository;
     private JobServiceImpl svc;
 
     @BeforeEach
     void setUp() {
         jobRepo = mock(JobRepository.class);
-        svc = new JobServiceImpl(jobRepo);
+        templateRepository = mock(TemplateRepository.class);
+        svc = new JobServiceImpl(jobRepo, templateRepository);
     }
 
     @Test
@@ -44,12 +48,20 @@ public class JobServiceImplTests {
                 Job.builder().id(1L).title("J1").build(),
                 Job.builder().id(2L).title("J2").build()
         );
-        when(jobRepo.findAllWithTemplatesOrderByTitleAsc()).thenReturn(jobs);
+        List<Template> templatesForJob1 = List.of(Template.builder().id(10L).name("T1").build());
+        List<Template> templatesForJob2 = List.of(Template.builder().id(20L).name("T2").build());
+        when(jobRepo.findAllByOrderByTitleAsc()).thenReturn(jobs);
+        when(templateRepository.findAllByJobIdOrderByIdAsc(1L)).thenReturn(templatesForJob1);
+        when(templateRepository.findAllByJobIdOrderByIdAsc(2L)).thenReturn(templatesForJob2);
 
         List<Job> result = svc.getAllJobsWithTemplates();
 
         assertSame(jobs, result);
-        verify(jobRepo).findAllWithTemplatesOrderByTitleAsc();
+        assertEquals(templatesForJob1, result.get(0).getTemplates());
+        assertEquals(templatesForJob2, result.get(1).getTemplates());
+        verify(jobRepo).findAllByOrderByTitleAsc();
+        verify(templateRepository).findAllByJobIdOrderByIdAsc(1L);
+        verify(templateRepository).findAllByJobIdOrderByIdAsc(2L);
     }
 
     @Test
