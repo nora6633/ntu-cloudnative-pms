@@ -26,12 +26,13 @@ export default function Login() {
     try {
       await login(username, password);
       navigate(from, { replace: true });
-    } catch (e: any) {
-      if (e.message === 'Invalid credentials') {
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      if (errorMessage === 'Invalid credentials') {
         setError('Invalid username or password');
       } else if (
-        e.message?.toLowerCase().includes('failed to fetch') ||
-        e.message?.toLowerCase().includes('network')
+        errorMessage.toLowerCase().includes('failed to fetch') ||
+        errorMessage.toLowerCase().includes('network')
       ) {
         setError('Network error. Please try again later.');
       } else {
