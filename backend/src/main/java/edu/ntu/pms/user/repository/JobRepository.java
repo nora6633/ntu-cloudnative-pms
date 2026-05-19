@@ -11,15 +11,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     List<Job> findAllByOrderByTitleAsc();
 
-    @Query("""
-            select distinct j
-            from Job j
-            left join fetch j.templates t
-            left join fetch t.criteria
-            order by j.title asc, t.id asc
-            """)
-    List<Job> findAllWithTemplatesOrderByTitleAsc();
-
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"employees", "employees.supervisor"})
     @Query("select j from Job j")
     List<Job> findAllWithEmployeesAndSupervisors();
