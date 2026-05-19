@@ -14,8 +14,6 @@ import { StartEvaluationSection }    from './sections/StartEvaluationSection';
 import { FinalizeSection }           from './sections/FinalizeSection';
 import { ViewAllSection }            from './sections/ViewAllSection';
 import { HistorySection }            from './sections/HistorySection';
-import { INITIAL_TEMPLATES } from './data';
-import type { Template } from './types';
 import { useAuth }                   from '../auth/AuthContext';
 import type { Role }                 from '../auth/AuthContext';
 import { Button }                    from './components/ui/button';
@@ -51,20 +49,6 @@ const menuItems: { id: SectionId; label: string; icon: React.ElementType }[] = [
   { id: 'audit',            label: 'Audit',            icon: Search        },
   { id: 'register',         label: 'Register',         icon: UserPlus      },
 ];
-
-// ── TemplateSection local state wrapper ───────────────────────────────────
-// TemplateSection has no API yet; keep its state locally in App.
-
-function TemplateSectionWrapper() {
-  const [, setTemplates] = useState<Template[]>(INITIAL_TEMPLATES);
-  return (
-    <TemplateSection
-      onCreateTemplate={(t) =>
-        setTemplates((prev) => [...prev, { id: Date.now().toString(), ...t }])
-      }
-    />
-  );
-}
 
 // ── App ───────────────────────────────────────────────────────────────────
 
@@ -142,7 +126,7 @@ export default function Home() {
         {safeSection === 'finalize'         && <FinalizeSection />}
         {safeSection === 'view_all'         && <ViewAllSection />}
         {safeSection === 'history'          && <HistorySection />}
-        {safeSection === 'template'         && <TemplateSectionWrapper />}
+        {safeSection === 'template'         && <TemplateSection />}
         {safeSection === 'audit'            && (
           <AuditSection />
         )}

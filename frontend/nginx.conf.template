@@ -1,0 +1,39 @@
+server {
+    # PORT is the standard env var used by Railway and most platforms
+    listen ${PORT};
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Proxy all /api/* requests to the backend so the browser sees a single origin.
+    # This avoids cross-site cookie restrictions (SameSite) and eliminates CORS for API calls.
+    # BACKEND_URL is injected at runtime (e.g. Railway internal networking URL).
+    location /api/ {
+        proxy_pass ${BACKEND_URL};
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Aggressively cache hashed static assets (JS/CSS filenames include a content hash,
+    # so a new deploy produces new filenames — old URLs never serve stale content)
+    location ~* \.(js|css|woff2?|ttf|eot|ico|svg|png|jpg|webp)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Serve runtime env config — VITE_API_URL is substituted by envsubst at container
+    # startup before nginx starts, so this response is static for the container's lifetime
+    # Exact match takes priority over the *.js caching rule — this must not be cached
+    location = /config.js {
+        add_header Content-Type application/javascript;
+        return 200 'window.__ENV__ = { VITE_API_URL: "${VITE_API_URL}" };';
+    }
+
+    # Fall back to index.html for all routes so React Router handles navigation
+    # client-side instead of nginx returning a 404 on a hard refresh
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

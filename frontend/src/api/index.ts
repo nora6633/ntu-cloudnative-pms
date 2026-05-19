@@ -20,6 +20,8 @@ import {
   getRegistrationUrl,
   getAddProgressUrl,
   getGetAllTemplateByJobIdUrl,
+  getCreateTemplateUrl,
+  getUpdateTemplateUrl,
   getGetAllJobsUrl,
   getGetAllJobsWithTemplatesUrl,
   getGetAuditLogsUrl,
@@ -38,8 +40,10 @@ import {
   type UserDTO,
   type CreateProgressDTO,
   type TemplateDTO,
+  type CreateTemplateRequest,
   type JobSummaryDTO,
   type JobTemplatesDTO,
+  type UpdateTemplateRequest,
   type PageAuditLogDTO,
   type AdminOnly200,
 } from './generated/orvalClient';
@@ -58,15 +62,22 @@ export type {
   UserDTO,
   CreateProgressDTO,
   TemplateDTO,
+  TemplateDTOEvaluationType,
+  CriterionDTO,
+  CreateTemplateRequest,
   JobSummaryDTO,
   JobTemplatesDTO,
+  UpdateTemplateRequest,
   PageAuditLogDTO,
   AdminOnly200,
   AuditLogDTOActionType,
 } from './generated/orvalClient';
 
 
-const baseUrl = () => (import.meta.env.VITE_API_URL as string) ?? '';
+// Runtime injection (production) takes precedence over the build-time value (dev)
+const baseUrl = () =>
+  (window as Window & { __ENV__?: { VITE_API_URL?: string } }).__ENV__?.VITE_API_URL
+  ?? import.meta.env.VITE_API_URL;
 
 async function apiFetch<T>(
   url: string,
@@ -171,8 +182,20 @@ export const rejectEvaluation = (id: number) =>
 export const getAllTemplateByJobId = (jobId: number, init?: RequestInit) =>
   apiFetch<TemplateDTO[]>(getGetAllTemplateByJobIdUrl(jobId), init);
 
-export const getAllJobs = (init?: RequestInit) =>
-  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl(), init);
+export const createTemplate = (body: CreateTemplateRequest) =>
+  apiFetch<TemplateDTO>(getCreateTemplateUrl(), {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+export const updateTemplate = (templateId: number, body: UpdateTemplateRequest) =>
+  apiFetch<TemplateDTO>(getUpdateTemplateUrl(templateId), {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+
+export const getAllJobs = () =>
+  apiFetch<JobSummaryDTO[]>(getGetAllJobsUrl());
 
 export const getAllJobsWithTemplates = (init?: RequestInit) =>
   apiFetch<JobTemplatesDTO[]>(getGetAllJobsWithTemplatesUrl(), init);
