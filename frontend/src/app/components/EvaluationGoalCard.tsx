@@ -24,10 +24,14 @@ export function EvaluationGoalCard({ status, goal, onUpdate, onDelete }: Evaluat
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
+      <div className="grid grid-cols-3 gap-7 mt-4 pt-4 border-t">
         <div>
           <div className="text-xs text-gray-500 mb-1">Metric</div>
           <p className="text-sm font-medium text-gray-900">{goal.metric}</p>
+        </div>
+        <div>
+          <div className="text-xs text-gray-500 mb-1">Resource</div>
+          <p className="text-sm font-medium text-gray-900">{goal.resource}</p>
         </div>
         <div>
           <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
@@ -45,7 +49,7 @@ export function EvaluationGoalCard({ status, goal, onUpdate, onDelete }: Evaluat
         </div>
       )}
 
-      {status === 'Initial' && (
+      {status === 'INITIAL' && (
         <div className="flex gap-2 mt-4 pt-4 border-t">
             <Button
               variant="outline"

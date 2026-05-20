@@ -2,9 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { EmployeeTable } from '../components/EmployeeTable';
 import { FinalizeDialog } from '../components/FinalizeDialog';
 import type { BaseEmployee } from '../components/EmployeeTable';
+import { NotificationDialog } from '../components/NotificationDialog';
 import type { EvaluationDTO } from '../../api';
 import { getEvaluationsForHr, approveEvaluation, rejectEvaluation } from '../../api';
 
+const MESSAGES = {
+  rejectFeedback:{
+    successTitle: 'Rejected',
+    successMsg: 'You have rejected the feedback',
+    errorMsg: 'Failed to reject the feedback. Please try again.',
+  },
+  approveFeedback:{
+    successTitle: 'Approved',
+    successMsg: 'You have approved the feedback',
+    errorMsg: 'Failed to approve the feedback. Please try again.',
+  },
+};
 
 interface EvalRow extends BaseEmployee {
   _evaluation: EvaluationDTO;
@@ -32,6 +45,18 @@ export function FinalizeSection() {
   const [selected, setSelected]   = useState<EvalRow | null>(null);
   const [dialogOpen, setDialog]   = useState(false);
 
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationTitle, setNotificationTitle] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState<'success'|'error'>('success');
+
+  const showNotification = (title: string, message: string, type: 'success' | 'error') => {
+    setNotificationTitle(title);
+    setNotificationMessage(message);
+    setNotificationType(type);
+    setNotificationOpen(true);
+  };
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -53,20 +78,18 @@ export function FinalizeSection() {
   const handleApprove = async (id: number) => {
     try {
       await approveEvaluation(id);
+      showNotification(MESSAGES.approveFeedback.successTitle, MESSAGES.approveFeedback.successMsg, 'success')
     } catch {
-      alert('Failed to approve evaluation.');
-    } finally {
-      await load();
+      showNotification('Error', MESSAGES.approveFeedback.errorMsg, 'error')
     }
   };
 
   const handleReject = async (id: number) => {
     try {
       await rejectEvaluation(id);
+      showNotification(MESSAGES.rejectFeedback.successTitle, MESSAGES.rejectFeedback.successMsg, 'success')
     } catch {
-      alert('Failed to reject evaluation.');
-    } finally {
-      await load();
+      showNotification('Error', MESSAGES.rejectFeedback.errorMsg, 'error')
     }
   };
 
@@ -99,6 +122,15 @@ export function FinalizeSection() {
         evaluation={selected?._evaluation ?? null}
         onApprove={handleApprove}
         onReject={handleReject}
+      />
+
+      <NotificationDialog
+        open={notificationOpen}
+        onOpenChange={setNotificationOpen}
+        type={notificationType}
+        title={notificationTitle}
+        message={notificationMessage}
+        onConfirm={load}
       />
     </>
   );

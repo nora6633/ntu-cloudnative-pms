@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, ListTodo, Plus, Target, Trophy, Star } from 'lucide-react';
+import { ListTodo, Plus, Target, Trophy, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { GoalCard } from '../components/GoalCard';
 import { UpdateProgressDialog } from '../components/UpdateProgressDialog';
 import { GoalDetailsDialog } from '../components/GoalDetailsDialog';
@@ -9,7 +8,7 @@ import { EvaluationGoalCard } from '../components/EvaluationGoalCard';
 import { EvaluationCriteriaDialog } from '../components/EvaluationCriteriaDialog';
 import { EvaluationGoalDialog } from '../components/EvaluationGoalDialog';
 import { NotificationDialog } from '../components/NotificationDialog';
-import type { EvalCycleTab, MyEvalStatus } from '../types';
+import type { EvaluationDTOType, EvaluationDTOStatus } from '../../api';
 import type { EvaluationDTO, GoalDTO } from '../../api';
 import {
   getMyEvaluations,
@@ -18,6 +17,7 @@ import {
   submitForProgressReview,
   approveReview,
   rejectReview,
+  addProgress,
 } from '../../api';
 
 // ── helpers ───────────────────────────────────────────────────────────────
@@ -48,45 +48,41 @@ const MESSAGES = {
     successMsg: 'You have requested a revision. Your manager will be notified.',
     errorMsg: 'Failed to request revision. Please try again.',
   },
+  addProgress: {
+    successTitle: 'Added',
+    successMsg: 'Progress is added.',
+    errorMsg: 'Failed to add progress. Please try again.',
+  },
 };
 
-const TYPE_MAP: Record<EvalCycleTab, string> = {
-  Annual: 'ANNUAL',
-  Quarter: 'QUARTER',
-  Probation: 'PROBATION',
-};
+const CYCLE_TABS: { key: EvaluationDTOType; label: string }[] = [
+  { key: 'ANNUAL', label: 'Annual' },
+  { key: 'QUARTER', label: 'Quarter' },
+  { key: 'PROBATION', label: 'Probation' },
+];
 
-function mapStatus(dto: EvaluationDTO): MyEvalStatus {
-  switch (dto.status) {
-    case 'INITIAL':                    return 'Initial';
-    case 'PENDING_GOAL_APPROVAL':      return 'Pending_goal_approval';
-    case 'WORKING':                    return 'Working';
-    case 'REVIEW':                     return 'Review';
-    case 'PENDING_REVIEW_CONFIRMATION': return 'Confirming';
-    case 'PENDING_CLOSURE':            return 'Pending_Closure';
-    case 'CLOSED':                     return 'Closed';
-    default:                           return 'Initial';
-  }
+function mapStatus(dto: EvaluationDTO): EvaluationDTOStatus {
+  return (dto.status ?? 'INITIAL') as EvaluationDTOStatus;
 }
 
-const STATUS_LABELS: Record<MyEvalStatus, string> = {
-  Initial:               'Initial',
-  Pending_goal_approval: 'Pending Goal Approval',
-  Working:               'Working',
-  Review:                'Awaiting Review',
-  Confirming:            'Confirming',
-  Pending_Closure:       'Pending Closure',
-  Closed:                'Closed',
+const STATUS_LABELS: Record<EvaluationDTOStatus, string> = {
+  INITIAL: 'Initial',
+  PENDING_GOAL_APPROVAL: 'Pending Goal Approval',
+  WORKING: 'Working',
+  REVIEW: 'Awaiting Review',
+  PENDING_REVIEW_CONFIRMATION: 'Confirming',
+  PENDING_CLOSURE: 'Pending Closure',
+  CLOSED: 'Closed',
 };
 
-const STATUS_COLORS: Record<MyEvalStatus, string> = {
-  Initial:               'text-gray-500',
-  Pending_goal_approval: 'text-yellow-600',
-  Working:               'text-blue-600',
-  Review:                'text-purple-600',
-  Confirming:            'text-orange-500',
-  Pending_Closure:       'text-orange-600',
-  Closed:                'text-green-600',
+const STATUS_COLORS: Record<EvaluationDTOStatus, string> = {
+  INITIAL: 'text-gray-500',
+  PENDING_GOAL_APPROVAL: 'text-yellow-600',
+  WORKING: 'text-blue-600',
+  REVIEW: 'text-purple-600',
+  PENDING_REVIEW_CONFIRMATION: 'text-orange-500',
+  PENDING_CLOSURE: 'text-orange-600',
+  CLOSED: 'text-green-600',
 };
 
 function StarDisplay({ rating }: { rating: number }) {
@@ -117,6 +113,8 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
   const [draftList,       setDraftList]       = useState<GoalDTO[]>([]);
   const [draftingGoals,   setDraftingGoals]   = useState(false);
   const [submitting,      setSubmitting]      = useState(false);
+  const [addingProgress,  setAddingProgress]  = useState(false);
+  const [rejectReviewing, setRejectReviewing] = useState(false);
 
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationTitle, setNotificationTitle] = useState('');
@@ -130,16 +128,20 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
     setNotificationOpen(true);
   };
 
-  const handleAsync = (
-    apiCall: () => Promise<{ status: number; data: string; }>,
+  const handleAsync = async <T,>(
+    apiCall: () => Promise<T>,
     messages: typeof MESSAGES.draftGoals,
     setLoading?: (loading: boolean) => void,
   ) => {
     setLoading?.(true);
-    apiCall()
-      .then(() => showNotification(messages.successTitle, messages.successMsg, 'success'))
-      .catch(() => showNotification('Error', messages.errorMsg, 'error'))
-      .finally(() => setLoading?.(false));
+    try {
+      await apiCall();
+      showNotification(messages.successTitle, messages.successMsg, 'success');
+    } catch {
+      showNotification('Error', messages.errorMsg, 'error');
+    } finally {
+      setLoading?.(false);
+    }
   };
 
   useEffect(() => {
@@ -157,6 +159,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
   }
 
   const evalId = evaluation.id!;
+  const cycle = evaluation.cycle;
   const status = mapStatus(evaluation);
   const items  = evaluation.evaluationItems ?? [];
 
@@ -220,7 +223,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
   };
 
   const handleAddProgress = async (description: string) => {
-    if (!activeGoal) return;
+    if (!activeGoal || activeGoal.id == null) return;
     const now = new Date().toISOString();
     const updated = draftList.map((g) =>
       g === activeGoal
@@ -228,7 +231,11 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         : g,
     );
     setDraftList(updated);
-    // TODO: call progress update API
+    await handleAsync(
+      () => addProgress(activeGoal.id!, { description }),
+      MESSAGES.addProgress,
+      setAddingProgress,
+    );
   };
 
   const handleWorkingSubmit = () => {
@@ -242,7 +249,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
   };
 
   const handleRejectReview = () => {
-    handleAsync(() => rejectReview(evalId), MESSAGES.rejectReview, setSubmitting);
+    handleAsync(() => rejectReview(evalId), MESSAGES.rejectReview, setRejectReviewing);
   };
 
   // ── stats ───────────────────────────────────────────────────────────────
@@ -262,13 +269,15 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
               <p className={`mt-1 font-medium ${STATUS_COLORS[status]}`}>
                 Status: {STATUS_LABELS[status]}
               </p>
+              <p className={`mt-1 font-medium ${STATUS_COLORS[status]}`}>
+                Cycle: {cycle}
+              </p>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="icon"><Bell className="w-5 h-5" /></Button>
               <Button variant="outline" size="icon" onClick={() => setCriteriaOpen(true)}>
                 <ListTodo className="w-5 h-5" />
               </Button>
-              {status === 'Initial' && (
+              {status === 'INITIAL' && (
                 <div className="flex gap-2">
                   <Button variant="outline" size="lg" onClick={handleDraftGoals} disabled={submitting}>
                     {draftingGoals ? 'Saving…' : 'Draft Goals'}
@@ -278,7 +287,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
                   </Button>
                 </div>
               )}
-              {status === 'Working' && (
+              {status === 'WORKING' && (
                 <Button size="lg" onClick={handleWorkingSubmit} disabled={submitting}>
                   {submitting ? 'Submitting…' : 'Submit for Review'}
                 </Button>
@@ -286,7 +295,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
             </div>
           </div>
 
-          {status === 'Working' && (
+          {status === 'WORKING' && (
             <div className="grid grid-cols-2 gap-4 mt-8">
               <div className="bg-blue-50 rounded-lg p-4">
                 <div className="flex items-center gap-2 text-blue-600 mb-1">
@@ -311,7 +320,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
       <div className="max-w-7xl mx-auto px-6 py-8">
 
         {/* Initial — goal setting */}
-        {status === 'Initial' && (
+        {status === 'INITIAL' && (
           <div className="space-y-4">
             {draftList.map((goal) => (
               <EvaluationGoalCard
@@ -336,7 +345,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Pending approval — read-only */}
-        {status === 'Pending_goal_approval' && (
+        {status === 'PENDING_GOAL_APPROVAL' && (
           <div className="space-y-4">
             <p className="text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3">
               Your goals have been submitted and are awaiting approval.
@@ -354,47 +363,37 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Working — progress tracking */}
-        {status === 'Working' && (
-          <Tabs defaultValue="active">
-            <TabsList>
-              <TabsTrigger value="active">Goals ({activeGoals.length})</TabsTrigger>
-              <TabsTrigger value="all">All Goals</TabsTrigger>
-            </TabsList>
-            <TabsContent value="active" className="mt-6">
+        {status === 'WORKING' && (
+          <div>
               {activeGoals.length === 0
                 ? <div className="text-center py-12 text-gray-500">No goals yet.</div>
                 : <div className="grid gap-4">
                     {activeGoals.map((g) => (
-                      <GoalCard key={g.id ?? g.definition} goal={g} onAddProgress={openAddProgress} onViewDetails={openDetails} />
+                      <GoalCard key={g.id ?? g.definition} status= {status} goal={g} onAddProgress={openAddProgress} onViewDetails={openDetails} />
                     ))}
                   </div>}
-            </TabsContent>
-            <TabsContent value="all" className="mt-6">
-              <div className="grid gap-4">
-                {draftList.map((g) => (
-                  <GoalCard key={g.id ?? g.definition} goal={g} onAddProgress={openAddProgress} onViewDetails={openDetails} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+          </div>
         )}
 
         {/* Review — waiting for manager */}
-        {status === 'Review' && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-4">
-              <Star className="w-8 h-8 text-purple-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Awaiting Manager Review</h3>
-            <p className="text-gray-500 text-sm">
-              Your manager is reviewing your goals and progress. You will be notified once ratings are submitted.
+        {status === 'REVIEW' && (
+          <div className="space-y-4">
+            <p className="text-sm text-purple-700 bg-purple-100 border border-purple-200 rounded-lg px-4 py-3">
+              Your manager is reviewing your goals and progress.
             </p>
+            {draftList.length === 0
+                ? <div className="text-center py-12 text-gray-500">No goals yet.</div>
+                : <div className="grid gap-4">
+                    {draftList.map((g) => (
+                      <GoalCard key={g.id ?? g.definition} status= {status} goal={g} onAddProgress={() => {}} onViewDetails={openDetails} />
+                    ))}
+                  </div>}
           </div>
         )}
 
         {/* Confirming — review received, employee confirms or rejects */}
-        {status === 'Confirming' && (
-          <div className="space-y-6">
+        {status === 'PENDING_REVIEW_CONFIRMATION' && (
+          <div className="space-y-4">
             <div className="flex items-center gap-3 mb-2">
               <StarDisplay rating={Math.round(avgRating)} />
               <span className="text-gray-600 text-sm">{avgRating.toFixed(1)} overall rating from your manager</span>
@@ -414,10 +413,10 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
               </div>
             ))}
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button variant="outline" onClick={handleRejectReview} disabled={submitting}>
-                Request Revision
+              <Button variant="outline" onClick={handleRejectReview} disabled={submitting || rejectReviewing}>
+                {rejectReviewing ? 'Requesting…' : 'Request Revision'}
               </Button>
-              <Button size="lg" onClick={handleConfirm} disabled={submitting}>
+              <Button size="lg" onClick={handleConfirm} disabled={submitting || rejectReviewing}>
                 {submitting ? 'Confirming…' : 'Confirm'}
               </Button>
             </div>
@@ -425,8 +424,8 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Pending Closure / Closed — read-only */}
-        {(status === 'Pending_Closure' || status === 'Closed') && (
-          <div className="space-y-6">
+        {(status === 'PENDING_CLOSURE') && (
+          <div className="space-y-4">
             <div className="flex items-center gap-3">
               <StarDisplay rating={Math.round(avgRating)} />
               <span className="text-gray-600 text-sm">{avgRating.toFixed(1)} overall</span>
@@ -461,12 +460,14 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         onClose={() => setGoalDialogOpen(false)}
         onSave={goalDialogMode === 'create' ? handleCreateGoal : handleUpdateGoal}
         existingGoal={editingGoal}
+        criteria={items}
         mode={goalDialogMode}
       />
       <UpdateProgressDialog
         open={progressOpen}
         onClose={() => setProgressOpen(false)}
         onAddProgress={handleAddProgress}
+        loading={addingProgress}
       />
       <GoalDetailsDialog
         open={detailsOpen}
@@ -491,7 +492,7 @@ export function MyEvaluationSection() {
   const [evaluations, setEvaluations] = useState<EvaluationDTO[]>([]);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
-  const [activeTab, setActiveTab]     = useState<EvalCycleTab>('Annual');
+  const [activeTab, setActiveTab]     = useState<EvaluationDTOType>('ANNUAL');
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -508,7 +509,7 @@ export function MyEvaluationSection() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const currentEval = evaluations.find((e) => e.type === TYPE_MAP[activeTab]) ?? null;
+  const currentEval = evaluations.find((e) => e.type === activeTab && e.status !== 'CLOSED') ?? null;
 
   if (loading) {
     return (
@@ -531,17 +532,17 @@ export function MyEvaluationSection() {
       <div className="bg-white border-b px-6 pt-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-1">
-            {(['Annual', 'Quarter', 'Probation'] as EvalCycleTab[]).map((tab) => (
+            {CYCLE_TABS.map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
                 className={`px-6 py-2.5 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
-                  activeTab === tab
+                  activeTab === tab.key
                     ? 'border-blue-600 text-blue-600 bg-blue-50'
                     : 'border-transparent text-gray-600 hover:text-gray-900'
                 }`}
               >
-                {tab}
+                {tab.label}
               </button>
             ))}
           </div>

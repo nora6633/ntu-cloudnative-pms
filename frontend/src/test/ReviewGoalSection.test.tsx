@@ -67,6 +67,11 @@ function mockApiWithContent(evaluations: typeof PENDING_EVALUATION[]) {
   } as any);
 }
 
+async function dismissNotification(user: ReturnType<typeof userEvent.setup>) {
+  const okButton = await screen.findByRole('button', { name: /ok/i });
+  await user.click(okButton);
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function renderAndWait() {
@@ -209,6 +214,7 @@ describe('ReviewGoalSection', () => {
       await user.click(screen.getByRole('button', { name: /approve/i }));
 
       expect(approveGoals).toHaveBeenCalledWith(PENDING_EVALUATION.id);
+      expect(screen.getByText('You have approved the goals')).toBeInTheDocument();
     });
 
     it('closes the dialog after approving', async () => {
@@ -217,6 +223,7 @@ describe('ReviewGoalSection', () => {
 
       await user.click(screen.getByText('Alice Johnson'));
       await user.click(screen.getByRole('button', { name: /approve/i }));
+      await dismissNotification(user);
 
       await waitFor(() =>
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
@@ -229,7 +236,7 @@ describe('ReviewGoalSection', () => {
 
       await user.click(screen.getByText('Alice Johnson'));
       await user.click(screen.getByRole('button', { name: /approve/i }));
-
+      await dismissNotification(user);
       await waitFor(() =>
         expect(getEvaluationsForManager).toHaveBeenCalledTimes(2),
       );
@@ -247,6 +254,7 @@ describe('ReviewGoalSection', () => {
       await user.click(screen.getByRole('button', { name: /reject/i }));
 
       expect(rejectGoals).toHaveBeenCalledWith(PENDING_EVALUATION.id);
+      expect(screen.getByText('You have rejected the goals')).toBeInTheDocument();
     });
 
     it('closes the dialog after rejecting', async () => {
@@ -255,6 +263,7 @@ describe('ReviewGoalSection', () => {
 
       await user.click(screen.getByText('Alice Johnson'));
       await user.click(screen.getByRole('button', { name: /reject/i }));
+      await dismissNotification(user);
 
       await waitFor(() =>
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
@@ -268,6 +277,7 @@ describe('ReviewGoalSection', () => {
 
       await user.click(screen.getByText('Alice Johnson'));
       await user.click(screen.getByRole('button', { name: /reject/i }));
+      await dismissNotification(user);
 
       await waitFor(() =>
         expect(getEvaluationsForManager).toHaveBeenCalledTimes(2),

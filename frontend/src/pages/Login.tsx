@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../auth/AuthContext';
+import { Button } from '../app/components/ui/button'
 
 import './Login.css';
 
@@ -42,35 +43,41 @@ export default function Login() {
       setSubmitting(false);
     }
   };
+  const allfilled = !!username.trim() && !!password.trim();
+  // Helper for input styling to ensure visibility and spacing
+  const inputStyle = {
+    display: 'block',
+    marginTop: '0.5rem', // Creates space from the label text
+    padding: '0.5rem',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    width: '100%',
+    boxSizing: 'border-box' as const,
+    backgroundColor: '#fff',
+    color: '#000'
+  };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>Login</h1>
-          <p>Please enter your details to sign in</p>
-        </div>
-
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={onSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+    <section style={{ maxWidth: 360, margin: '4rem auto', fontFamily: 'sans-serif' }}>
+      <h1>Login</h1>
+      <form onSubmit={onSubmit}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <label style={{ fontWeight: 'bold' }}>
+            Username
             <input
-              id="username"
-              type="text"
+              style={inputStyle}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
               placeholder="Enter your username"
               required
             />
-          </div>
+          </label>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <label style={{ fontWeight: 'bold' }}>
+            Password
             <input
-              id="password"
+              style={inputStyle}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -78,13 +85,31 @@ export default function Login() {
               placeholder="••••••••"
               required
             />
-          </div>
+          </label>
 
-          <button className="login-button" type="submit" disabled={submitting}>
+          {error && <p style={{ color: 'crimson', margin: 0 }}>{error}</p>}
+          <Button onClick={onSubmit} disabled={submitting || !allfilled}>
             {submitting ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
-      </div>
-    </div>
+          </Button>
+          {/* <button 
+            type="submit" 
+            disabled={submitting}
+            style={{
+              padding: '0.75rem',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              // Dynamic Colors: Grey when disabled, White when enabled
+              backgroundColor: submitting ? '#cccccc' : '#ffffff',  // grey : green
+              color: '#000000', 
+              border: '1px solid #999',
+              borderRadius: '4px',
+              fontWeight: 'bold',
+              transition: 'background-color 0.2s'
+            }}
+          >
+            {submitting ? 'Signing in...' : 'Sign in'}
+          </button> */}
+        </div>
+      </form>
+    </section>
   );
 }

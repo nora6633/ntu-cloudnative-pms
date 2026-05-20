@@ -91,6 +91,11 @@ async function renderAndWait() {
   return user;
 }
 
+async function dismissNotification(user: ReturnType<typeof userEvent.setup>) {
+  const okButton = await screen.findByRole('button', { name: /ok/i });
+  await user.click(okButton);
+}
+
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('ReviewSection', () => {
@@ -251,6 +256,25 @@ describe('ReviewSection', () => {
       expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
     });
 
+    it('Alert when feedback has less than ten words', async () => {
+      mockApi([REVIEW_EVALUATION]);
+      const user = await renderAndWait();
+
+      await user.click(screen.getByText('Alice Johnson'));
+
+      await user.type(
+        screen.getByPlaceholderText('Add your comments...'),
+        'Great work',
+      );
+      await user.tab();
+
+      const dialog = await screen.findByRole('dialog');
+      expect(
+        await within(dialog).findByText(/Please provide at least 10 words before continuing/i),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
+    });
+
     it('Submit button is enabled when all items have rating and feedback', async () => {
       mockApi([REVIEW_EVALUATION]);
       const user = await renderAndWait();
@@ -266,7 +290,7 @@ describe('ReviewSection', () => {
       // Comment
       await user.type(
         screen.getByPlaceholderText('Add your comments...'),
-        'Great work',
+        'Great work 3 4 5 6 7 8 9 10',
       );
 
       expect(screen.getByRole('button', { name: /submit/i })).toBeEnabled();
@@ -343,7 +367,7 @@ describe('ReviewSection', () => {
       await user.click(screen.getByRole('button', { name: /^save$/i }));
 
       await waitFor(() =>
-        expect(window.alert).toHaveBeenCalledWith('Draft saved successfully.'),
+        expect(screen.getByText('You have saved the feedback.')).toBeInTheDocument(),
       );
     });
 
@@ -356,7 +380,7 @@ describe('ReviewSection', () => {
       await user.click(screen.getByRole('button', { name: /^save$/i }));
 
       await waitFor(() =>
-        expect(window.alert).toHaveBeenCalledWith('Failed to save draft.'),
+        expect(screen.getByText('Failed to save the feedback. Please try again.')).toBeInTheDocument(),
       );
     });
 
@@ -368,8 +392,9 @@ describe('ReviewSection', () => {
       await user.click(screen.getByRole('button', { name: /^save$/i }));
 
       await waitFor(() =>
-        expect(window.alert).toHaveBeenCalledWith('Draft saved successfully.'),
+        expect(screen.getByText('You have saved the feedback.')).toBeInTheDocument(),
       );
+      await dismissNotification(user);
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
@@ -393,12 +418,13 @@ describe('ReviewSection', () => {
         'Great work',
       );
       await user.click(screen.getByRole('button', { name: /^save$/i }));
+      await dismissNotification(user);
       
       // Mock the updated evaluation data for the second load
       mockApi([evalWithFeedback]);
       await user.click(screen.getByRole('button', { name: /cancel/i }));
       await user.click(screen.getByText('Alice Johnson'));
-      expect( screen.getByText('Great work'), ).toBeInTheDocument();
+      expect(screen.getByText('Great work')).toBeInTheDocument();
     });
   });
 
@@ -419,7 +445,7 @@ describe('ReviewSection', () => {
 
       await user.type(
         screen.getByPlaceholderText('Add your comments...'),
-        'Excellent',
+        'Excellent 2 3 4 5 6 7 8 9 10',
       );
 
       return user;
@@ -442,6 +468,7 @@ describe('ReviewSection', () => {
       await waitFor(() =>
         expect(getEvaluationsForManager).toHaveBeenCalled(),
       );
+      await dismissNotification(user);
       // After submit, the dialog should be closed and list reloaded
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
@@ -451,6 +478,7 @@ describe('ReviewSection', () => {
 
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
+      await dismissNotification(user);
       await waitFor(() =>
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
       );
@@ -462,7 +490,7 @@ describe('ReviewSection', () => {
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() =>
-        expect(window.alert).toHaveBeenCalledWith('Review submitted successfully.'),
+        expect(screen.getByText('You have submitted the feedback.')).toBeInTheDocument(),
       );
     });
 
@@ -473,7 +501,7 @@ describe('ReviewSection', () => {
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() =>
-        expect(window.alert).toHaveBeenCalledWith('Failed to submit review.'),
+        expect(screen.getByText('Failed to submit the feedback. Please try again.')).toBeInTheDocument(),
       );
     });
   });

@@ -32,10 +32,12 @@ export function EmployeeReviewDialog({
   const [items, setItems] = useState<EvaluationItemDTO[]>([]);
   const [selectedGoal, setSelectedGoal] = useState<GoalDTO | null>(null);
   const [progressDialogOpen, setProgressDialogOpen] = useState(false);
+  const [touched, setTouched] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     if (evaluation) {
       setItems(evaluation.evaluationItems ?? []);
+      setTouched({});
     }
   }, [evaluation, open]);
 
@@ -43,8 +45,23 @@ export function EmployeeReviewDialog({
 
   const name = evaluation.employeeName ?? '—';
   const goals = evaluation.goals ?? [];
+  const countWords = (text?: string) => {
+    if (!text?.trim()) return 0;
+    return text.trim().split(/\s+/).length;
+  };
+
+  const isCommentValid = (feedback?: string) => {
+    return countWords(feedback) >= 10;
+  };
   const allRated = items.length > 0 && items.every((it) => (it.rating ?? 0) > 0);
-  const allCommented = items.length > 0 && items.every((it) => !!it.feedback?.trim());
+  const allCommented = items.length > 0 && items.every((it) => isCommentValid(it.feedback));
+
+  const handleBlur = (id: number) => {
+    setTouched((prev) => ({
+      ...prev,
+      [id]: true,
+    }));
+  };
 
   const setRating = (id: number, rating: number) =>
     setItems((prev) => prev.map((it) => it.id === id ? { ...it, rating } : it));
@@ -54,7 +71,19 @@ export function EmployeeReviewDialog({
 
   const handleSave = () => onSave(evaluation.id!, items);
   const handleSubmit = () => {
-    if (allRated && allCommented) { onSubmit(evaluation.id!, items); onClose(); }
+    // Mark all as touched so errors appear
+    const allTouched: Record<number, boolean> = {};
+
+    items.forEach((item) => {
+      allTouched[item.id] = true;
+    });
+
+    setTouched(allTouched);
+
+    if (allRated && allCommented) {
+      onSubmit(evaluation.id!, items);
+      onClose();
+    }
   };
 
   const StarRating = ({ item }: { item: EvaluationItemDTO }) => (
@@ -104,26 +133,82 @@ export function EmployeeReviewDialog({
                   No evaluation criteria available for this evaluation.
                 </p>
               ) : (
-                items.map((item) => (
-                  <div key={item.id} className="border rounded-lg p-4 bg-gray-50">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-1">{item.name}</h4>
-                        <p className="text-sm text-gray-600">{item.description}</p>
+                items.map((item) => {
+                    const wordCount = countWords(
+                      item.feedback
+                    );
+
+                    const showError =
+                      touched[item.id] &&
+                      !isCommentValid(item.feedback);
+
+                    return (
+                      <div
+                        key={item.id}
+                        className="border rounded-lg p-4 bg-gray-50"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 mb-1">
+                              {item.name}{' '}
+                              <span className="text-red-500">
+                                *
+                              </span>
+                            </h4>
+
+                            <p className="text-sm text-gray-600">
+                              {item.description}
+                            </p>
+                          </div>
+
+                          <div className="ml-4">
+                            <StarRating item={item} />
+                          </div>
+                        </div>
+
+                        <Textarea
+                          placeholder="Add your comments..."
+                          value={item.feedback ?? ''}
+                          onChange={(e) =>
+                            setFeedback(
+                              item.id,
+                              e.target.value
+                            )
+                          }
+                          onBlur={() =>
+                            handleBlur(item.id)
+                          }
+                          rows={3}
+                          className={`mt-2 transition-colors ${
+                            showError
+                              ? 'border-red-500 focus-visible:ring-red-500'
+                              : ''
+                          }`}
+                        />
+
+                        <div className="mt-2 flex items-center justify-between">
+                          <p
+                            className={`text-xs ${
+                              showError
+                                ? 'text-red-500'
+                                : wordCount >= 10
+                                ? 'text-green-600'
+                                : 'text-gray-500'
+                            }`}
+                          >
+                            {wordCount} / 10 words
+                          </p>
+
+                          {showError && (
+                            <p className="text-xs text-red-500">
+                              Please provide at least 10
+                              words before continuing.
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div className="ml-4">
-                        <StarRating item={item} />
-                      </div>
-                    </div>
-                    <Textarea
-                      placeholder="Add your comments..."
-                      value={item.feedback ?? ''}
-                      onChange={(e) => setFeedback(item.id, e.target.value)}
-                      rows={2}
-                      className="mt-2"
-                    />
-                  </div>
-                ))
+                    );
+                  })
               )}
             </TabsContent>
 
@@ -139,10 +224,14 @@ export function EmployeeReviewDialog({
                       <p className="text-sm text-gray-600 mt-1">{goal.relevance}</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t">
+                  <div className="grid grid-cols-3 gap-5 mt-3 pt-3 border-t">
                     <div>
                       <div className="text-xs text-gray-500 mb-1">Metric</div>
                       <p className="text-sm font-medium">{goal.metric}</p>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 mb-1">Resources</div>
+                      <p className="text-sm font-medium">{goal.resource}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">

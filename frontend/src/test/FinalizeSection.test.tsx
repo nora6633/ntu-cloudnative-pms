@@ -24,6 +24,11 @@ vi.mock('../app/components/ViewProgressDialog', () => ({
   ViewProgressDialog: () => null,
 }));
 
+async function dismissNotification(user: ReturnType<typeof userEvent.setup>) {
+  const okButton = await screen.findByRole('button', { name: /ok/i });
+  await user.click(okButton);
+}
+
 const EVALUATION_ITEM = {
   id: 201,
   name: 'Communication',
@@ -265,6 +270,7 @@ describe('FinalizeSection', () => {
           await user.click(screen.getByRole('button', { name: /approve/i }));
     
           expect(approveEvaluation).toHaveBeenCalledWith(PENDING_CLOSURE.id);
+          expect(screen.getByText('You have approved the feedback')).toBeInTheDocument();
         });
     
         it('closes the dialog after approving', async () => {
@@ -273,7 +279,8 @@ describe('FinalizeSection', () => {
     
           await user.click(screen.getByText('Alice Johnson'));
           await user.click(screen.getByRole('button', { name: /approve/i }));
-    
+  
+          await dismissNotification(user);
           await waitFor(() =>
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
           );
@@ -285,6 +292,7 @@ describe('FinalizeSection', () => {
     
           await user.click(screen.getByText('Alice Johnson'));
           await user.click(screen.getByRole('button', { name: /approve/i }));
+          await dismissNotification(user);
     
           await waitFor(() =>
             expect(getEvaluationsForHr).toHaveBeenCalledTimes(2),
@@ -303,6 +311,7 @@ describe('FinalizeSection', () => {
           await user.click(screen.getByRole('button', { name: /reject/i }));
     
           expect(rejectEvaluation).toHaveBeenCalledWith(PENDING_CLOSURE.id);
+          expect(screen.getByText('You have rejected the feedback')).toBeInTheDocument();
         });
     
         it('closes the dialog after rejecting', async () => {
@@ -311,6 +320,7 @@ describe('FinalizeSection', () => {
     
           await user.click(screen.getByText('Alice Johnson'));
           await user.click(screen.getByRole('button', { name: /reject/i }));
+          await dismissNotification(user);
     
           await waitFor(() =>
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
@@ -324,6 +334,7 @@ describe('FinalizeSection', () => {
     
           await user.click(screen.getByText('Alice Johnson'));
           await user.click(screen.getByRole('button', { name: /reject/i }));
+          await dismissNotification(user);
     
           await waitFor(() =>
             expect(getEvaluationsForHr).toHaveBeenCalledTimes(2),

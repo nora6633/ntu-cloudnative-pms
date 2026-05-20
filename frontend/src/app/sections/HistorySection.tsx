@@ -2,12 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Star, Eye, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { ScrollArea } from '../components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import type { EvalCycleTab } from '../types';
+import type { EvaluationDTOType } from '../../api';
 import type { EvaluationDTO, GoalDTO } from '../../api';
 import { getMyEvaluations } from '../../api';
+import { ViewProgressDialog } from '../components/ViewProgressDialog';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -33,38 +32,14 @@ function cycleLabel(e: EvaluationDTO): string {
   return `${e.cycle ?? ''} ${typeLabel}`.trim();
 }
 
-// ── Progress log sub-dialog ────────────────────────────────────────────────
-
-function ProgressLogDialog({ goal, onClose }: { goal: GoalDTO | null; onClose: () => void }) {
-  return (
-    <Dialog open={!!goal} onOpenChange={(o) => { if (!o) onClose(); }}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader><DialogTitle>{goal?.definition}</DialogTitle></DialogHeader>
-        <ScrollArea className="max-h-[55vh] pr-4">
-          <div className="space-y-3 mt-4">
-            {(goal?.progresses ?? []).length === 0 ? (
-              <p className="text-sm text-gray-500">No progress updates.</p>
-            ) : (
-              [...(goal?.progresses ?? [])].reverse().map((entry, i) => (
-                <div key={i} className="border-l-2 border-blue-200 pl-4 pb-3">
-                  <p className="text-xs text-gray-400 mb-1">{entry.timestamp ?? ''}</p>
-                  <p className="text-sm text-gray-700">{entry.description}</p>
-                </div>
-              ))
-            )}
-          </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 // ── Single record card ─────────────────────────────────────────────────────
 
 function RecordCard({ evaluation }: { evaluation: EvaluationDTO }) {
   const [expanded, setExpanded]     = useState(false);
   const [activeTab, setActiveTab]   = useState('ratings');
-  const [progressGoal, setProgressGoal] = useState<GoalDTO | null>(null);
+  const [progressDialogOpen, setProgressDialogOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<GoalDTO | null>(null);
 
   const avg   = avgRating(evaluation);
   const items = evaluation.evaluationItems ?? [];
@@ -134,17 +109,27 @@ function RecordCard({ evaluation }: { evaluation: EvaluationDTO }) {
                   <div key={goal.id ?? goal.definition} className="border rounded-lg p-4 bg-gray-50">
                     <h4 className="font-semibold text-sm text-gray-900">{goal.definition}</h4>
                     <p className="text-sm text-gray-600 mt-1">{goal.relevance}</p>
-                    <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t">
+                    <div className="grid grid-cols-3 gap-3 mt-3 pt-3 border-t">
                       <div><div className="text-xs text-gray-400 mb-1">Metric</div><p className="text-sm font-medium">{goal.metric}</p></div>
+                      <div><div className="text-xs text-gray-400 mb-1">Resources</div><p className="text-sm font-medium">{goal.resource}</p></div>
                       <div><div className="text-xs text-gray-400 mb-1">Deadline</div><p className="text-sm font-medium">{goal.deadline ?? '—'}</p></div>
                     </div>
-                    {(goal.progresses ?? []).length > 0 && (
-                      <div className="mt-3 pt-3 border-t">
-                        <Button variant="outline" size="sm" onClick={() => setProgressGoal(goal)}>
-                          <Eye className="w-4 h-4 mr-2" />View Progress Log
-                        </Button>
-                      </div>
-                    )}
+                    {goal.progresses && goal.progresses.length > 0 && (
+                        <div className="mt-3 flex justify-end mb-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => {
+                              setSelectedGoal(goal);
+                              setProgressDialogOpen(true);
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                            View Progress
+                          </Button>
+                        </div>
+                      )}
                   </div>
                 ))}
               </TabsContent>
@@ -152,8 +137,7 @@ function RecordCard({ evaluation }: { evaluation: EvaluationDTO }) {
           </div>
         )}
       </div>
-
-      <ProgressLogDialog goal={progressGoal} onClose={() => setProgressGoal(null)} />
+      <ViewProgressDialog open={progressDialogOpen} onClose={() => setProgressDialogOpen(false)} goal={selectedGoal} />
     </>
   );
 }
@@ -202,10 +186,8 @@ export function HistorySection() {
   if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading…</p></div>;
   if (error)   return <div className="flex items-center justify-center min-h-screen"><p className="text-red-500">{error}</p></div>;
 
-  const byType = (tab: EvalCycleTab) => {
-    const dtoType = tab === 'Annual' ? 'ANNUAL' : tab === 'Quarter' ? 'QUARTER' : 'PROBATION';
-    return evaluations.filter((e) => e.type === dtoType);
-  };
+  const byType = (tab: EvaluationDTOType) =>
+    evaluations.filter((e) => e.type === tab);
 
   return (
     <div className="p-8">
@@ -215,14 +197,14 @@ export function HistorySection() {
           <p className="text-gray-600 mt-1">Your past evaluation records — ratings, goals, and progress</p>
         </div>
 
-        <Tabs defaultValue="Annual">
+        <Tabs defaultValue="ANNUAL">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="Annual">Annual</TabsTrigger>
-            <TabsTrigger value="Quarter">Quarter</TabsTrigger>
-            <TabsTrigger value="Probation">Probation</TabsTrigger>
+            <TabsTrigger value="ANNUAL">Annual</TabsTrigger>
+            <TabsTrigger value="QUARTER">Quarter</TabsTrigger>
+            <TabsTrigger value="PROBATION">Probation</TabsTrigger>
           </TabsList>
 
-          {(['Annual', 'Quarter', 'Probation'] as EvalCycleTab[]).map((tab) => (
+          {(['ANNUAL', 'QUARTER', 'PROBATION'] as EvaluationDTOType[]).map((tab) => (
             <TabsContent key={tab} value={tab} className="mt-6">
               <RecordList records={byType(tab)} />
             </TabsContent>
