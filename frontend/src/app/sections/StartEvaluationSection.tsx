@@ -254,7 +254,7 @@ export function StartEvaluationSection() {
 
             {/* Cycle name */}
             <div className="space-y-2">
-              <Label htmlFor="cycleName">Cycle Name</Label>
+              <Label htmlFor="cycleName">Cycle Name <span className="text-red-500">*</span></Label>
               <Input
                 id="cycleName"
                 placeholder="e.g. 2026"
@@ -266,7 +266,7 @@ export function StartEvaluationSection() {
 
             {/* Evaluation type */}
             <div className="space-y-2">
-              <Label>Evaluation Type</Label>
+              <Label>Evaluation Type <span className="text-red-500">*</span></Label>
               <Select
                 value={evalType ?? ''}
                 onValueChange={(v) => setEvalType(v as EvaluationCycleDTOEvaluationType)}
@@ -291,7 +291,7 @@ export function StartEvaluationSection() {
                 const selectedId = job.id != null ? selectedIds[job.id] ?? '' : '';
                 return (
                   <div key={job.id ?? job.title} className="space-y-1.5">
-                    <Label className="text-gray-700">{job.title}</Label>
+                    <Label className="text-gray-700">{job.title} <span className="text-red-500">*</span></Label>
                     <div className="flex items-center gap-3">
                       <Select
                         value={selectedId}
