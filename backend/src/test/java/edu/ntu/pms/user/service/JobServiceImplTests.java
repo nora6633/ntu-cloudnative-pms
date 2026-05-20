@@ -57,11 +57,14 @@ public class JobServiceImplTests {
         List<Job> result = svc.getAllJobsWithTemplates();
 
         assertSame(jobs, result);
+        assertEquals(List.of("J1", "J2"), result.stream().map(Job::getTitle).toList());
         assertEquals(templatesForJob1, result.get(0).getTemplates());
         assertEquals(templatesForJob2, result.get(1).getTemplates());
-        verify(jobRepo).findAllByOrderByTitleAsc();
-        verify(templateRepository).findAllByJobIdOrderByIdAsc(1L);
-        verify(templateRepository).findAllByJobIdOrderByIdAsc(2L);
+        var inOrder = inOrder(jobRepo, templateRepository);
+        inOrder.verify(jobRepo).findAllByOrderByTitleAsc();
+        inOrder.verify(templateRepository).findAllByJobIdOrderByIdAsc(1L);
+        inOrder.verify(templateRepository).findAllByJobIdOrderByIdAsc(2L);
+        verifyNoMoreInteractions(jobRepo, templateRepository);
     }
 
     @Test
