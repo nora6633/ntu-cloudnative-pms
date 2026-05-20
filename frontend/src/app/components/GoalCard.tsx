@@ -45,7 +45,7 @@ export function GoalCard({ status, goal, onAddProgress, onViewDetails }: GoalCar
           <span>{goal.deadline ?? 'No deadline'}</span>
         </div>
         <div className="flex gap-2">
-          {status === 'Working' &&
+          {status === 'WORKING' &&
             <Button
               variant="outline"
               size="sm"

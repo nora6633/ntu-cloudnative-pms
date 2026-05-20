@@ -8,7 +8,7 @@ import { EvaluationGoalCard } from '../components/EvaluationGoalCard';
 import { EvaluationCriteriaDialog } from '../components/EvaluationCriteriaDialog';
 import { EvaluationGoalDialog } from '../components/EvaluationGoalDialog';
 import { NotificationDialog } from '../components/NotificationDialog';
-import type { EvalCycleTab, MyEvalStatus } from '../types';
+import type { EvaluationDTOType, EvaluationDTOStatus } from '../../api';
 import type { EvaluationDTO, GoalDTO } from '../../api';
 import {
   getMyEvaluations,
@@ -55,43 +55,34 @@ const MESSAGES = {
   },
 };
 
-const TYPE_MAP: Record<EvalCycleTab, string> = {
-  Annual: 'ANNUAL',
-  Quarter: 'QUARTER',
-  Probation: 'PROBATION',
-};
+const CYCLE_TABS: { key: EvaluationDTOType; label: string }[] = [
+  { key: 'ANNUAL', label: 'Annual' },
+  { key: 'QUARTER', label: 'Quarter' },
+  { key: 'PROBATION', label: 'Probation' },
+];
 
-function mapStatus(dto: EvaluationDTO): MyEvalStatus {
-  switch (dto.status) {
-    case 'INITIAL':                    return 'Initial';
-    case 'PENDING_GOAL_APPROVAL':      return 'Pending_goal_approval';
-    case 'WORKING':                    return 'Working';
-    case 'REVIEW':                     return 'Review';
-    case 'PENDING_REVIEW_CONFIRMATION': return 'Confirming';
-    case 'PENDING_CLOSURE':            return 'Pending_Closure';
-    case 'CLOSED':                     return 'Closed';
-    default:                           return 'Initial';
-  }
+function mapStatus(dto: EvaluationDTO): EvaluationDTOStatus {
+  return (dto.status ?? 'INITIAL') as EvaluationDTOStatus;
 }
 
-const STATUS_LABELS: Record<MyEvalStatus, string> = {
-  Initial:               'Initial',
-  Pending_goal_approval: 'Pending Goal Approval',
-  Working:               'Working',
-  Review:                'Awaiting Review',
-  Confirming:            'Confirming',
-  Pending_Closure:       'Pending Closure',
-  Closed:                'Closed',
+const STATUS_LABELS: Record<EvaluationDTOStatus, string> = {
+  INITIAL: 'Initial',
+  PENDING_GOAL_APPROVAL: 'Pending Goal Approval',
+  WORKING: 'Working',
+  REVIEW: 'Awaiting Review',
+  PENDING_REVIEW_CONFIRMATION: 'Confirming',
+  PENDING_CLOSURE: 'Pending Closure',
+  CLOSED: 'Closed',
 };
 
-const STATUS_COLORS: Record<MyEvalStatus, string> = {
-  Initial:               'text-gray-500',
-  Pending_goal_approval: 'text-yellow-600',
-  Working:               'text-blue-600',
-  Review:                'text-purple-600',
-  Confirming:            'text-orange-500',
-  Pending_Closure:       'text-orange-600',
-  Closed:                'text-green-600',
+const STATUS_COLORS: Record<EvaluationDTOStatus, string> = {
+  INITIAL: 'text-gray-500',
+  PENDING_GOAL_APPROVAL: 'text-yellow-600',
+  WORKING: 'text-blue-600',
+  REVIEW: 'text-purple-600',
+  PENDING_REVIEW_CONFIRMATION: 'text-orange-500',
+  PENDING_CLOSURE: 'text-orange-600',
+  CLOSED: 'text-green-600',
 };
 
 function StarDisplay({ rating }: { rating: number }) {
@@ -286,7 +277,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
               <Button variant="outline" size="icon" onClick={() => setCriteriaOpen(true)}>
                 <ListTodo className="w-5 h-5" />
               </Button>
-              {status === 'Initial' && (
+              {status === 'INITIAL' && (
                 <div className="flex gap-2">
                   <Button variant="outline" size="lg" onClick={handleDraftGoals} disabled={submitting}>
                     {draftingGoals ? 'Saving…' : 'Draft Goals'}
@@ -296,7 +287,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
                   </Button>
                 </div>
               )}
-              {status === 'Working' && (
+              {status === 'WORKING' && (
                 <Button size="lg" onClick={handleWorkingSubmit} disabled={submitting}>
                   {submitting ? 'Submitting…' : 'Submit for Review'}
                 </Button>
@@ -304,7 +295,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
             </div>
           </div>
 
-          {status === 'Working' && (
+          {status === 'WORKING' && (
             <div className="grid grid-cols-2 gap-4 mt-8">
               <div className="bg-blue-50 rounded-lg p-4">
                 <div className="flex items-center gap-2 text-blue-600 mb-1">
@@ -329,7 +320,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
       <div className="max-w-7xl mx-auto px-6 py-8">
 
         {/* Initial — goal setting */}
-        {status === 'Initial' && (
+        {status === 'INITIAL' && (
           <div className="space-y-4">
             {draftList.map((goal) => (
               <EvaluationGoalCard
@@ -354,7 +345,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Pending approval — read-only */}
-        {status === 'Pending_goal_approval' && (
+        {status === 'PENDING_GOAL_APPROVAL' && (
           <div className="space-y-4">
             <p className="text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3">
               Your goals have been submitted and are awaiting approval.
@@ -372,7 +363,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Working — progress tracking */}
-        {status === 'Working' && (
+        {status === 'WORKING' && (
           <div>
               {activeGoals.length === 0
                 ? <div className="text-center py-12 text-gray-500">No goals yet.</div>
@@ -385,7 +376,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Review — waiting for manager */}
-        {status === 'Review' && (
+        {status === 'REVIEW' && (
           <div className="space-y-4">
             <p className="text-sm text-purple-700 bg-purple-100 border border-purple-200 rounded-lg px-4 py-3">
               Your manager is reviewing your goals and progress.
@@ -401,7 +392,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Confirming — review received, employee confirms or rejects */}
-        {status === 'Confirming' && (
+        {status === 'PENDING_REVIEW_CONFIRMATION' && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-2">
               <StarDisplay rating={Math.round(avgRating)} />
@@ -433,7 +424,7 @@ function CycleView({ evaluation, onRefresh }: CycleViewProps) {
         )}
 
         {/* Pending Closure / Closed — read-only */}
-        {(status === 'Pending_Closure') && (
+        {(status === 'PENDING_CLOSURE') && (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <StarDisplay rating={Math.round(avgRating)} />
@@ -501,7 +492,7 @@ export function MyEvaluationSection() {
   const [evaluations, setEvaluations] = useState<EvaluationDTO[]>([]);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
-  const [activeTab, setActiveTab]     = useState<EvalCycleTab>('Annual');
+  const [activeTab, setActiveTab]     = useState<EvaluationDTOType>('ANNUAL');
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -518,7 +509,7 @@ export function MyEvaluationSection() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const currentEval = evaluations.find((e) => e.type === TYPE_MAP[activeTab] && e.status !== 'CLOSED') ?? null;
+  const currentEval = evaluations.find((e) => e.type === activeTab && e.status !== 'CLOSED') ?? null;
 
   if (loading) {
     return (
@@ -541,17 +532,17 @@ export function MyEvaluationSection() {
       <div className="bg-white border-b px-6 pt-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-1">
-            {(['Annual', 'Quarter', 'Probation'] as EvalCycleTab[]).map((tab) => (
+            {CYCLE_TABS.map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
                 className={`px-6 py-2.5 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
-                  activeTab === tab
+                  activeTab === tab.key
                     ? 'border-blue-600 text-blue-600 bg-blue-50'
                     : 'border-transparent text-gray-600 hover:text-gray-900'
                 }`}
               >
-                {tab}
+                {tab.label}
               </button>
             ))}
           </div>

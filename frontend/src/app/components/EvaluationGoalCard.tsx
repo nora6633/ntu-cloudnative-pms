@@ -49,7 +49,7 @@ export function EvaluationGoalCard({ status, goal, onUpdate, onDelete }: Evaluat
         </div>
       )}
 
-      {status === 'Initial' && (
+      {status === 'INITIAL' && (
         <div className="flex gap-2 mt-4 pt-4 border-t">
             <Button
               variant="outline"
