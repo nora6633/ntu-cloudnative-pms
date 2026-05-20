@@ -327,7 +327,7 @@ export function RegisterSection() {
                     <SelectContent>
                       {probationTemplates.map((t) => (
                         <SelectItem key={t.id} value={String(t.id)}>
-                          {t.evaluationType} — Template #{t.id}
+                          {t.evaluationType} — {t.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
