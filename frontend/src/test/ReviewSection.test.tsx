@@ -256,6 +256,25 @@ describe('ReviewSection', () => {
       expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
     });
 
+    it('Alert when feedback has less than ten words', async () => {
+      mockApi([REVIEW_EVALUATION]);
+      const user = await renderAndWait();
+
+      await user.click(screen.getByText('Alice Johnson'));
+
+      await user.type(
+        screen.getByPlaceholderText('Add your comments...'),
+        'Great work',
+      );
+      await user.tab();
+
+      const dialog = await screen.findByRole('dialog');
+      expect(
+        await within(dialog).findByText(/Please provide at least 10 words before continuing/i),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
+    });
+
     it('Submit button is enabled when all items have rating and feedback', async () => {
       mockApi([REVIEW_EVALUATION]);
       const user = await renderAndWait();
@@ -271,7 +290,7 @@ describe('ReviewSection', () => {
       // Comment
       await user.type(
         screen.getByPlaceholderText('Add your comments...'),
-        'Great work',
+        'Great work 3 4 5 6 7 8 9 10',
       );
 
       expect(screen.getByRole('button', { name: /submit/i })).toBeEnabled();
@@ -426,7 +445,7 @@ describe('ReviewSection', () => {
 
       await user.type(
         screen.getByPlaceholderText('Add your comments...'),
-        'Excellent',
+        'Excellent 2 3 4 5 6 7 8 9 10',
       );
 
       return user;
