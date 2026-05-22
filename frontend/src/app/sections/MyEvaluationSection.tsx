@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ListTodo, Plus, Target, Trophy, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { GoalCard } from '../components/GoalCard';
@@ -493,6 +493,7 @@ export function MyEvaluationSection() {
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
   const [activeTab, setActiveTab]     = useState<EvaluationDTOType>('ANNUAL');
+  const [selectedEvalId, setSelectedEvalId] = useState<number | null>(null);
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -509,7 +510,28 @@ export function MyEvaluationSection() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const currentEval = evaluations.find((e) => e.type === activeTab && e.status !== 'CLOSED') ?? null;
+  const activeEvaluationsOfTab = useMemo(() => {
+    return evaluations
+      .filter((e) => e.type === activeTab && e.status !== 'CLOSED')
+      .sort((a, b) => Number(b.id ?? 0) - Number(a.id ?? 0));
+  }, [evaluations, activeTab]);
+
+  const currentEval = useMemo(() => {
+    if (selectedEvalId !== null) {
+      return activeEvaluationsOfTab.find((e) => e.id === selectedEvalId) ?? activeEvaluationsOfTab[0] ?? null;
+    }
+    return activeEvaluationsOfTab[0] ?? null;
+  }, [activeEvaluationsOfTab, selectedEvalId]);
+
+  useEffect(() => {
+    if (activeEvaluationsOfTab.length > 0) {
+      if (!selectedEvalId || !activeEvaluationsOfTab.some((e) => e.id === selectedEvalId)) {
+        setSelectedEvalId(activeEvaluationsOfTab[0].id ?? null);
+      }
+    } else {
+      setSelectedEvalId(null);
+    }
+  }, [activeEvaluationsOfTab, selectedEvalId]);
 
   if (loading) {
     return (
@@ -530,7 +552,7 @@ export function MyEvaluationSection() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b px-6 pt-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex gap-1">
             {CYCLE_TABS.map((tab) => (
               <button
@@ -546,10 +568,27 @@ export function MyEvaluationSection() {
               </button>
             ))}
           </div>
+
+          {activeEvaluationsOfTab.length > 1 && (
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-medium text-gray-600">Active Cycle:</span>
+              <select
+                value={selectedEvalId ?? ''}
+                onChange={(e) => setSelectedEvalId(Number(e.target.value))}
+                className="bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {activeEvaluationsOfTab.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.cycle} ({STATUS_LABELS[mapStatus(e)]})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
-      <CycleView key={activeTab} evaluation={currentEval} onRefresh={fetch} />
+      <CycleView key={currentEval?.id ?? activeTab} evaluation={currentEval} onRefresh={fetch} />
     </div>
   );
 }
