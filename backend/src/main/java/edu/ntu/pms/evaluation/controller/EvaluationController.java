@@ -58,7 +58,7 @@ public class EvaluationController {
     }
 
     @Tag(name = "hr")
-    @PreAuthorize("hasRole('ROLE_HR')")
+    @PreAuthorize("hasAnyRole('ROLE_HR', 'ROLE_ADMIN')")
     @GetMapping("/hr-evaluations")
     public Slice<EvaluationDTO> getEvaluationsForHr(Pageable pageable) {
         Slice<Evaluation> page = service.getEvaluationsForHr(pageable);

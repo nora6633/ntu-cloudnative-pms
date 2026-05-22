@@ -66,7 +66,9 @@ export function ViewAllDialog({ open, onClose, evaluation }: ViewAllDialogProps)
             </Avatar>
             <div className="flex-1">
               <DialogTitle className="text-xl">{name}</DialogTitle>
-              <p className="text-sm text-gray-600 mt-0.5">{evaluation.employeeJobTitle}</p>
+              <p className="text-sm text-gray-600 mt-0.5">
+                {evaluation.employeeJobTitle} {evaluation.cycle && `• ${evaluation.cycle}`}
+              </p>
               <Badge className="mt-2 text-xs">{statusLabel(status)}</Badge>
             </div>
           </div>

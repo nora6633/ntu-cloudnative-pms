@@ -9,6 +9,8 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -110,6 +112,25 @@ public class EvaluationServiceImplTests {
         // Act & Assert — compare contents rather than instance identity
         assertEquals(list, svc.getEvaluationsForHr(pageable).getContent());
         verify(evalRepo).findByDepartmentId(eq(33L), any(Pageable.class));
+    }
+
+    @Test
+    void getEvaluationsForHr_fetchesAllWhenAdmin() {
+        // Arrange authenticated user as ADMIN
+        User u = User.builder().id(1L).username("admin").role(edu.ntu.pms.user.enums.Role.ADMIN).build();
+        when(currentUser.get()).thenReturn(u);
+
+        // Arrange repository
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Evaluation> list = List.of(Evaluation.builder().id(3L).build());
+        Page<Evaluation> page = new PageImpl<>(list, pageable, list.size());
+        when(evalRepo.findAll(any(Pageable.class))).thenReturn(page);
+        when(evalRepo.findAllWithCollectionsByIdIn(anyList())).thenReturn(list);
+
+        // Act & Assert
+        assertEquals(list, svc.getEvaluationsForHr(pageable).getContent());
+        verify(evalRepo).findAll(any(Pageable.class));
+        verify(evalRepo, never()).findByDepartmentId(any(), any());
     }
 
     @Test

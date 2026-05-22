@@ -62,9 +62,15 @@ public class EvaluationServiceImpl implements EvaluationService {
     @Override
     @Transactional(readOnly = true)
     public Slice<Evaluation> getEvaluationsForHr(Pageable pageable) {
-        Department dept = Optional.ofNullable(currentUser.get().getOverseenDepartment())
-                .orElseThrow(() -> new OverseenDepartmentNotFoundException(currentUser.get().getId()));
-        Slice<Evaluation> page = evalRepo.findByDepartmentId(dept.getId(), pageable);
+        User user = currentUser.get();
+        Slice<Evaluation> page;
+        if (user.getRole() == edu.ntu.pms.user.enums.Role.ADMIN) {
+            page = evalRepo.findAll(pageable);
+        } else {
+            Department dept = Optional.ofNullable(user.getOverseenDepartment())
+                    .orElseThrow(() -> new OverseenDepartmentNotFoundException(user.getId()));
+            page = evalRepo.findByDepartmentId(dept.getId(), pageable);
+        }
         return loadPageAndCollections(page, pageable);
     }
 
