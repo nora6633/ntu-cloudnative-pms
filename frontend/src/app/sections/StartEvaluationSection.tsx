@@ -53,7 +53,7 @@ function TemplatePreviewDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>{jobTitle} · {template.evaluationType}</DialogTitle>
+          <DialogTitle>{jobTitle} · {template.name || template.evaluationType}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-2">
           <div className="space-y-4 mt-2">
@@ -308,7 +308,7 @@ export function StartEvaluationSection() {
                         <SelectContent>
                           {options.map((t) => (
                             <SelectItem key={t.id ?? String(t.evaluationType)} value={String(t.id)}>
-                              {t.evaluationType ? `${t.evaluationType} #${t.id}` : `Template #${t.id}`}
+                              {t.name ? t.name : (t.evaluationType ? `${t.evaluationType} #${t.id}` : `Template #${t.id}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
