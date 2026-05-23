@@ -17,6 +17,7 @@ export interface BaseEmployee {
   jobTitle: string;
   typeTitle: string;
   status: string;
+  cycle?: string;
 }
 
 function getInitials(name: string) {
@@ -36,6 +37,7 @@ interface EmployeeTableProps<T extends BaseEmployee> {
   statusFilter: string;
   setStatusFilter: (v: string) => void;
   hideStatus?: boolean;
+  showCycle?: boolean;
   //statusOptions: string[];
   statusColorMap: Record<string, string>;
   onEmployeeClick: (employee: T) => void;
@@ -54,6 +56,7 @@ export function EmployeeTable<T extends BaseEmployee>({
   statusFilter,
   setStatusFilter,
   hideStatus = false,
+  showCycle = false,
   //statusOptions,
   statusColorMap,
   onEmployeeClick,
@@ -147,13 +150,14 @@ export function EmployeeTable<T extends BaseEmployee>({
                 <TableHead className="w-[300px]">Employee</TableHead>
                 <TableHead>Job Title</TableHead>
                 <TableHead>Cycle Type</TableHead>
+                {showCycle && <TableHead>Cycle Name</TableHead>}
                 {!hideStatus && <TableHead>Status</TableHead>}  
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={3 + (showCycle ? 1 : 0) + (hideStatus ? 0 : 1)} className="text-center py-8 text-gray-500">
                     No employees found matching your filters
                   </TableCell>
                 </TableRow>
@@ -175,6 +179,7 @@ export function EmployeeTable<T extends BaseEmployee>({
                     </TableCell>
                     <TableCell>{employee.jobTitle}</TableCell>
                     <TableCell>{employee.typeTitle}</TableCell>
+                    {showCycle && <TableCell>{employee.cycle ?? "—"}</TableCell>}
                     {!hideStatus && ( 
                     <TableCell>
                       <Badge className={getStatusColor(employee.status)}>
