@@ -21,7 +21,7 @@ public interface UserMapper {
 
     @Mapping(target = "job.id", source = "jobId")
     @Mapping(target = "department.id", source = "departmentId")
-    @Mapping(target = "overseenDepartment.id", source = "overseenDepartmentId")
+    @Mapping(target = "overseenDepartment", ignore = true) // Handled in Service to avoid transient instances
     @Mapping(target = "supervisor.id", source = "supervisorId")
     @Mapping(target = "passwordHash", ignore = true) // Handled in Service
     @Mapping(target = "id", ignore = true)
