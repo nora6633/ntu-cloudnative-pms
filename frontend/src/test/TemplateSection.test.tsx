@@ -3,18 +3,23 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TemplateSection } from '../app/sections/TemplateSection';
 import {
+  ApiError,
   createTemplate,
   getAllJobs,
   getAllTemplateByJobId,
   updateTemplate,
 } from '../api';
 
-vi.mock('../api', () => ({
-  getAllJobs: vi.fn(),
-  getAllTemplateByJobId: vi.fn(),
-  createTemplate: vi.fn(),
-  updateTemplate: vi.fn(),
-}));
+vi.mock('../api', async () => {
+  const actual = await vi.importActual<typeof import('../api')>('../api');
+  return {
+    ...actual,
+    getAllJobs: vi.fn(),
+    getAllTemplateByJobId: vi.fn(),
+    createTemplate: vi.fn(),
+    updateTemplate: vi.fn(),
+  };
+});
 
 vi.mock('../app/components/ui/select', () => ({
   Select: ({ value, onValueChange, disabled, children }: any) => (
@@ -116,7 +121,11 @@ describe('TemplateSection', () => {
   it('shows duplicate-name validation from the backend', async () => {
     vi.mocked(getAllJobs).mockResolvedValue({ data: JOBS } as any);
     vi.mocked(getAllTemplateByJobId).mockResolvedValue({ data: [] } as any);
-    vi.mocked(createTemplate).mockRejectedValue(new Error('already exists'));
+    vi.mocked(createTemplate).mockRejectedValue(new ApiError({
+      kind: 'http',
+      status: 409,
+      message: 'The request conflicts with existing data.',
+    }));
 
     await renderSection();
     await selectJob('1');
@@ -193,7 +202,10 @@ describe('TemplateSection', () => {
   it('keeps form state when save changes fails', async () => {
     vi.mocked(getAllJobs).mockResolvedValue({ data: JOBS } as any);
     vi.mocked(getAllTemplateByJobId).mockResolvedValue({ data: [ENGINEERING_TEMPLATE] } as any);
-    vi.mocked(updateTemplate).mockRejectedValue(new Error('Failed to fetch'));
+    vi.mocked(updateTemplate).mockRejectedValue(new ApiError({
+      kind: 'network',
+      message: 'Network error. Please try again later.',
+    }));
 
     await renderSection();
     await selectJob('1');
@@ -205,7 +217,7 @@ describe('TemplateSection', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
 
-    expect(await screen.findByText('Failed to fetch')).toBeInTheDocument();
+    expect(await screen.findByText('Network error. Please try again later.')).toBeInTheDocument();
     expect(getAllTemplateByJobId).toHaveBeenCalledTimes(1);
     expect(screen.getByDisplayValue('Broken Save Name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();

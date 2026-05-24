@@ -1,6 +1,5 @@
 package edu.ntu.pms.template.controller;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -93,7 +92,7 @@ class TemplateControllerTests {
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.title").value("Resource Not Found"))
-                .andExpect(jsonPath("$.detail").value(containsString("Job with ID 999 not found")));
+                .andExpect(jsonPath("$.detail").value("The requested resource could not be found."));
 
         verify(templateService).getAllTemplatesByJobId(999L);
     }

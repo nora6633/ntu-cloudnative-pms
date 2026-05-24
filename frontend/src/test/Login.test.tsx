@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor, type RenderResult } from '@testing-
 import userEvent from '@testing-library/user-event';
 //import { ReactNode } from 'react';
 import Login from '../pages/Login';
+import { ApiError } from '../api';
 import { AuthContext, type AuthContextValue } from '../auth/AuthContext';
 import { useNavigate, useLocation, BrowserRouter } from 'react-router';
 
@@ -105,7 +106,11 @@ describe('Login Page', () => {
 
     it('should clear error message when form is submitted', async () => {
       const user = userEvent.setup();
-      const mockLogin = vi.fn().mockRejectedValue(new Error('Invalid credentials'));
+      const mockLogin = vi.fn().mockRejectedValue(new ApiError({
+        kind: 'http',
+        status: 401,
+        message: 'Authentication failed.',
+      }));
       renderLogin({ login: mockLogin });
 
       // First failed attempt to show error
@@ -209,7 +214,11 @@ describe('Login Page', () => {
   describe('Error Handling', () => {
     it('should display error message on login failure', async () => {
       const user = userEvent.setup();
-      const mockLogin = vi.fn().mockRejectedValue(new Error('Login failed'));
+      const mockLogin = vi.fn().mockRejectedValue(new ApiError({
+        kind: 'http',
+        status: 500,
+        message: 'Something went wrong on the server. Please try again later.',
+      }));
       renderLogin({ login: mockLogin });
 
       await user.type(screen.getByLabelText(/username/i), 'testuser');
@@ -223,7 +232,11 @@ describe('Login Page', () => {
 
     it('should not navigate on login failure', async () => {
       const user = userEvent.setup();
-      const mockLogin = vi.fn().mockRejectedValue(new Error('Login failed'));
+      const mockLogin = vi.fn().mockRejectedValue(new ApiError({
+        kind: 'http',
+        status: 500,
+        message: 'Something went wrong on the server. Please try again later.',
+      }));
       renderLogin({ login: mockLogin });
 
       await user.type(screen.getByLabelText(/username/i), 'testuser');
@@ -239,7 +252,11 @@ describe('Login Page', () => {
 
     it('should re-enable submit button on login failure', async () => {
       const user = userEvent.setup();
-      const mockLogin = vi.fn().mockRejectedValue(new Error('Login failed'));
+      const mockLogin = vi.fn().mockRejectedValue(new ApiError({
+        kind: 'http',
+        status: 500,
+        message: 'Something went wrong on the server. Please try again later.',
+      }));
       renderLogin({ login: mockLogin });
 
       const submitButton = screen.getByRole('button', { name: /sign in/i });
@@ -293,6 +310,25 @@ describe('Login Page', () => {
       await waitFor(() => {
         expect(buttons[0]).toHaveTextContent('Sign in');
         expect(buttons[0]).not.toHaveTextContent('Signing in');
+      });
+    });
+  });
+
+  describe('Safe Error Messaging', () => {
+    it('should map network failures to a generic message', async () => {
+      const user = userEvent.setup();
+      const mockLogin = vi.fn().mockRejectedValue(new ApiError({
+        kind: 'network',
+        message: 'Network error. Please try again later.',
+      }));
+      renderLogin({ login: mockLogin });
+
+      await user.type(screen.getByLabelText(/username/i), 'testuser');
+      await user.type(screen.getByLabelText(/password/i), 'wrongpassword');
+      await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Network error. Please try again later./i)).toBeInTheDocument();
       });
     });
   });

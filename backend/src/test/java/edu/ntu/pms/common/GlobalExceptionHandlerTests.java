@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -62,6 +63,26 @@ class GlobalExceptionHandlerTests {
         public void throwDataIntegrityEx() {
             throw new org.springframework.dao.DataIntegrityViolationException("some sql error");
         }
+
+        @GetMapping("/test-illegal-argument")
+        public void throwIllegalArgumentEx() {
+            throw new IllegalArgumentException("Job ID not found: 99");
+        }
+
+        @GetMapping("/test-not-found")
+        public void throwNotFoundEx() {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Template 7 missing");
+        }
+
+        @GetMapping("/test-unauthorized")
+        public void throwUnauthorizedEx() {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
+        @GetMapping("/test-conflict")
+        public void throwConflictEx() {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Duplicate template name");
+        }
     }
 
 
@@ -80,7 +101,7 @@ class GlobalExceptionHandlerTests {
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
                 .andExpect(jsonPath("$.title").value("Access Denied"))
-                .andExpect(jsonPath("$.detail").value("Access Denied"));
+                .andExpect(jsonPath("$.detail").value("Access denied."));
     }
 
     @Test
@@ -108,6 +129,42 @@ class GlobalExceptionHandlerTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
                 .andExpect(jsonPath("$.title").value("Data Integrity Error"))
-                .andExpect(jsonPath("$.detail").value("Data integrity violation"));
+                .andExpect(jsonPath("$.detail").value("The request could not be completed. Please review your input and try again."));
+    }
+
+    @Test
+    void shouldSanitizeIllegalArgumentExceptionMessages() throws Exception {
+        mockMvc.perform(get("/test-illegal-argument"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+                .andExpect(jsonPath("$.title").value("Bad Request"))
+                .andExpect(jsonPath("$.detail").value("The request could not be completed. Please review your input and try again."));
+    }
+
+    @Test
+    void shouldSanitizeErrorResponseExceptionMessages() throws Exception {
+        mockMvc.perform(get("/test-not-found"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+                .andExpect(jsonPath("$.title").value("Resource Not Found"))
+                .andExpect(jsonPath("$.detail").value("The requested resource could not be found."));
+    }
+
+    @Test
+    void shouldSanitizeUnauthorizedResponseStatusExceptionMessages() throws Exception {
+        mockMvc.perform(get("/test-unauthorized"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+                .andExpect(jsonPath("$.title").value("Unauthorized"))
+                .andExpect(jsonPath("$.detail").value("Authentication required"));
+    }
+
+    @Test
+    void shouldSanitizeConflictResponseStatusExceptionMessages() throws Exception {
+        mockMvc.perform(get("/test-conflict"))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+                .andExpect(jsonPath("$.title").value("Conflict"))
+                .andExpect(jsonPath("$.detail").value("The request conflicts with existing data."));
     }
 }

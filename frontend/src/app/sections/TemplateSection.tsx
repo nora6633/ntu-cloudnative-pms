@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileText, PencilLine, Plus, RefreshCw, Trash2 } from "lucide-react";
 import {
+  ApiError,
   createTemplate,
   getAllJobs,
   getAllTemplateByJobId,
@@ -273,14 +274,15 @@ export function TemplateSection() {
       }
       setFormErrors({});
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to save template.";
-      if (message.includes("already exists")) {
+      if (error instanceof ApiError && error.status === 409) {
         setFormErrors((current) => ({
           ...current,
           name: "A template with this name already exists for the selected job.",
         }));
+      } else if (error instanceof ApiError && error.kind === "network") {
+        setTemplatesError("Network error. Please try again later.");
       } else {
-        setTemplatesError(message);
+        setTemplatesError("Unable to save template.");
       }
     } finally {
       setSaving(false);

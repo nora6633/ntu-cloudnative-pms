@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../auth/AuthContext';
+import { ApiError } from '../api';
 import { Button } from '../app/components/ui/button'
 
 import './Login.css';
@@ -28,13 +29,9 @@ export default function Login() {
       await login(username, password);
       navigate(from, { replace: true });
     } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : String(e);
-      if (errorMessage === 'Invalid credentials') {
+      if (e instanceof ApiError && e.status === 401) {
         setError('Invalid username or password');
-      } else if (
-        errorMessage.toLowerCase().includes('failed to fetch') ||
-        errorMessage.toLowerCase().includes('network')
-      ) {
+      } else if (e instanceof ApiError && e.kind === 'network') {
         setError('Network error. Please try again later.');
       } else {
         setError('An unexpected error occurred. Please try again later.');

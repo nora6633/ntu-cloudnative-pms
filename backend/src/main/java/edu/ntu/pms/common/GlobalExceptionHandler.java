@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,24 +26,23 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final String BAD_REQUEST_DETAIL =
+            "The request could not be completed. Please review your input and try again.";
+    private static final String NOT_FOUND_DETAIL = "The requested resource could not be found.";
+    private static final String CONFLICT_DETAIL = "The request conflicts with existing data.";
+    private static final String SERVER_ERROR_DETAIL =
+            "An unexpected error occurred on the server.";
+
     // Handle "Unauthorized" (401) - No or invalid token
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.UNAUTHORIZED,
-                "Authentication required");
-        problem.setTitle("Unauthorized");
-        return problem;
+        return buildProblem(HttpStatus.UNAUTHORIZED, "Unauthorized", "Authentication required");
     }
 
     // Handle "Forbidden" (403) - Logged in, but wrong role/permissions
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDeniedException(AccessDeniedException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.FORBIDDEN,
-                "Access Denied");
-        problem.setTitle("Access Denied");
-        return problem;
+        return buildProblem(HttpStatus.FORBIDDEN, "Access Denied", "Access denied.");
     }
 
     // Handle Validation Errors (@Valid) We override this to turn messy field errors into a readable 'detail'
@@ -69,33 +69,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // Catch-all for unexpected Server Errors (500)
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneralException(Exception ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            "An unexpected error occurred on the server."
-        );
-        problem.setTitle("Server Error");
-        return problem;
+        return buildProblem(HttpStatus.INTERNAL_SERVER_ERROR, "Server Error", SERVER_ERROR_DETAIL);
     }
 
     // Catch IllegalArgumentException separately to return a 400 Bad Request instead of 500 Internal Server Error
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgumentException(IllegalArgumentException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST,
-                ex.getMessage() // Use the exception message as the detail for better clarity
-        );
-        problem.setTitle("Bad Request");
-        return problem;
+        return buildProblem(HttpStatus.BAD_REQUEST, "Bad Request", BAD_REQUEST_DETAIL);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail handleIllegalStateException(IllegalStateException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST,
-                ex.getMessage() // Use the exception message as the detail for better clarity
-        );
-        problem.setTitle("Bad Request");
-        return problem;
+        return buildProblem(HttpStatus.BAD_REQUEST, "Bad Request", BAD_REQUEST_DETAIL);
     }
 
     // Catch DataIntegrityViolationException to return a 400 Bad Request instead of
@@ -103,10 +88,39 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ProblemDetail handleDataIntegrityViolationException(
             org.springframework.dao.DataIntegrityViolationException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST,
-                "Data integrity violation");
-        problem.setTitle("Data Integrity Error");
+        return buildProblem(HttpStatus.BAD_REQUEST, "Data Integrity Error", BAD_REQUEST_DETAIL);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleErrorResponseException(
+            ErrorResponseException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+        HttpStatus resolvedStatus = HttpStatus.resolve(status.value());
+        if (resolvedStatus == null) {
+            resolvedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return ResponseEntity.status(resolvedStatus).headers(headers).body(sanitizeErrorResponse(resolvedStatus));
+    }
+
+    private ProblemDetail sanitizeErrorResponse(HttpStatus status) {
+        return switch (status) {
+            case UNAUTHORIZED -> buildProblem(status, "Unauthorized", "Authentication required");
+            case FORBIDDEN -> buildProblem(status, "Access Denied", "Access denied.");
+            case NOT_FOUND -> buildProblem(status, "Resource Not Found", NOT_FOUND_DETAIL);
+            case CONFLICT -> buildProblem(status, "Conflict", CONFLICT_DETAIL);
+            case BAD_REQUEST, UNPROCESSABLE_ENTITY -> buildProblem(status, "Bad Request", BAD_REQUEST_DETAIL);
+            default -> status.is5xxServerError()
+                    ? buildProblem(status, "Server Error", SERVER_ERROR_DETAIL)
+                    : buildProblem(status, status.getReasonPhrase(), "The request could not be completed.");
+        };
+    }
+
+    private ProblemDetail buildProblem(HttpStatus status, String title, String detail) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
+        problem.setTitle(title);
         return problem;
     }
 }
