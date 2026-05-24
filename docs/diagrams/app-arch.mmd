@@ -1,0 +1,11 @@
+%%{init: {'flowchart': {'nodeSpacing': 30, 'rankSpacing': 30, 'diagramPadding': 5, 'padding': 6}}}%%
+flowchart LR
+    req([Request]) --> filter["Security Filter\nJWT · CORS"]
+    filter --> ctrl["Controller\n@PreAuthorize"]
+    ctrl --> mapper["Mapper"]
+    mapper --> svc["Service"]
+    svc --> repo["Repository"]
+    repo <--> db[(MySQL)]
+
+    filter -.->|"exception"| geh["Exception Handler\nProblem Detail"]
+    svc -.->|"exception"| geh

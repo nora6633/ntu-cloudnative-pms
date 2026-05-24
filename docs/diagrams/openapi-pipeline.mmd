@@ -1,0 +1,12 @@
+%%{init: {'flowchart': {'nodeSpacing': 30, 'rankSpacing': 30, 'diagramPadding': 5, 'padding': 6}}}%%
+flowchart LR
+    A["Backend\nControllers & DTOs"]
+    B["/v3/api-docs.yaml"]
+    C["docs/api/\nopenapi.yaml"]
+    D["orvalClient.ts\ntyped API client"]
+    E["React\nComponents"]
+
+    A -->|"springdoc\nannotations"| B
+    B -->|"CI job\nscrapes & commits"| C
+    C -->|"Orval\ngenerates"| D
+    D -->|"imported by"| E
