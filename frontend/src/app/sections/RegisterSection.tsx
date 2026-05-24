@@ -18,6 +18,7 @@ import {
   getDepartments,
   getSupervisors,
   getAllTemplateByJobId,
+  ApiError,
   type UserDTO,
   type JobSummaryDTO,
   type DepartmentDTO,
@@ -128,8 +129,15 @@ export function RegisterSection() {
       toast.success(`Account "${form.username}" registered successfully!`);
       setForm(INITIAL_FORM);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.';
-      toast.error(errorMessage);
+      if (err instanceof ApiError && err.kind === 'network') {
+        toast.error('Network error. Please try again later.');
+      } else if (err instanceof ApiError && err.status === 400) {
+        toast.error('Unable to register account. Please review the form and try again.');
+      } else if (err instanceof ApiError && err.status === 409) {
+        toast.error('Unable to register account because it conflicts with existing data.');
+      } else {
+        toast.error('Registration failed. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }

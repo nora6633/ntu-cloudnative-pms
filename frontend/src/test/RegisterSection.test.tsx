@@ -3,15 +3,27 @@ import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { RegisterSection } from '../app/sections/RegisterSection';
 import { 
+  ApiError,
   getAllJobs, 
   getDepartments, 
   getSupervisors, 
   getAllTemplateByJobId, 
   registration 
 } from '../api';
+import { toast } from 'sonner';
 
 // Mock API
-vi.mock('../api');
+vi.mock('../api', async () => {
+  const actual = await vi.importActual<typeof import('../api')>('../api');
+  return {
+    ...actual,
+    getAllJobs: vi.fn(),
+    getDepartments: vi.fn(),
+    getSupervisors: vi.fn(),
+    getAllTemplateByJobId: vi.fn(),
+    registration: vi.fn(),
+  };
+});
 
 // Mock Lucide icons
 vi.mock('lucide-react', () => ({
@@ -143,5 +155,38 @@ describe('RegisterSection', () => {
     fireEvent.change(jobSelect, { target: { value: '1' } });
 
     await waitFor(() => expect(getAllTemplateByJobId).toHaveBeenCalledWith(1, expect.any(Object)));
+  });
+
+  it('shows a generic toast instead of exposing backend details on registration failure', async () => {
+    const user = userEvent.setup();
+    vi.mocked(registration).mockRejectedValue(new ApiError({
+      kind: 'http',
+      status: 400,
+      message: 'The request could not be completed. Please review your input and try again.',
+    }));
+
+    const { container } = render(<RegisterSection />);
+    await waitFor(() => expect(getAllJobs).toHaveBeenCalled());
+
+    const usernameInput = container.querySelector('#reg-username') as HTMLInputElement;
+    const passwordInput = container.querySelector('#reg-password') as HTMLInputElement;
+    const roleSelect = container.querySelectorAll('select')[0];
+
+    await user.type(usernameInput, 'tester');
+    await user.type(passwordInput, 'password123');
+    fireEvent.change(roleSelect, { target: { value: 'EMPLOYEE' } });
+
+    await waitFor(() => expect(container.querySelectorAll('select').length).toBeGreaterThan(3));
+
+    const selects = container.querySelectorAll('select');
+    fireEvent.change(selects[1], { target: { value: '1' } });
+    fireEvent.change(selects[2], { target: { value: '10' } });
+    fireEvent.change(selects[3], { target: { value: '100' } });
+
+    await user.click(screen.getByRole('button', { name: /Register Account/i }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Unable to register account. Please review the form and try again.');
+    });
   });
 });

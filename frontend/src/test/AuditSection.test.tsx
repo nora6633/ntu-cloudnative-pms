@@ -11,13 +11,27 @@ vi.mock('../api', () => ({
 
 // Mock Radix Select to plain <select> to dodge pointer-events issues
 vi.mock('../app/components/ui/select', () => ({
-  Select: ({ onValueChange, children, value }: any) => (
+  Select: ({
+    onValueChange,
+    children,
+    value,
+  }: {
+    onValueChange: (value: string) => void;
+    children: React.ReactNode;
+    value?: string;
+  }) => (
     <select value={value} onChange={(e) => onValueChange(e.target.value)}>{children}</select>
   ),
-  SelectTrigger: ({ children }: any) => <>{children}</>,
-  SelectValue: ({ placeholder }: any) => <>{placeholder}</>,
-  SelectContent: ({ children }: any) => <>{children}</>,
-  SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>,
+  SelectTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SelectValue: ({ placeholder }: { placeholder?: string }) => <>{placeholder}</>,
+  SelectContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SelectItem: ({
+    value,
+    children,
+  }: {
+    value: string;
+    children: React.ReactNode;
+  }) => <option value={value}>{children}</option>,
 }));
 
 const ROW = {

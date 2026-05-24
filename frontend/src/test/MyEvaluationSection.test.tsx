@@ -2,7 +2,15 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MyEvaluationSection } from '../app/sections/MyEvaluationSection';
-import * as api from '../api';
+import {
+  addProgress,
+  approveReview,
+  draftGoals,
+  getMyEvaluations,
+  rejectReview,
+  submitForGoalApproval,
+  submitForProgressReview,
+} from '../api';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -15,8 +23,6 @@ vi.mock('../api', () => ({
   rejectReview: vi.fn(),
   addProgress: vi.fn(),
 }));
-
-const mockApi = api as { [K in keyof typeof api]: ReturnType<typeof vi.fn> };
 
 // Stub child dialogs that are not under test
 vi.mock('../app/components/EvaluationCriteriaDialog', () => ({
@@ -73,7 +79,7 @@ function makeEval(status: string, goals: typeof GOAL_NO_PROGRESS[] = [], extraIt
 }
 
 function setup(evaluation: object | null) {
-  mockApi.getMyEvaluations.mockResolvedValue({
+  vi.mocked(getMyEvaluations).mockResolvedValue({
     data: { content: evaluation ? [evaluation] : [] },
   } as any);
   return render(<MyEvaluationSection />);
@@ -83,13 +89,13 @@ function setup(evaluation: object | null) {
 
 describe('Loading and error states', () => {
   it('shows loading indicator while fetching', () => {
-    mockApi.getMyEvaluations.mockReturnValue(new Promise(() => {})); // never resolves
+    vi.mocked(getMyEvaluations).mockReturnValue(new Promise(() => {})); // never resolves
     render(<MyEvaluationSection />);
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   it('shows error message when fetch fails', async () => {
-    mockApi.getMyEvaluations.mockRejectedValue(new Error('Network error'));
+    vi.mocked(getMyEvaluations).mockRejectedValue(new Error('Network error'));
     render(<MyEvaluationSection />);
     await waitFor(() =>
       expect(screen.getByText(/Failed to load evaluations/i)).toBeInTheDocument(),
@@ -97,7 +103,7 @@ describe('Loading and error states', () => {
   });
 
   it('shows empty state when no evaluation exists for the selected tab', async () => {
-    mockApi.getMyEvaluations.mockResolvedValue({ data: { content: [] } } as any);
+    vi.mocked(getMyEvaluations).mockResolvedValue({ data: { content: [] } } as any);
     render(<MyEvaluationSection />);
     await waitFor(() =>
       expect(screen.getByText(/No active evaluation for this cycle/i)).toBeInTheDocument(),
@@ -118,7 +124,7 @@ describe('Tab navigation', () => {
   });
 
   it('switches to Quarter tab on click', async () => {
-    mockApi.getMyEvaluations.mockResolvedValue({
+    vi.mocked(getMyEvaluations).mockResolvedValue({
       data: {
         content: [
           makeEval('INITIAL'),                           // ANNUAL
@@ -154,8 +160,8 @@ describe('Criteria dialog', () => {
 
 describe('Initial status', () => {
   beforeEach(() => {
-    mockApi.draftGoals.mockResolvedValue({} as any);
-    mockApi.submitForGoalApproval.mockResolvedValue({} as any);
+    vi.mocked(draftGoals).mockResolvedValue({} as any);
+    vi.mocked(submitForGoalApproval).mockResolvedValue({} as any);
   });
 
   it('render initial page components', async () => {
@@ -279,8 +285,8 @@ describe('Review goal status', () => {
 
 describe('Working status', () => {
   beforeEach(() => {
-    mockApi.addProgress.mockResolvedValue({} as any);
-    mockApi.submitForProgressReview.mockResolvedValue({} as any);
+    vi.mocked(addProgress).mockResolvedValue({} as any);
+    vi.mocked(submitForProgressReview).mockResolvedValue({} as any);
   });
 
   it('shows "Status: Working" in the header', async () => {
@@ -396,8 +402,8 @@ describe('Confirming status', () => {
   ];
 
   beforeEach(() => {
-    mockApi.approveReview.mockResolvedValue({} as any);
-    mockApi.rejectReview.mockResolvedValue({} as any);
+    vi.mocked(approveReview).mockResolvedValue({} as any);
+    vi.mocked(rejectReview).mockResolvedValue({} as any);
   });
 
   it('render Confirm page correctly', async () => {
@@ -410,7 +416,7 @@ describe('Confirming status', () => {
   });
 
   it('shows "Requesting…" label while Request Revision is in-flight', async () => {
-    mockApi.rejectReview.mockReturnValue(new Promise(() => {})); // never resolves
+    vi.mocked(rejectReview).mockReturnValue(new Promise(() => {})); // never resolves
     setup(makeEval('PENDING_REVIEW_CONFIRMATION', [], ratedItems));
     await waitFor(() => screen.getByRole('button', { name: /Request Revision/i }));
     fireEvent.click(screen.getByRole('button', { name: /Request Revision/i }));
@@ -420,7 +426,7 @@ describe('Confirming status', () => {
   });
 
   it('shows "Confirming…" label while Confirm is in-flight', async () => {
-    mockApi.approveReview.mockReturnValue(new Promise(() => {})); // never resolves
+    vi.mocked(approveReview).mockReturnValue(new Promise(() => {})); // never resolves
     setup(makeEval('PENDING_REVIEW_CONFIRMATION', [], ratedItems));
     await waitFor(() => screen.getByRole('button', { name: /^Confirm$/i }));
     fireEvent.click(screen.getByRole('button', { name: /^Confirm$/i }));
@@ -486,7 +492,7 @@ describe('Pending_Closure status', () => {
 describe('Closed status (no page shown)', () => {
   it('does not render closed evaluation', async () => {
     // CLOSED evals are filtered out by currentEval selector (status !== CLOSED)
-    mockApi.getMyEvaluations.mockResolvedValue({
+    vi.mocked(getMyEvaluations).mockResolvedValue({
       data: { content: [makeEval('CLOSED')] },
     } as any);
     render(<MyEvaluationSection />);
