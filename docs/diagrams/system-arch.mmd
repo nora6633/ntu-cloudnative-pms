@@ -1,0 +1,14 @@
+%%{init: {'flowchart': {'nodeSpacing': 40, 'rankSpacing': 40, 'diagramPadding': 8, 'padding': 8}}}%%
+flowchart LR
+    browser([Browser])
+
+    subgraph railway["Railway PaaS"]
+        nginx["Nginx\nReact SPA · /api/* proxy"]
+        spring["Spring Boot\ninternal only"]
+        mysql[(MySQL\ninternal only)]
+
+        nginx -->|"/api/*"| spring
+        spring <--> mysql
+    end
+
+    browser <-->|"HTTPS"| nginx

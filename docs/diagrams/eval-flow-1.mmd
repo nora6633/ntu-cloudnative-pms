@@ -1,0 +1,12 @@
+stateDiagram-v2
+    state "Goal Drafting" as INITIAL
+    state "Awaiting Goal Approval" as PENDING_GOAL_APPROVAL
+    state "Progress Updates" as WORKING
+    state "Manager Review" as REVIEW
+
+    [*] --> INITIAL : Admin starts cycle
+    INITIAL --> PENDING_GOAL_APPROVAL : Employee submits goals
+    PENDING_GOAL_APPROVAL --> INITIAL : Manager rejects ↩
+    PENDING_GOAL_APPROVAL --> WORKING : Manager approves
+    WORKING --> REVIEW : Employee submits progress
+    REVIEW --> [*]
