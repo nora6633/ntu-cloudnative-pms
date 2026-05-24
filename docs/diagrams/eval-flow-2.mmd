@@ -1,0 +1,13 @@
+stateDiagram-v2
+    state "Manager Review" as REVIEW
+    state "Awaiting Confirmation" as PENDING_REVIEW_CONFIRMATION
+    state "Awaiting HR Closure" as PENDING_CLOSURE
+    state "Closed" as CLOSED
+
+    [*] --> REVIEW
+    REVIEW --> PENDING_REVIEW_CONFIRMATION : Manager submits review
+    PENDING_REVIEW_CONFIRMATION --> REVIEW : Employee rejects ↩
+    PENDING_REVIEW_CONFIRMATION --> PENDING_CLOSURE : Employee confirms
+    PENDING_CLOSURE --> REVIEW : HR rejects ↩
+    PENDING_CLOSURE --> CLOSED : HR closes
+    CLOSED --> [*]
