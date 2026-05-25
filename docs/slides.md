@@ -13,19 +13,7 @@ A web-based PMS for managing employee goals, performance reviews, and audit trai
 
 ---
 
-# System Overview
-
-| Requirement | Module | Implementation |
-|---|---|---|
-| Goal setting | Evaluation | `Goal` entity,  approval gate |
-| Progress tracking | Evaluation | `Progress` entity linked to each goal |
-| Template-driven review | Template + Evaluation | HR defines criteria per job, drives manager review form |
-| RBAC | Spring Security | `@PreAuthorize` at controller layer |
-| Audit trail | Hibernate Enver | Append-only revision records  |
-
----
-
-# Evaluation Status Flow
+# Evaluation Flow
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; height: 85%; align-items: center;">
 <div style="text-align: center;">
@@ -89,11 +77,6 @@ React SPA — Pages & reusable Components, with a TypeScript API client auto-gen
 
 # Demo
 
-**Roles in this demo:** HR · Admin · Employee · Manager
+- Demo Link: https://pms-frontend-production-f2a8.up.railway.app
 
-| Phase | Steps |
-|---|---|
-| Setup | HR creates template · Admin creates users · Admin starts cycle |
-| Goal Setting | Employee sets goals · Manager approves |
-| Review | Employee submits progress · Manager submits review · Employee confirms |
-| Closeout | HR closes cycle · Admin inspects audit log |
+- Github Repo: https://github.com/nora6633/ntu-cloudnative-pms
