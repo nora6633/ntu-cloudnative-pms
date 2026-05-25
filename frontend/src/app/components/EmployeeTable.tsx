@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
 
 export interface BaseEmployee {
   id: string;
@@ -41,6 +42,11 @@ interface EmployeeTableProps<T extends BaseEmployee> {
   //statusOptions: string[];
   statusColorMap: Record<string, string>;
   onEmployeeClick: (employee: T) => void;
+  currentPage?: number;
+  isFirstPage?: boolean;
+  isLastPage?: boolean;
+  onPageChange?: (newPage: number) => void;
+  isLoading?: boolean;
 }
 
 export function EmployeeTable<T extends BaseEmployee>({
@@ -60,11 +66,21 @@ export function EmployeeTable<T extends BaseEmployee>({
   //statusOptions,
   statusColorMap,
   onEmployeeClick,
+  currentPage,
+  isFirstPage,
+  isLastPage,
+  onPageChange,
+  isLoading = false,
 }: EmployeeTableProps<T>) {
   const uniqueJobTitles = Array.from(new Set(employees.map((e) => e.jobTitle)));
   const uniqueTypeTitles = Array.from(new Set(employees.map((e) => e.typeTitle)));
   const uniqueStatusOptions = Array.from(new Set(employees.map((e) => e.status)));
 
+  const startIndex = currentPage !== undefined ? currentPage * 10 : 0;
+  const endIndex = startIndex + employees.length;
+
+  // TODO: Move filtering and searching to the server-side once the backend API supports it.
+  // Currently, we perform client-side filtering which is constrained to the loaded page size (e.g. 10 items).
   const filtered = employees.filter((employee) => {
     const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesJob = jobFilter === "all" || employee.jobTitle === jobFilter;
@@ -192,6 +208,39 @@ export function EmployeeTable<T extends BaseEmployee>({
               )}
             </TableBody>
           </Table>
+
+          {onPageChange !== undefined && currentPage !== undefined && !(employees.length === 0 && currentPage === 0) && (
+            <div className="p-4 border-t flex items-center justify-between bg-gray-50 rounded-b-lg">
+              <div className="text-sm text-gray-600">
+                Showing {employees.length > 0 ? startIndex + 1 : 0} to {endIndex} entries
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onPageChange(Math.max(0, currentPage - 1))}
+                  disabled={isFirstPage || isLoading}
+                  className="flex items-center gap-1.5 text-xs"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  Previous
+                </Button>
+                <div className="text-sm text-gray-600 font-medium px-2">
+                  {isLoading ? "Loading..." : `Page ${currentPage + 1}`}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onPageChange(currentPage + 1)}
+                  disabled={isLastPage || isLoading}
+                  className="flex items-center gap-1.5 text-xs"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

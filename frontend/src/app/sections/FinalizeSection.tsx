@@ -61,7 +61,7 @@ export function FinalizeSection() {
     setLoading(true);
     setError(null);
     try {
-      const res = await getEvaluationsForHr({ pageable: { page: 0, size: 10 } });
+      const res = await getEvaluationsForHr({ pageable: { page: 0, size: 100 } });
       const closeable = (res.data.content ?? []).filter(
         (e) => e.status === 'PENDING_CLOSURE',
       );
