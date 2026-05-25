@@ -27,6 +27,7 @@ import {
   getGetAuditLogsUrl,
   getGetModulesUrl,
   getAdminOnlyUrl,
+  type Pageable,
   type GetMyEvaluationsParams,
   type GetEvaluationsForManagerParams,
   type GetEvaluationsForHrParams,
@@ -186,14 +187,30 @@ export const logout = () => apiFetch<void>(getLogoutUrl(), { method: 'POST' });
 export const registration = (body: UserDTO) =>
   apiFetch<UserDTO>(getRegistrationUrl(), { method: 'POST', body: JSON.stringify(body) });
 
+function fixPageableUrl(url: string, pageable?: Pageable): string {
+  if (!pageable) return url;
+  const [basePath, search] = url.split('?');
+  const searchParams = new URLSearchParams(search || '');
+  searchParams.delete('pageable');
+  
+  const { page, size, sort } = pageable;
+  if (page !== undefined) searchParams.append('page', page.toString());
+  if (size !== undefined) searchParams.append('size', size.toString());
+  if (sort) {
+    sort.forEach((s) => searchParams.append('sort', s));
+  }
+  const queryStr = searchParams.toString();
+  return queryStr ? `${basePath}?${queryStr}` : basePath;
+}
+
 export const getMyEvaluations = (params: GetMyEvaluationsParams) =>
-  apiFetch<SliceEvaluationDTO>(getGetMyEvaluationsUrl(params));
+  apiFetch<SliceEvaluationDTO>(fixPageableUrl(getGetMyEvaluationsUrl(params), params.pageable));
 
 export const getEvaluationsForManager = (params: GetEvaluationsForManagerParams) =>
-  apiFetch<SliceEvaluationDTO>(getGetEvaluationsForManagerUrl(params));
+  apiFetch<SliceEvaluationDTO>(fixPageableUrl(getGetEvaluationsForManagerUrl(params), params.pageable));
 
 export const getEvaluationsForHr = (params: GetEvaluationsForHrParams) =>
-  apiFetch<SliceEvaluationDTO>(getGetEvaluationsForHrUrl(params));
+  apiFetch<SliceEvaluationDTO>(fixPageableUrl(getGetEvaluationsForHrUrl(params), params.pageable));
 
 export const startEvaluationCycle = (body: EvaluationCycleDTO) =>
   apiFetch<string>(getStartEvaluationCycleUrl(), {

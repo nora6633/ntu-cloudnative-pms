@@ -46,9 +46,12 @@ function toRow(e: EvaluationDTO): EvalRow {
   };
 }
 
+const DEFAULT_PAGE_SIZE = 10;
+
 export function ViewAllSection() {
   const [rows, setRows]           = useState<EvalRow[]>([]);
   const [loading, setLoading]     = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError]         = useState<string | null>(null);
   const [search, setSearch]       = useState('');
   const [jobFilter, setJob]       = useState('all');
@@ -56,23 +59,35 @@ export function ViewAllSection() {
   const [statusFilter, setStatus] = useState('all');
   const [selected, setSelected]   = useState<EvalRow | null>(null);
   const [dialogOpen, setDialog]   = useState(false);
+  const [page, setPage]           = useState(0);
+  const [isFirst, setIsFirst]     = useState(true);
+  const [isLast, setIsLast]       = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await getEvaluationsForHr({ pageable: { page: 0, size: 100 } });
+      const res = await getEvaluationsForHr({
+        pageable: {
+          page: page,
+          size: DEFAULT_PAGE_SIZE,
+          sort: ['id,desc']
+        }
+      });
       setRows((res.data.content ?? []).map(toRow));
+      setIsFirst(res.data.first ?? true);
+      setIsLast(res.data.last ?? true);
     } catch {
       setError('Failed to load evaluations.');
     } finally {
       setLoading(false);
+      setInitialLoading(false);
     }
-  }, []);
+  }, [page]);
 
   useEffect(() => { load(); }, [load]);
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading…</p></div>;
+  if (initialLoading) return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Loading…</p></div>;
   if (error)   return <div className="flex items-center justify-center min-h-screen"><p className="text-red-500">{error}</p></div>;
 
   return (
@@ -91,9 +106,13 @@ export function ViewAllSection() {
         setStatusFilter={setStatus}
         hideStatus={false}
         showCycle={true}
-        //statusOptions={STATUS_OPTIONS}
         statusColorMap={STATUS_COLOR_MAP}
         onEmployeeClick={(row) => { setSelected(row); setDialog(true); }}
+        currentPage={page}
+        isFirstPage={isFirst}
+        isLastPage={isLast}
+        onPageChange={setPage}
+        isLoading={loading}
       />
 
       <ViewAllDialog
