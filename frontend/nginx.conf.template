@@ -8,12 +8,28 @@ server {
     # Proxy all /api/* requests to the backend so the browser sees a single origin.
     # This avoids cross-site cookie restrictions (SameSite) and eliminates CORS for API calls.
     # BACKEND_URL is injected at runtime (e.g. Railway internal networking URL).
+    #
+    # Using a variable for proxy_pass forces nginx to re-resolve DNS via the resolver on
+    # every request (within the TTL). Without this, nginx caches the IP at startup — when
+    # Railway runs multiple backend replicas the cached IP can become stale, causing hangs.
     location /api/ {
-        proxy_pass ${BACKEND_URL};
+        resolver 127.0.0.11 valid=10s ipv6=off;
+        set $backend "${BACKEND_URL}";
+        proxy_pass $backend;
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 5s;
+        proxy_send_timeout 10s;
+        proxy_read_timeout 15s;
+
+        # If a replica fails or times out, try the next one before returning an error.
+        # Skipped automatically for non-idempotent methods (POST/PUT/DELETE) to avoid
+        # executing a write twice.
+        proxy_next_upstream error timeout http_502 http_503 http_504;
+        proxy_next_upstream_tries 2;
+        proxy_next_upstream_timeout 15s;
     }
 
     # Aggressively cache hashed static assets (JS/CSS filenames include a content hash,
