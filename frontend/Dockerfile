@@ -22,7 +22,11 @@ COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
 ENV PORT=80
 ENV VITE_API_URL=
-# Backend internal URL for the nginx proxy (e.g. Railway private networking URL).
-# When set, /api/* requests are proxied to this URL — no cross-origin cookie issues.
-ENV BACKEND_URL=
+# Backend hostname and port for the nginx upstream pool (e.g. Railway private networking).
+# Split into two vars so nginx can use them in an upstream block with the "resolve" flag.
+ENV BACKEND_HOST=
+ENV BACKEND_PORT=
+# Tells the nginx Docker entrypoint to read /etc/resolv.conf and export
+# NGINX_LOCAL_RESOLVERS — used by nginx.conf.template for dynamic DNS resolution.
+ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=true
 EXPOSE ${PORT}
