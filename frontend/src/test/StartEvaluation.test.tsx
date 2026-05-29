@@ -281,7 +281,7 @@ describe('StartEvaluationSection', () => {
       expect(options).not.toContain('PROBATION #21');
     });
 
-    it('do not show template selection when no satisfied template', async () => {
+    it('renders no template options when no satisfied template exists', async () => {
       await renderAndWait();
 
       await selectOption(/evaluation type/i, /quarter/i);
@@ -290,7 +290,8 @@ describe('StartEvaluationSection', () => {
       await waitFor(() => {
         const seGroup = screen.getByText('Software Engineer').closest('div.space-y-1\\.5') as HTMLElement;
         const seSelect = seGroup?.querySelector('select');
-        expect(!seSelect);
+        if (!seSelect) throw new Error('Could not find Software Engineer template select');
+        expect(seSelect.querySelectorAll('option')).toHaveLength(0);
       });
     });
   });
