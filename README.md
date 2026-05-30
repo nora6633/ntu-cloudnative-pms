@@ -257,6 +257,12 @@ Department and Job CRUD endpoints are shared between `ADMIN` and `HR`.
 
 ---
 
+---
+## Test
+### Load Test
+- `BASE_URL=https://pms-frontend-production-f2a8.up.railway.app PMS_USER=xxx PMS_PASS=xxx k6 run loadtest/load-test.js`
+---
+
 ## Team
 
 Group 1 — National Taiwan University, Spring 2026
