@@ -1,0 +1,1093 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: loadtest/stress-test.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 1000 max VUs, 5m30s max duration (incl. graceful stop):
+              * default: Up to 1000 looping VUs for 5m0s over 1 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+
+
+running (0m00.9s), 0004/1000 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 0004/1000 VUs  0m00.9s/5m00.0s
+
+running (0m01.9s), 0007/1000 VUs, 1 complete and 0 interrupted iterations
+default   [   1% ] 0007/1000 VUs  0m01.9s/5m00.0s
+
+running (0m02.9s), 0010/1000 VUs, 5 complete and 0 interrupted iterations
+default   [   1% ] 0010/1000 VUs  0m02.9s/5m00.0s
+
+running (0m03.9s), 0014/1000 VUs, 12 complete and 0 interrupted iterations
+default   [   1% ] 0014/1000 VUs  0m03.9s/5m00.0s
+
+running (0m04.9s), 0017/1000 VUs, 20 complete and 0 interrupted iterations
+default   [   2% ] 0017/1000 VUs  0m04.9s/5m00.0s
+
+running (0m05.9s), 0020/1000 VUs, 30 complete and 0 interrupted iterations
+default   [   2% ] 0020/1000 VUs  0m05.9s/5m00.0s
+
+running (0m06.9s), 0024/1000 VUs, 46 complete and 0 interrupted iterations
+default   [   2% ] 0024/1000 VUs  0m06.9s/5m00.0s
+
+running (0m07.9s), 0027/1000 VUs, 64 complete and 0 interrupted iterations
+default   [   3% ] 0027/1000 VUs  0m07.9s/5m00.0s
+
+running (0m08.9s), 0030/1000 VUs, 80 complete and 0 interrupted iterations
+default   [   3% ] 0030/1000 VUs  0m08.9s/5m00.0s
+
+running (0m09.9s), 0034/1000 VUs, 104 complete and 0 interrupted iterations
+default   [   3% ] 0034/1000 VUs  0m09.9s/5m00.0s
+
+running (0m10.9s), 0037/1000 VUs, 124 complete and 0 interrupted iterations
+default   [   4% ] 0037/1000 VUs  0m10.9s/5m00.0s
+
+running (0m11.9s), 0040/1000 VUs, 151 complete and 0 interrupted iterations
+default   [   4% ] 0040/1000 VUs  0m11.9s/5m00.0s
+
+running (0m12.9s), 0044/1000 VUs, 181 complete and 0 interrupted iterations
+default   [   4% ] 0044/1000 VUs  0m12.9s/5m00.0s
+
+running (0m13.9s), 0047/1000 VUs, 215 complete and 0 interrupted iterations
+default   [   5% ] 0047/1000 VUs  0m13.9s/5m00.0s
+
+running (0m14.9s), 0050/1000 VUs, 249 complete and 0 interrupted iterations
+default   [   5% ] 0050/1000 VUs  0m14.9s/5m00.0s
+
+running (0m15.9s), 0054/1000 VUs, 287 complete and 0 interrupted iterations
+default   [   5% ] 0054/1000 VUs  0m15.9s/5m00.0s
+
+running (0m16.9s), 0057/1000 VUs, 320 complete and 0 interrupted iterations
+default   [   6% ] 0057/1000 VUs  0m16.9s/5m00.0s
+
+running (0m17.9s), 0060/1000 VUs, 368 complete and 0 interrupted iterations
+default   [   6% ] 0060/1000 VUs  0m17.9s/5m00.0s
+
+running (0m19.0s), 0064/1000 VUs, 411 complete and 0 interrupted iterations
+default   [   6% ] 0064/1000 VUs  0m19.0s/5m00.0s
+
+running (0m19.9s), 0067/1000 VUs, 457 complete and 0 interrupted iterations
+default   [   7% ] 0067/1000 VUs  0m19.9s/5m00.0s
+
+running (0m20.9s), 0070/1000 VUs, 505 complete and 0 interrupted iterations
+default   [   7% ] 0070/1000 VUs  0m20.9s/5m00.0s
+
+running (0m21.9s), 0074/1000 VUs, 559 complete and 0 interrupted iterations
+default   [   7% ] 0074/1000 VUs  0m21.9s/5m00.0s
+
+running (0m22.9s), 0077/1000 VUs, 617 complete and 0 interrupted iterations
+default   [   8% ] 0077/1000 VUs  0m22.9s/5m00.0s
+
+running (0m23.9s), 0080/1000 VUs, 675 complete and 0 interrupted iterations
+default   [   8% ] 0080/1000 VUs  0m23.9s/5m00.0s
+
+running (0m24.9s), 0084/1000 VUs, 734 complete and 0 interrupted iterations
+default   [   8% ] 0084/1000 VUs  0m24.9s/5m00.0s
+
+running (0m25.9s), 0087/1000 VUs, 791 complete and 0 interrupted iterations
+default   [   9% ] 0087/1000 VUs  0m25.9s/5m00.0s
+
+running (0m26.9s), 0090/1000 VUs, 856 complete and 0 interrupted iterations
+default   [   9% ] 0090/1000 VUs  0m26.9s/5m00.0s
+
+running (0m27.9s), 0094/1000 VUs, 925 complete and 0 interrupted iterations
+default   [   9% ] 0094/1000 VUs  0m27.9s/5m00.0s
+
+running (0m28.9s), 0097/1000 VUs, 992 complete and 0 interrupted iterations
+default   [  10% ] 0097/1000 VUs  0m28.9s/5m00.0s
+
+running (0m29.9s), 0100/1000 VUs, 1074 complete and 0 interrupted iterations
+default   [  10% ] 0100/1000 VUs  0m29.9s/5m00.0s
+
+running (0m30.9s), 0104/1000 VUs, 1139 complete and 0 interrupted iterations
+default   [  10% ] 0104/1000 VUs  0m30.9s/5m00.0s
+
+running (0m31.9s), 0107/1000 VUs, 1226 complete and 0 interrupted iterations
+default   [  11% ] 0107/1000 VUs  0m31.9s/5m00.0s
+
+running (0m32.9s), 0110/1000 VUs, 1309 complete and 0 interrupted iterations
+default   [  11% ] 0110/1000 VUs  0m32.9s/5m00.0s
+
+running (0m33.9s), 0114/1000 VUs, 1385 complete and 0 interrupted iterations
+default   [  11% ] 0114/1000 VUs  0m33.9s/5m00.0s
+
+running (0m34.9s), 0117/1000 VUs, 1483 complete and 0 interrupted iterations
+default   [  12% ] 0117/1000 VUs  0m34.9s/5m00.0s
+
+running (0m35.9s), 0120/1000 VUs, 1577 complete and 0 interrupted iterations
+default   [  12% ] 0120/1000 VUs  0m35.9s/5m00.0s
+
+running (0m36.9s), 0124/1000 VUs, 1659 complete and 0 interrupted iterations
+default   [  12% ] 0124/1000 VUs  0m36.9s/5m00.0s
+
+running (0m37.9s), 0127/1000 VUs, 1757 complete and 0 interrupted iterations
+default   [  13% ] 0127/1000 VUs  0m37.9s/5m00.0s
+
+running (0m38.9s), 0130/1000 VUs, 1855 complete and 0 interrupted iterations
+default   [  13% ] 0130/1000 VUs  0m38.9s/5m00.0s
+
+running (0m39.9s), 0134/1000 VUs, 1953 complete and 0 interrupted iterations
+default   [  13% ] 0134/1000 VUs  0m39.9s/5m00.0s
+
+running (0m40.9s), 0137/1000 VUs, 2059 complete and 0 interrupted iterations
+default   [  14% ] 0137/1000 VUs  0m40.9s/5m00.0s
+
+running (0m41.9s), 0140/1000 VUs, 2158 complete and 0 interrupted iterations
+default   [  14% ] 0140/1000 VUs  0m41.9s/5m00.0s
+
+running (0m42.9s), 0144/1000 VUs, 2255 complete and 0 interrupted iterations
+default   [  14% ] 0144/1000 VUs  0m42.9s/5m00.0s
+
+running (0m43.9s), 0147/1000 VUs, 2363 complete and 0 interrupted iterations
+default   [  15% ] 0147/1000 VUs  0m43.9s/5m00.0s
+
+running (0m44.9s), 0150/1000 VUs, 2470 complete and 0 interrupted iterations
+default   [  15% ] 0150/1000 VUs  0m44.9s/5m00.0s
+
+running (0m45.9s), 0153/1000 VUs, 2580 complete and 0 interrupted iterations
+default   [  15% ] 0153/1000 VUs  0m45.9s/5m00.0s
+
+running (0m46.9s), 0157/1000 VUs, 2679 complete and 0 interrupted iterations
+default   [  16% ] 0157/1000 VUs  0m46.9s/5m00.0s
+
+running (0m47.9s), 0160/1000 VUs, 2806 complete and 0 interrupted iterations
+default   [  16% ] 0160/1000 VUs  0m47.9s/5m00.0s
+
+running (0m48.9s), 0163/1000 VUs, 2926 complete and 0 interrupted iterations
+default   [  16% ] 0163/1000 VUs  0m48.9s/5m00.0s
+
+running (0m49.9s), 0167/1000 VUs, 3047 complete and 0 interrupted iterations
+default   [  17% ] 0167/1000 VUs  0m49.9s/5m00.0s
+
+running (0m50.9s), 0170/1000 VUs, 3160 complete and 0 interrupted iterations
+default   [  17% ] 0170/1000 VUs  0m50.9s/5m00.0s
+
+running (0m51.9s), 0173/1000 VUs, 3299 complete and 0 interrupted iterations
+default   [  17% ] 0173/1000 VUs  0m51.9s/5m00.0s
+
+running (0m52.9s), 0177/1000 VUs, 3419 complete and 0 interrupted iterations
+default   [  18% ] 0177/1000 VUs  0m52.9s/5m00.0s
+
+running (0m53.9s), 0180/1000 VUs, 3562 complete and 0 interrupted iterations
+default   [  18% ] 0180/1000 VUs  0m53.9s/5m00.0s
+
+running (0m54.9s), 0183/1000 VUs, 3704 complete and 0 interrupted iterations
+default   [  18% ] 0183/1000 VUs  0m54.9s/5m00.0s
+
+running (0m55.9s), 0187/1000 VUs, 3832 complete and 0 interrupted iterations
+default   [  19% ] 0187/1000 VUs  0m55.9s/5m00.0s
+
+running (0m56.9s), 0190/1000 VUs, 3943 complete and 0 interrupted iterations
+default   [  19% ] 0190/1000 VUs  0m56.9s/5m00.0s
+
+running (0m57.9s), 0193/1000 VUs, 4063 complete and 0 interrupted iterations
+default   [  19% ] 0193/1000 VUs  0m57.9s/5m00.0s
+
+running (0m58.9s), 0197/1000 VUs, 4180 complete and 0 interrupted iterations
+default   [  20% ] 0197/1000 VUs  0m58.9s/5m00.0s
+
+running (0m59.9s), 0200/1000 VUs, 4342 complete and 0 interrupted iterations
+default   [  20% ] 0200/1000 VUs  0m59.9s/5m00.0s
+
+running (1m00.9s), 0203/1000 VUs, 4483 complete and 0 interrupted iterations
+default   [  20% ] 0203/1000 VUs  1m00.9s/5m00.0s
+
+running (1m01.9s), 0207/1000 VUs, 4625 complete and 0 interrupted iterations
+default   [  21% ] 0207/1000 VUs  1m01.9s/5m00.0s
+
+running (1m02.9s), 0210/1000 VUs, 4790 complete and 0 interrupted iterations
+default   [  21% ] 0210/1000 VUs  1m02.9s/5m00.0s
+
+running (1m03.9s), 0213/1000 VUs, 4923 complete and 0 interrupted iterations
+default   [  21% ] 0213/1000 VUs  1m03.9s/5m00.0s
+
+running (1m04.9s), 0217/1000 VUs, 5056 complete and 0 interrupted iterations
+default   [  22% ] 0217/1000 VUs  1m04.9s/5m00.0s
+
+running (1m05.9s), 0220/1000 VUs, 5196 complete and 0 interrupted iterations
+default   [  22% ] 0220/1000 VUs  1m05.9s/5m00.0s
+
+running (1m06.9s), 0223/1000 VUs, 5371 complete and 0 interrupted iterations
+default   [  22% ] 0223/1000 VUs  1m06.9s/5m00.0s
+
+running (1m07.9s), 0227/1000 VUs, 5526 complete and 0 interrupted iterations
+default   [  23% ] 0227/1000 VUs  1m07.9s/5m00.0s
+
+running (1m08.9s), 0230/1000 VUs, 5691 complete and 0 interrupted iterations
+default   [  23% ] 0230/1000 VUs  1m08.9s/5m00.0s
+
+running (1m09.9s), 0233/1000 VUs, 5865 complete and 0 interrupted iterations
+default   [  23% ] 0233/1000 VUs  1m09.9s/5m00.0s
+
+running (1m10.9s), 0237/1000 VUs, 6040 complete and 0 interrupted iterations
+default   [  24% ] 0237/1000 VUs  1m10.9s/5m00.0s
+
+running (1m11.9s), 0240/1000 VUs, 6199 complete and 0 interrupted iterations
+default   [  24% ] 0240/1000 VUs  1m11.9s/5m00.0s
+
+running (1m12.9s), 0243/1000 VUs, 6387 complete and 0 interrupted iterations
+default   [  24% ] 0243/1000 VUs  1m12.9s/5m00.0s
+
+running (1m13.9s), 0247/1000 VUs, 6551 complete and 0 interrupted iterations
+default   [  25% ] 0247/1000 VUs  1m13.9s/5m00.0s
+
+running (1m14.9s), 0250/1000 VUs, 6748 complete and 0 interrupted iterations
+default   [  25% ] 0250/1000 VUs  1m14.9s/5m00.0s
+
+running (1m15.9s), 0253/1000 VUs, 6951 complete and 0 interrupted iterations
+default   [  25% ] 0253/1000 VUs  1m15.9s/5m00.0s
+
+running (1m16.9s), 0257/1000 VUs, 7143 complete and 0 interrupted iterations
+default   [  26% ] 0257/1000 VUs  1m16.9s/5m00.0s
+
+running (1m17.9s), 0260/1000 VUs, 7336 complete and 0 interrupted iterations
+default   [  26% ] 0260/1000 VUs  1m17.9s/5m00.0s
+
+running (1m18.9s), 0263/1000 VUs, 7516 complete and 0 interrupted iterations
+default   [  26% ] 0263/1000 VUs  1m18.9s/5m00.0s
+
+running (1m19.9s), 0267/1000 VUs, 7707 complete and 0 interrupted iterations
+default   [  27% ] 0267/1000 VUs  1m19.9s/5m00.0s
+
+running (1m20.9s), 0270/1000 VUs, 7888 complete and 0 interrupted iterations
+default   [  27% ] 0270/1000 VUs  1m20.9s/5m00.0s
+
+running (1m21.9s), 0273/1000 VUs, 7993 complete and 0 interrupted iterations
+default   [  27% ] 0273/1000 VUs  1m21.9s/5m00.0s
+
+running (1m22.9s), 0277/1000 VUs, 8094 complete and 0 interrupted iterations
+default   [  28% ] 0277/1000 VUs  1m22.9s/5m00.0s
+
+running (1m23.9s), 0280/1000 VUs, 8336 complete and 0 interrupted iterations
+default   [  28% ] 0280/1000 VUs  1m23.9s/5m00.0s
+
+running (1m24.9s), 0283/1000 VUs, 8555 complete and 0 interrupted iterations
+default   [  28% ] 0283/1000 VUs  1m24.9s/5m00.0s
+
+running (1m26.0s), 0287/1000 VUs, 8724 complete and 0 interrupted iterations
+default   [  29% ] 0287/1000 VUs  1m26.0s/5m00.0s
+
+running (1m26.9s), 0290/1000 VUs, 8949 complete and 0 interrupted iterations
+default   [  29% ] 0290/1000 VUs  1m26.9s/5m00.0s
+
+running (1m27.9s), 0293/1000 VUs, 9154 complete and 0 interrupted iterations
+default   [  29% ] 0293/1000 VUs  1m27.9s/5m00.0s
+
+running (1m28.9s), 0297/1000 VUs, 9369 complete and 0 interrupted iterations
+default   [  30% ] 0297/1000 VUs  1m28.9s/5m00.0s
+
+running (1m29.9s), 0300/1000 VUs, 9556 complete and 0 interrupted iterations
+default   [  30% ] 0300/1000 VUs  1m29.9s/5m00.0s
+
+running (1m30.9s), 0303/1000 VUs, 9768 complete and 0 interrupted iterations
+default   [  30% ] 0303/1000 VUs  1m30.9s/5m00.0s
+
+running (1m31.9s), 0307/1000 VUs, 9974 complete and 0 interrupted iterations
+default   [  31% ] 0307/1000 VUs  1m31.9s/5m00.0s
+
+running (1m32.9s), 0310/1000 VUs, 10154 complete and 0 interrupted iterations
+default   [  31% ] 0310/1000 VUs  1m32.9s/5m00.0s
+
+running (1m33.9s), 0313/1000 VUs, 10332 complete and 0 interrupted iterations
+default   [  31% ] 0313/1000 VUs  1m33.9s/5m00.0s
+
+running (1m34.9s), 0317/1000 VUs, 10484 complete and 0 interrupted iterations
+default   [  32% ] 0317/1000 VUs  1m34.9s/5m00.0s
+
+running (1m35.9s), 0320/1000 VUs, 10702 complete and 0 interrupted iterations
+default   [  32% ] 0320/1000 VUs  1m35.9s/5m00.0s
+
+running (1m36.9s), 0323/1000 VUs, 10911 complete and 0 interrupted iterations
+default   [  32% ] 0323/1000 VUs  1m36.9s/5m00.0s
+
+running (1m37.9s), 0327/1000 VUs, 11089 complete and 0 interrupted iterations
+default   [  33% ] 0327/1000 VUs  1m37.9s/5m00.0s
+
+running (1m38.9s), 0330/1000 VUs, 11331 complete and 0 interrupted iterations
+default   [  33% ] 0330/1000 VUs  1m38.9s/5m00.0s
+
+running (1m39.9s), 0333/1000 VUs, 11558 complete and 0 interrupted iterations
+default   [  33% ] 0333/1000 VUs  1m39.9s/5m00.0s
+
+running (1m40.9s), 0337/1000 VUs, 11794 complete and 0 interrupted iterations
+default   [  34% ] 0337/1000 VUs  1m40.9s/5m00.0s
+
+running (1m41.9s), 0340/1000 VUs, 11965 complete and 0 interrupted iterations
+default   [  34% ] 0340/1000 VUs  1m41.9s/5m00.0s
+
+running (1m42.9s), 0343/1000 VUs, 12198 complete and 0 interrupted iterations
+default   [  34% ] 0343/1000 VUs  1m42.9s/5m00.0s
+
+running (1m43.9s), 0347/1000 VUs, 12493 complete and 0 interrupted iterations
+default   [  35% ] 0347/1000 VUs  1m43.9s/5m00.0s
+
+running (1m44.9s), 0350/1000 VUs, 12726 complete and 0 interrupted iterations
+default   [  35% ] 0350/1000 VUs  1m44.9s/5m00.0s
+
+running (1m45.9s), 0353/1000 VUs, 12989 complete and 0 interrupted iterations
+default   [  35% ] 0353/1000 VUs  1m45.9s/5m00.0s
+
+running (1m46.9s), 0357/1000 VUs, 13282 complete and 0 interrupted iterations
+default   [  36% ] 0357/1000 VUs  1m46.9s/5m00.0s
+
+running (1m47.9s), 0360/1000 VUs, 13579 complete and 0 interrupted iterations
+default   [  36% ] 0360/1000 VUs  1m47.9s/5m00.0s
+
+running (1m48.9s), 0363/1000 VUs, 13864 complete and 0 interrupted iterations
+default   [  36% ] 0363/1000 VUs  1m48.9s/5m00.0s
+
+running (1m49.9s), 0367/1000 VUs, 14131 complete and 0 interrupted iterations
+default   [  37% ] 0367/1000 VUs  1m49.9s/5m00.0s
+
+running (1m50.9s), 0370/1000 VUs, 14424 complete and 0 interrupted iterations
+default   [  37% ] 0370/1000 VUs  1m50.9s/5m00.0s
+
+running (1m51.9s), 0373/1000 VUs, 14719 complete and 0 interrupted iterations
+default   [  37% ] 0373/1000 VUs  1m51.9s/5m00.0s
+
+running (1m52.9s), 0377/1000 VUs, 15022 complete and 0 interrupted iterations
+default   [  38% ] 0377/1000 VUs  1m52.9s/5m00.0s
+
+running (1m53.9s), 0380/1000 VUs, 15306 complete and 0 interrupted iterations
+default   [  38% ] 0380/1000 VUs  1m53.9s/5m00.0s
+
+running (1m54.9s), 0383/1000 VUs, 15620 complete and 0 interrupted iterations
+default   [  38% ] 0383/1000 VUs  1m54.9s/5m00.0s
+
+running (1m55.9s), 0387/1000 VUs, 15915 complete and 0 interrupted iterations
+default   [  39% ] 0387/1000 VUs  1m55.9s/5m00.0s
+
+running (1m56.9s), 0390/1000 VUs, 16205 complete and 0 interrupted iterations
+default   [  39% ] 0390/1000 VUs  1m56.9s/5m00.0s
+
+running (1m57.9s), 0393/1000 VUs, 16342 complete and 0 interrupted iterations
+default   [  39% ] 0393/1000 VUs  1m57.9s/5m00.0s
+
+running (1m58.9s), 0397/1000 VUs, 16542 complete and 0 interrupted iterations
+default   [  40% ] 0397/1000 VUs  1m58.9s/5m00.0s
+
+running (1m59.9s), 0400/1000 VUs, 16737 complete and 0 interrupted iterations
+default   [  40% ] 0400/1000 VUs  1m59.9s/5m00.0s
+
+running (2m00.9s), 0403/1000 VUs, 17022 complete and 0 interrupted iterations
+default   [  40% ] 0403/1000 VUs  2m00.9s/5m00.0s
+
+running (2m01.9s), 0407/1000 VUs, 17259 complete and 0 interrupted iterations
+default   [  41% ] 0407/1000 VUs  2m01.9s/5m00.0s
+
+running (2m02.9s), 0410/1000 VUs, 17469 complete and 0 interrupted iterations
+default   [  41% ] 0410/1000 VUs  2m02.9s/5m00.0s
+
+running (2m03.9s), 0413/1000 VUs, 17690 complete and 0 interrupted iterations
+default   [  41% ] 0413/1000 VUs  2m03.9s/5m00.0s
+
+running (2m04.9s), 0417/1000 VUs, 17946 complete and 0 interrupted iterations
+default   [  42% ] 0417/1000 VUs  2m04.9s/5m00.0s
+
+running (2m05.9s), 0420/1000 VUs, 18218 complete and 0 interrupted iterations
+default   [  42% ] 0420/1000 VUs  2m05.9s/5m00.0s
+
+running (2m06.9s), 0423/1000 VUs, 18435 complete and 0 interrupted iterations
+default   [  42% ] 0423/1000 VUs  2m06.9s/5m00.0s
+
+running (2m07.9s), 0427/1000 VUs, 18624 complete and 0 interrupted iterations
+default   [  43% ] 0427/1000 VUs  2m07.9s/5m00.0s
+
+running (2m08.9s), 0430/1000 VUs, 18856 complete and 0 interrupted iterations
+default   [  43% ] 0430/1000 VUs  2m08.9s/5m00.0s
+
+running (2m09.9s), 0433/1000 VUs, 19143 complete and 0 interrupted iterations
+default   [  43% ] 0433/1000 VUs  2m09.9s/5m00.0s
+
+running (2m10.9s), 0437/1000 VUs, 19415 complete and 0 interrupted iterations
+default   [  44% ] 0437/1000 VUs  2m10.9s/5m00.0s
+
+running (2m11.9s), 0440/1000 VUs, 19567 complete and 0 interrupted iterations
+default   [  44% ] 0440/1000 VUs  2m11.9s/5m00.0s
+
+running (2m12.9s), 0443/1000 VUs, 19802 complete and 0 interrupted iterations
+default   [  44% ] 0443/1000 VUs  2m12.9s/5m00.0s
+
+running (2m13.9s), 0447/1000 VUs, 20022 complete and 0 interrupted iterations
+default   [  45% ] 0447/1000 VUs  2m13.9s/5m00.0s
+
+running (2m14.9s), 0450/1000 VUs, 20246 complete and 0 interrupted iterations
+default   [  45% ] 0450/1000 VUs  2m14.9s/5m00.0s
+
+running (2m15.9s), 0453/1000 VUs, 20481 complete and 0 interrupted iterations
+default   [  45% ] 0453/1000 VUs  2m15.9s/5m00.0s
+
+running (2m16.9s), 0457/1000 VUs, 20752 complete and 0 interrupted iterations
+default   [  46% ] 0457/1000 VUs  2m16.9s/5m00.0s
+
+running (2m17.9s), 0460/1000 VUs, 21036 complete and 0 interrupted iterations
+default   [  46% ] 0460/1000 VUs  2m17.9s/5m00.0s
+
+running (2m18.9s), 0463/1000 VUs, 21331 complete and 0 interrupted iterations
+default   [  46% ] 0463/1000 VUs  2m18.9s/5m00.0s
+
+running (2m19.9s), 0467/1000 VUs, 21598 complete and 0 interrupted iterations
+default   [  47% ] 0467/1000 VUs  2m19.9s/5m00.0s
+
+running (2m20.9s), 0470/1000 VUs, 21819 complete and 0 interrupted iterations
+default   [  47% ] 0470/1000 VUs  2m20.9s/5m00.0s
+
+running (2m21.9s), 0473/1000 VUs, 22051 complete and 0 interrupted iterations
+default   [  47% ] 0473/1000 VUs  2m21.9s/5m00.0s
+
+running (2m22.9s), 0477/1000 VUs, 22309 complete and 0 interrupted iterations
+default   [  48% ] 0477/1000 VUs  2m22.9s/5m00.0s
+
+running (2m23.9s), 0480/1000 VUs, 22597 complete and 0 interrupted iterations
+default   [  48% ] 0480/1000 VUs  2m23.9s/5m00.0s
+
+running (2m24.9s), 0483/1000 VUs, 22804 complete and 0 interrupted iterations
+default   [  48% ] 0483/1000 VUs  2m24.9s/5m00.0s
+
+running (2m25.9s), 0487/1000 VUs, 23053 complete and 0 interrupted iterations
+default   [  49% ] 0487/1000 VUs  2m25.9s/5m00.0s
+
+running (2m26.9s), 0490/1000 VUs, 23286 complete and 0 interrupted iterations
+default   [  49% ] 0490/1000 VUs  2m26.9s/5m00.0s
+
+running (2m27.9s), 0493/1000 VUs, 23578 complete and 0 interrupted iterations
+default   [  49% ] 0493/1000 VUs  2m27.9s/5m00.0s
+
+running (2m28.9s), 0496/1000 VUs, 23719 complete and 0 interrupted iterations
+default   [  50% ] 0496/1000 VUs  2m28.9s/5m00.0s
+
+running (2m29.9s), 0500/1000 VUs, 23885 complete and 0 interrupted iterations
+default   [  50% ] 0500/1000 VUs  2m29.9s/5m00.0s
+
+running (2m30.9s), 0503/1000 VUs, 24179 complete and 0 interrupted iterations
+default   [  50% ] 0503/1000 VUs  2m30.9s/5m00.0s
+
+running (2m31.9s), 0506/1000 VUs, 24454 complete and 0 interrupted iterations
+default   [  51% ] 0506/1000 VUs  2m31.9s/5m00.0s
+
+running (2m32.9s), 0510/1000 VUs, 24663 complete and 0 interrupted iterations
+default   [  51% ] 0510/1000 VUs  2m32.9s/5m00.0s
+
+running (2m33.9s), 0513/1000 VUs, 24711 complete and 0 interrupted iterations
+default   [  51% ] 0513/1000 VUs  2m33.9s/5m00.0s
+
+running (2m34.9s), 0516/1000 VUs, 24739 complete and 0 interrupted iterations
+default   [  52% ] 0516/1000 VUs  2m34.9s/5m00.0s
+
+running (2m35.9s), 0520/1000 VUs, 24834 complete and 0 interrupted iterations
+default   [  52% ] 0520/1000 VUs  2m35.9s/5m00.0s
+
+running (2m36.9s), 0523/1000 VUs, 25151 complete and 0 interrupted iterations
+default   [  52% ] 0523/1000 VUs  2m36.9s/5m00.0s
+
+running (2m37.9s), 0526/1000 VUs, 25307 complete and 0 interrupted iterations
+default   [  53% ] 0526/1000 VUs  2m37.9s/5m00.0s
+
+running (2m38.9s), 0530/1000 VUs, 25542 complete and 0 interrupted iterations
+default   [  53% ] 0530/1000 VUs  2m38.9s/5m00.0s
+
+running (2m39.9s), 0533/1000 VUs, 25666 complete and 0 interrupted iterations
+default   [  53% ] 0533/1000 VUs  2m39.9s/5m00.0s
+
+running (2m40.9s), 0536/1000 VUs, 25979 complete and 0 interrupted iterations
+default   [  54% ] 0536/1000 VUs  2m40.9s/5m00.0s
+
+running (2m41.9s), 0540/1000 VUs, 26274 complete and 0 interrupted iterations
+default   [  54% ] 0540/1000 VUs  2m41.9s/5m00.0s
+
+running (2m42.9s), 0543/1000 VUs, 26408 complete and 0 interrupted iterations
+default   [  54% ] 0543/1000 VUs  2m42.9s/5m00.0s
+
+running (2m43.9s), 0546/1000 VUs, 26661 complete and 0 interrupted iterations
+default   [  55% ] 0546/1000 VUs  2m43.9s/5m00.0s
+
+running (2m44.9s), 0550/1000 VUs, 26946 complete and 0 interrupted iterations
+default   [  55% ] 0550/1000 VUs  2m44.9s/5m00.0s
+
+running (2m45.9s), 0553/1000 VUs, 27180 complete and 0 interrupted iterations
+default   [  55% ] 0553/1000 VUs  2m45.9s/5m00.0s
+
+running (2m46.9s), 0556/1000 VUs, 27381 complete and 0 interrupted iterations
+default   [  56% ] 0556/1000 VUs  2m46.9s/5m00.0s
+
+running (2m47.9s), 0560/1000 VUs, 27614 complete and 0 interrupted iterations
+default   [  56% ] 0560/1000 VUs  2m47.9s/5m00.0s
+
+running (2m48.9s), 0563/1000 VUs, 27877 complete and 0 interrupted iterations
+default   [  56% ] 0563/1000 VUs  2m48.9s/5m00.0s
+
+running (2m49.9s), 0566/1000 VUs, 28117 complete and 0 interrupted iterations
+default   [  57% ] 0566/1000 VUs  2m49.9s/5m00.0s
+
+running (2m50.9s), 0570/1000 VUs, 28343 complete and 0 interrupted iterations
+default   [  57% ] 0570/1000 VUs  2m50.9s/5m00.0s
+
+running (2m51.9s), 0573/1000 VUs, 28530 complete and 0 interrupted iterations
+default   [  57% ] 0573/1000 VUs  2m51.9s/5m00.0s
+
+running (2m52.9s), 0576/1000 VUs, 28807 complete and 0 interrupted iterations
+default   [  58% ] 0576/1000 VUs  2m52.9s/5m00.0s
+
+running (2m53.9s), 0580/1000 VUs, 29032 complete and 0 interrupted iterations
+default   [  58% ] 0580/1000 VUs  2m53.9s/5m00.0s
+
+running (2m54.9s), 0583/1000 VUs, 29208 complete and 0 interrupted iterations
+default   [  58% ] 0583/1000 VUs  2m54.9s/5m00.0s
+
+running (2m55.9s), 0586/1000 VUs, 29379 complete and 0 interrupted iterations
+default   [  59% ] 0586/1000 VUs  2m55.9s/5m00.0s
+
+running (2m56.9s), 0590/1000 VUs, 29689 complete and 0 interrupted iterations
+default   [  59% ] 0590/1000 VUs  2m56.9s/5m00.0s
+
+running (2m57.9s), 0593/1000 VUs, 29758 complete and 0 interrupted iterations
+default   [  59% ] 0593/1000 VUs  2m57.9s/5m00.0s
+
+running (2m58.9s), 0596/1000 VUs, 29777 complete and 0 interrupted iterations
+default   [  60% ] 0596/1000 VUs  2m58.9s/5m00.0s
+
+running (2m59.9s), 0600/1000 VUs, 29878 complete and 0 interrupted iterations
+default   [  60% ] 0600/1000 VUs  2m59.9s/5m00.0s
+
+running (3m00.9s), 0603/1000 VUs, 30227 complete and 0 interrupted iterations
+default   [  60% ] 0603/1000 VUs  3m00.9s/5m00.0s
+
+running (3m01.9s), 0606/1000 VUs, 30526 complete and 0 interrupted iterations
+default   [  61% ] 0606/1000 VUs  3m01.9s/5m00.0s
+
+running (3m02.9s), 0610/1000 VUs, 30615 complete and 0 interrupted iterations
+default   [  61% ] 0610/1000 VUs  3m02.9s/5m00.0s
+
+running (3m03.9s), 0613/1000 VUs, 30632 complete and 0 interrupted iterations
+default   [  61% ] 0613/1000 VUs  3m03.9s/5m00.0s
+
+running (3m04.9s), 0616/1000 VUs, 30683 complete and 0 interrupted iterations
+default   [  62% ] 0616/1000 VUs  3m04.9s/5m00.0s
+
+running (3m05.9s), 0620/1000 VUs, 31036 complete and 0 interrupted iterations
+default   [  62% ] 0620/1000 VUs  3m05.9s/5m00.0s
+
+running (3m06.9s), 0623/1000 VUs, 31413 complete and 0 interrupted iterations
+default   [  62% ] 0623/1000 VUs  3m06.9s/5m00.0s
+
+running (3m07.9s), 0626/1000 VUs, 31798 complete and 0 interrupted iterations
+default   [  63% ] 0626/1000 VUs  3m07.9s/5m00.0s
+
+running (3m08.9s), 0630/1000 VUs, 32148 complete and 0 interrupted iterations
+default   [  63% ] 0630/1000 VUs  3m08.9s/5m00.0s
+
+running (3m09.9s), 0633/1000 VUs, 32536 complete and 0 interrupted iterations
+default   [  63% ] 0633/1000 VUs  3m09.9s/5m00.0s
+
+running (3m10.9s), 0636/1000 VUs, 32749 complete and 0 interrupted iterations
+default   [  64% ] 0636/1000 VUs  3m10.9s/5m00.0s
+
+running (3m11.9s), 0640/1000 VUs, 33256 complete and 0 interrupted iterations
+default   [  64% ] 0640/1000 VUs  3m11.9s/5m00.0s
+
+running (3m12.9s), 0643/1000 VUs, 33595 complete and 0 interrupted iterations
+default   [  64% ] 0643/1000 VUs  3m12.9s/5m00.0s
+
+running (3m13.9s), 0646/1000 VUs, 33895 complete and 0 interrupted iterations
+default   [  65% ] 0646/1000 VUs  3m13.9s/5m00.0s
+
+running (3m14.9s), 0650/1000 VUs, 34078 complete and 0 interrupted iterations
+default   [  65% ] 0650/1000 VUs  3m14.9s/5m00.0s
+time="2026-05-30T16:46:00+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/evaluations/my-evaluations\": read tcp 192.168.8.13:62054->66.33.22.160:443: read: connection reset by peer"
+
+running (3m15.9s), 0653/1000 VUs, 34271 complete and 0 interrupted iterations
+default   [  65% ] 0653/1000 VUs  3m15.9s/5m00.0s
+
+running (3m16.9s), 0656/1000 VUs, 34681 complete and 0 interrupted iterations
+default   [  66% ] 0656/1000 VUs  3m16.9s/5m00.0s
+
+running (3m17.9s), 0660/1000 VUs, 34972 complete and 0 interrupted iterations
+default   [  66% ] 0660/1000 VUs  3m17.9s/5m00.0s
+
+running (3m18.9s), 0663/1000 VUs, 35236 complete and 0 interrupted iterations
+default   [  66% ] 0663/1000 VUs  3m18.9s/5m00.0s
+
+running (3m19.9s), 0666/1000 VUs, 35458 complete and 0 interrupted iterations
+default   [  67% ] 0666/1000 VUs  3m19.9s/5m00.0s
+
+running (3m20.9s), 0670/1000 VUs, 35650 complete and 0 interrupted iterations
+default   [  67% ] 0670/1000 VUs  3m20.9s/5m00.0s
+
+running (3m21.9s), 0673/1000 VUs, 35899 complete and 0 interrupted iterations
+default   [  67% ] 0673/1000 VUs  3m21.9s/5m00.0s
+
+running (3m22.9s), 0676/1000 VUs, 35983 complete and 0 interrupted iterations
+default   [  68% ] 0676/1000 VUs  3m22.9s/5m00.0s
+
+running (3m23.9s), 0680/1000 VUs, 36165 complete and 0 interrupted iterations
+default   [  68% ] 0680/1000 VUs  3m23.9s/5m00.0s
+
+running (3m24.9s), 0683/1000 VUs, 36409 complete and 0 interrupted iterations
+default   [  68% ] 0683/1000 VUs  3m24.9s/5m00.0s
+
+running (3m25.9s), 0686/1000 VUs, 36615 complete and 0 interrupted iterations
+default   [  69% ] 0686/1000 VUs  3m25.9s/5m00.0s
+
+running (3m26.9s), 0690/1000 VUs, 36810 complete and 0 interrupted iterations
+default   [  69% ] 0690/1000 VUs  3m26.9s/5m00.0s
+
+running (3m27.9s), 0693/1000 VUs, 37051 complete and 0 interrupted iterations
+default   [  69% ] 0693/1000 VUs  3m27.9s/5m00.0s
+
+running (3m28.9s), 0696/1000 VUs, 37259 complete and 0 interrupted iterations
+default   [  70% ] 0696/1000 VUs  3m28.9s/5m00.0s
+
+running (3m29.9s), 0700/1000 VUs, 37527 complete and 0 interrupted iterations
+default   [  70% ] 0700/1000 VUs  3m29.9s/5m00.0s
+
+running (3m30.9s), 0703/1000 VUs, 37715 complete and 0 interrupted iterations
+default   [  70% ] 0703/1000 VUs  3m30.9s/5m00.0s
+
+running (3m31.9s), 0706/1000 VUs, 37826 complete and 0 interrupted iterations
+default   [  71% ] 0706/1000 VUs  3m31.9s/5m00.0s
+
+running (3m32.9s), 0710/1000 VUs, 37894 complete and 0 interrupted iterations
+default   [  71% ] 0710/1000 VUs  3m32.9s/5m00.0s
+
+running (3m33.9s), 0713/1000 VUs, 38136 complete and 0 interrupted iterations
+default   [  71% ] 0713/1000 VUs  3m33.9s/5m00.0s
+
+running (3m34.9s), 0716/1000 VUs, 38343 complete and 0 interrupted iterations
+default   [  72% ] 0716/1000 VUs  3m34.9s/5m00.0s
+
+running (3m35.9s), 0720/1000 VUs, 38505 complete and 0 interrupted iterations
+default   [  72% ] 0720/1000 VUs  3m35.9s/5m00.0s
+
+running (3m36.9s), 0723/1000 VUs, 38660 complete and 0 interrupted iterations
+default   [  72% ] 0723/1000 VUs  3m36.9s/5m00.0s
+
+running (3m37.9s), 0726/1000 VUs, 38848 complete and 0 interrupted iterations
+default   [  73% ] 0726/1000 VUs  3m37.9s/5m00.0s
+
+running (3m38.9s), 0730/1000 VUs, 39123 complete and 0 interrupted iterations
+default   [  73% ] 0730/1000 VUs  3m38.9s/5m00.0s
+time="2026-05-30T16:46:24+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62234->66.33.22.160:443: read: connection reset by peer"
+
+running (3m39.9s), 0733/1000 VUs, 39272 complete and 0 interrupted iterations
+default   [  73% ] 0733/1000 VUs  3m39.9s/5m00.0s
+
+running (3m40.9s), 0736/1000 VUs, 39510 complete and 0 interrupted iterations
+default   [  74% ] 0736/1000 VUs  3m40.9s/5m00.0s
+
+running (3m41.9s), 0740/1000 VUs, 39735 complete and 0 interrupted iterations
+default   [  74% ] 0740/1000 VUs  3m41.9s/5m00.0s
+
+running (3m42.9s), 0743/1000 VUs, 39871 complete and 0 interrupted iterations
+default   [  74% ] 0743/1000 VUs  3m42.9s/5m00.0s
+
+running (3m43.9s), 0746/1000 VUs, 40067 complete and 0 interrupted iterations
+default   [  75% ] 0746/1000 VUs  3m43.9s/5m00.0s
+
+running (3m44.9s), 0750/1000 VUs, 40543 complete and 0 interrupted iterations
+default   [  75% ] 0750/1000 VUs  3m44.9s/5m00.0s
+
+running (3m45.9s), 0753/1000 VUs, 40877 complete and 0 interrupted iterations
+default   [  75% ] 0753/1000 VUs  3m45.9s/5m00.0s
+
+running (3m46.9s), 0756/1000 VUs, 41134 complete and 0 interrupted iterations
+default   [  76% ] 0756/1000 VUs  3m46.9s/5m00.0s
+
+running (3m47.9s), 0760/1000 VUs, 41435 complete and 0 interrupted iterations
+default   [  76% ] 0760/1000 VUs  3m47.9s/5m00.0s
+
+running (3m48.9s), 0763/1000 VUs, 41772 complete and 0 interrupted iterations
+default   [  76% ] 0763/1000 VUs  3m48.9s/5m00.0s
+
+running (3m49.9s), 0766/1000 VUs, 42028 complete and 0 interrupted iterations
+default   [  77% ] 0766/1000 VUs  3m49.9s/5m00.0s
+
+running (3m50.9s), 0770/1000 VUs, 42237 complete and 0 interrupted iterations
+default   [  77% ] 0770/1000 VUs  3m50.9s/5m00.0s
+time="2026-05-30T16:46:36+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62477->66.33.22.160:443: read: connection reset by peer"
+
+running (3m51.9s), 0773/1000 VUs, 42446 complete and 0 interrupted iterations
+default   [  77% ] 0773/1000 VUs  3m51.9s/5m00.0s
+
+running (3m52.9s), 0776/1000 VUs, 42813 complete and 0 interrupted iterations
+default   [  78% ] 0776/1000 VUs  3m52.9s/5m00.0s
+
+running (3m53.9s), 0780/1000 VUs, 43228 complete and 0 interrupted iterations
+default   [  78% ] 0780/1000 VUs  3m53.9s/5m00.0s
+
+running (3m54.9s), 0783/1000 VUs, 43560 complete and 0 interrupted iterations
+default   [  78% ] 0783/1000 VUs  3m54.9s/5m00.0s
+
+running (3m55.9s), 0786/1000 VUs, 43951 complete and 0 interrupted iterations
+default   [  79% ] 0786/1000 VUs  3m55.9s/5m00.0s
+time="2026-05-30T16:46:41+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62634->66.33.22.160:443: read: connection reset by peer"
+
+running (3m56.9s), 0790/1000 VUs, 44325 complete and 0 interrupted iterations
+default   [  79% ] 0790/1000 VUs  3m56.9s/5m00.0s
+
+running (3m57.9s), 0793/1000 VUs, 44684 complete and 0 interrupted iterations
+default   [  79% ] 0793/1000 VUs  3m57.9s/5m00.0s
+
+running (3m58.9s), 0796/1000 VUs, 44952 complete and 0 interrupted iterations
+default   [  80% ] 0796/1000 VUs  3m58.9s/5m00.0s
+time="2026-05-30T16:46:43+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62409->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:46:44+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62580->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:46:44+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62594->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:46:44+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62076->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:46:44+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62217->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:46:44+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62058->66.33.22.160:443: read: connection reset by peer"
+
+running (3m59.9s), 0800/1000 VUs, 45254 complete and 0 interrupted iterations
+default   [  80% ] 0800/1000 VUs  3m59.9s/5m00.0s
+time="2026-05-30T16:46:45+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62290->66.33.22.160:443: read: connection reset by peer"
+
+running (4m00.9s), 0803/1000 VUs, 45513 complete and 0 interrupted iterations
+default   [  80% ] 0803/1000 VUs  4m00.9s/5m00.0s
+
+running (4m01.9s), 0806/1000 VUs, 45684 complete and 0 interrupted iterations
+default   [  81% ] 0806/1000 VUs  4m01.9s/5m00.0s
+
+running (4m02.9s), 0810/1000 VUs, 45958 complete and 0 interrupted iterations
+default   [  81% ] 0810/1000 VUs  4m02.9s/5m00.0s
+
+running (4m03.9s), 0813/1000 VUs, 46348 complete and 0 interrupted iterations
+default   [  81% ] 0813/1000 VUs  4m03.9s/5m00.0s
+
+running (4m04.9s), 0816/1000 VUs, 46684 complete and 0 interrupted iterations
+default   [  82% ] 0816/1000 VUs  4m04.9s/5m00.0s
+
+running (4m05.9s), 0819/1000 VUs, 46958 complete and 0 interrupted iterations
+default   [  82% ] 0819/1000 VUs  4m05.9s/5m00.0s
+time="2026-05-30T16:46:50+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62224->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:46:51+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62310->66.33.22.160:443: read: connection reset by peer"
+
+running (4m06.9s), 0823/1000 VUs, 47274 complete and 0 interrupted iterations
+default   [  82% ] 0823/1000 VUs  4m06.9s/5m00.0s
+
+running (4m07.9s), 0826/1000 VUs, 47692 complete and 0 interrupted iterations
+default   [  83% ] 0826/1000 VUs  4m07.9s/5m00.0s
+time="2026-05-30T16:46:52+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62526->66.33.22.160:443: read: connection reset by peer"
+
+running (4m08.9s), 0829/1000 VUs, 48042 complete and 0 interrupted iterations
+default   [  83% ] 0829/1000 VUs  4m08.9s/5m00.0s
+
+running (4m09.9s), 0833/1000 VUs, 48354 complete and 0 interrupted iterations
+default   [  83% ] 0833/1000 VUs  4m09.9s/5m00.0s
+
+running (4m10.9s), 0836/1000 VUs, 48712 complete and 0 interrupted iterations
+default   [  84% ] 0836/1000 VUs  4m10.9s/5m00.0s
+time="2026-05-30T16:46:56+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62669->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:46:56+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/evaluations/my-evaluations\": read tcp 192.168.8.13:62382->66.33.22.160:443: read: connection reset by peer"
+
+running (4m11.9s), 0839/1000 VUs, 48989 complete and 0 interrupted iterations
+default   [  84% ] 0839/1000 VUs  4m11.9s/5m00.0s
+time="2026-05-30T16:46:57+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62165->66.33.22.160:443: read: connection reset by peer"
+
+running (4m12.9s), 0843/1000 VUs, 49390 complete and 0 interrupted iterations
+default   [  84% ] 0843/1000 VUs  4m12.9s/5m00.0s
+time="2026-05-30T16:46:58+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62131->66.33.22.160:443: read: connection reset by peer"
+
+running (4m13.9s), 0846/1000 VUs, 49728 complete and 0 interrupted iterations
+default   [  85% ] 0846/1000 VUs  4m13.9s/5m00.0s
+
+running (4m14.9s), 0849/1000 VUs, 50025 complete and 0 interrupted iterations
+default   [  85% ] 0849/1000 VUs  4m14.9s/5m00.0s
+
+running (4m15.9s), 0853/1000 VUs, 50359 complete and 0 interrupted iterations
+default   [  85% ] 0853/1000 VUs  4m15.9s/5m00.0s
+
+running (4m16.9s), 0856/1000 VUs, 50704 complete and 0 interrupted iterations
+default   [  86% ] 0856/1000 VUs  4m16.9s/5m00.0s
+
+running (4m17.9s), 0859/1000 VUs, 51002 complete and 0 interrupted iterations
+default   [  86% ] 0859/1000 VUs  4m17.9s/5m00.0s
+time="2026-05-30T16:47:03+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62696->66.33.22.160:443: read: connection reset by peer"
+
+running (4m18.9s), 0863/1000 VUs, 51292 complete and 0 interrupted iterations
+default   [  86% ] 0863/1000 VUs  4m18.9s/5m00.0s
+
+running (4m19.9s), 0866/1000 VUs, 51603 complete and 0 interrupted iterations
+default   [  87% ] 0866/1000 VUs  4m19.9s/5m00.0s
+
+running (4m20.9s), 0869/1000 VUs, 51970 complete and 0 interrupted iterations
+default   [  87% ] 0869/1000 VUs  4m20.9s/5m00.0s
+
+running (4m21.9s), 0873/1000 VUs, 52347 complete and 0 interrupted iterations
+default   [  87% ] 0873/1000 VUs  4m21.9s/5m00.0s
+
+running (4m22.9s), 0876/1000 VUs, 52729 complete and 0 interrupted iterations
+default   [  88% ] 0876/1000 VUs  4m22.9s/5m00.0s
+
+running (4m23.9s), 0879/1000 VUs, 53121 complete and 0 interrupted iterations
+default   [  88% ] 0879/1000 VUs  4m23.9s/5m00.0s
+time="2026-05-30T16:47:09+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62870->66.33.22.160:443: read: connection reset by peer"
+
+running (4m24.9s), 0883/1000 VUs, 53408 complete and 0 interrupted iterations
+default   [  88% ] 0883/1000 VUs  4m24.9s/5m00.0s
+
+running (4m25.9s), 0886/1000 VUs, 53738 complete and 0 interrupted iterations
+default   [  89% ] 0886/1000 VUs  4m25.9s/5m00.0s
+
+running (4m26.9s), 0889/1000 VUs, 54117 complete and 0 interrupted iterations
+default   [  89% ] 0889/1000 VUs  4m26.9s/5m00.0s
+
+running (4m27.9s), 0893/1000 VUs, 54458 complete and 0 interrupted iterations
+default   [  89% ] 0893/1000 VUs  4m27.9s/5m00.0s
+time="2026-05-30T16:47:13+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/evaluations/my-evaluations\": read tcp 192.168.8.13:62479->66.33.22.160:443: read: connection reset by peer"
+
+running (4m28.9s), 0896/1000 VUs, 54811 complete and 0 interrupted iterations
+default   [  90% ] 0896/1000 VUs  4m28.9s/5m00.0s
+
+running (4m29.9s), 0899/1000 VUs, 55061 complete and 0 interrupted iterations
+default   [  90% ] 0899/1000 VUs  4m29.9s/5m00.0s
+
+running (4m30.9s), 0903/1000 VUs, 55293 complete and 0 interrupted iterations
+default   [  90% ] 0903/1000 VUs  4m30.9s/5m00.0s
+
+running (4m31.9s), 0906/1000 VUs, 55485 complete and 0 interrupted iterations
+default   [  91% ] 0906/1000 VUs  4m31.9s/5m00.0s
+time="2026-05-30T16:47:17+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62638->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:17+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62495->66.33.22.160:443: read: connection reset by peer"
+
+running (4m32.9s), 0909/1000 VUs, 55749 complete and 0 interrupted iterations
+default   [  91% ] 0909/1000 VUs  4m32.9s/5m00.0s
+time="2026-05-30T16:47:18+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62347->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:18+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62596->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:18+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62118->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:18+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62798->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:18+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62658->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:18+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62846->66.33.22.160:443: read: connection reset by peer"
+
+running (4m33.9s), 0913/1000 VUs, 56202 complete and 0 interrupted iterations
+default   [  91% ] 0913/1000 VUs  4m33.9s/5m00.0s
+time="2026-05-30T16:47:19+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62140->66.33.22.160:443: read: connection reset by peer"
+
+running (4m34.9s), 0916/1000 VUs, 56546 complete and 0 interrupted iterations
+default   [  92% ] 0916/1000 VUs  4m34.9s/5m00.0s
+
+running (4m35.9s), 0919/1000 VUs, 56885 complete and 0 interrupted iterations
+default   [  92% ] 0919/1000 VUs  4m35.9s/5m00.0s
+
+running (4m36.9s), 0923/1000 VUs, 57229 complete and 0 interrupted iterations
+default   [  92% ] 0923/1000 VUs  4m36.9s/5m00.0s
+time="2026-05-30T16:47:22+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62892->66.33.22.160:443: read: connection reset by peer"
+
+running (4m37.9s), 0926/1000 VUs, 57591 complete and 0 interrupted iterations
+default   [  93% ] 0926/1000 VUs  4m37.9s/5m00.0s
+
+running (4m38.9s), 0929/1000 VUs, 57932 complete and 0 interrupted iterations
+default   [  93% ] 0929/1000 VUs  4m38.9s/5m00.0s
+
+running (4m39.9s), 0933/1000 VUs, 58272 complete and 0 interrupted iterations
+default   [  93% ] 0933/1000 VUs  4m39.9s/5m00.0s
+
+running (4m40.9s), 0936/1000 VUs, 58610 complete and 0 interrupted iterations
+default   [  94% ] 0936/1000 VUs  4m40.9s/5m00.0s
+
+running (4m41.9s), 0939/1000 VUs, 58904 complete and 0 interrupted iterations
+default   [  94% ] 0939/1000 VUs  4m41.9s/5m00.0s
+
+running (4m42.9s), 0943/1000 VUs, 59123 complete and 0 interrupted iterations
+default   [  94% ] 0943/1000 VUs  4m42.9s/5m00.0s
+
+running (4m43.9s), 0946/1000 VUs, 59185 complete and 0 interrupted iterations
+default   [  95% ] 0946/1000 VUs  4m43.9s/5m00.0s
+
+running (4m44.9s), 0949/1000 VUs, 59364 complete and 0 interrupted iterations
+default   [  95% ] 0949/1000 VUs  4m44.9s/5m00.0s
+
+running (4m45.9s), 0953/1000 VUs, 59759 complete and 0 interrupted iterations
+default   [  95% ] 0953/1000 VUs  4m45.9s/5m00.0s
+time="2026-05-30T16:47:31+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62832->66.33.22.160:443: read: connection reset by peer"
+
+running (4m46.9s), 0956/1000 VUs, 60075 complete and 0 interrupted iterations
+default   [  96% ] 0956/1000 VUs  4m46.9s/5m00.0s
+
+running (4m47.9s), 0959/1000 VUs, 60311 complete and 0 interrupted iterations
+default   [  96% ] 0959/1000 VUs  4m47.9s/5m00.0s
+
+running (4m48.9s), 0963/1000 VUs, 60644 complete and 0 interrupted iterations
+default   [  96% ] 0963/1000 VUs  4m48.9s/5m00.0s
+
+running (4m49.9s), 0966/1000 VUs, 60936 complete and 0 interrupted iterations
+default   [  97% ] 0966/1000 VUs  4m49.9s/5m00.0s
+
+running (4m50.9s), 0969/1000 VUs, 61318 complete and 0 interrupted iterations
+default   [  97% ] 0969/1000 VUs  4m50.9s/5m00.0s
+
+running (4m51.9s), 0973/1000 VUs, 61619 complete and 0 interrupted iterations
+default   [  97% ] 0973/1000 VUs  4m51.9s/5m00.0s
+
+running (4m52.9s), 0976/1000 VUs, 61842 complete and 0 interrupted iterations
+default   [  98% ] 0976/1000 VUs  4m52.9s/5m00.0s
+time="2026-05-30T16:47:37+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62294->66.33.22.160:443: read: connection reset by peer"
+
+running (4m53.9s), 0979/1000 VUs, 62114 complete and 0 interrupted iterations
+default   [  98% ] 0979/1000 VUs  4m53.9s/5m00.0s
+
+running (4m54.9s), 0983/1000 VUs, 62427 complete and 0 interrupted iterations
+default   [  98% ] 0983/1000 VUs  4m54.9s/5m00.0s
+
+running (4m55.9s), 0986/1000 VUs, 62666 complete and 0 interrupted iterations
+default   [  99% ] 0986/1000 VUs  4m55.9s/5m00.0s
+
+running (4m56.9s), 0989/1000 VUs, 62880 complete and 0 interrupted iterations
+default   [  99% ] 0989/1000 VUs  4m56.9s/5m00.0s
+time="2026-05-30T16:47:42+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62469->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:42+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62674->66.33.22.160:443: read: connection reset by peer"
+
+running (4m57.9s), 0993/1000 VUs, 63188 complete and 0 interrupted iterations
+default   [  99% ] 0993/1000 VUs  4m57.9s/5m00.0s
+time="2026-05-30T16:47:43+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62885->66.33.22.160:443: read: connection reset by peer"
+
+running (4m58.9s), 0996/1000 VUs, 63622 complete and 0 interrupted iterations
+default   [ 100% ] 0996/1000 VUs  4m58.9s/5m00.0s
+
+running (4m59.9s), 0999/1000 VUs, 63896 complete and 0 interrupted iterations
+default   [ 100% ] 0999/1000 VUs  4m59.9s/5m00.0s
+time="2026-05-30T16:47:45+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62824->66.33.22.160:443: read: connection reset by peer"
+
+running (5m00.9s), 0797/1000 VUs, 64105 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:46+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62407->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:46+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62033->66.33.22.160:443: read: connection reset by peer"
+
+running (5m01.9s), 0508/1000 VUs, 64394 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m02.9s), 0053/1000 VUs, 64849 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m03.9s), 0028/1000 VUs, 64874 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:49+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62889->66.33.22.160:443: read: connection reset by peer"
+
+running (5m04.9s), 0025/1000 VUs, 64877 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:50+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62319->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:50+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62291->66.33.22.160:443: read: connection reset by peer"
+
+running (5m05.9s), 0022/1000 VUs, 64880 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:51+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62851->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:51+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62982->66.33.22.160:443: read: connection reset by peer"
+
+running (5m06.9s), 0020/1000 VUs, 64882 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:51+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62108->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:52+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62250->66.33.22.160:443: read: connection reset by peer"
+
+running (5m07.9s), 0018/1000 VUs, 64884 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m08.9s), 0016/1000 VUs, 64886 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:54+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/evaluations/my-evaluations\": read tcp 192.168.8.13:62423->66.33.22.160:443: read: connection reset by peer"
+
+running (5m09.9s), 0016/1000 VUs, 64886 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m10.9s), 0015/1000 VUs, 64887 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m11.9s), 0015/1000 VUs, 64887 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m12.9s), 0015/1000 VUs, 64887 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:58+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62820->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:47:58+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/evaluations/my-evaluations\": read tcp 192.168.8.13:62533->66.33.22.160:443: read: connection reset by peer"
+
+running (5m13.9s), 0015/1000 VUs, 64887 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:47:59+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62718->66.33.22.160:443: read: connection reset by peer"
+
+running (5m14.9s), 0013/1000 VUs, 64889 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m15.9s), 0012/1000 VUs, 64890 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m16.9s), 0012/1000 VUs, 64890 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:48:01+08:00" level=warning msg="Request Failed" error="request timeout"
+time="2026-05-30T16:48:02+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62139->66.33.22.160:443: read: connection reset by peer"
+
+running (5m17.9s), 0012/1000 VUs, 64890 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m18.9s), 0010/1000 VUs, 64892 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:48:03+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62494->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:48:04+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:63044->66.33.22.160:443: read: connection reset by peer"
+
+running (5m19.9s), 0010/1000 VUs, 64892 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:48:04+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62487->66.33.22.160:443: read: connection reset by peer"
+
+running (5m20.9s), 0009/1000 VUs, 64893 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m21.9s), 0007/1000 VUs, 64895 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:48:07+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/evaluations/my-evaluations\": read tcp 192.168.8.13:62865->66.33.22.160:443: read: connection reset by peer"
+
+running (5m22.9s), 0007/1000 VUs, 64895 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:48:08+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62311->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:48:08+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62540->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:48:08+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62629->66.33.22.160:443: read: connection reset by peer"
+time="2026-05-30T16:48:08+08:00" level=warning msg="Request Failed" error="Get \"https://pms-frontend-production-f2a8.up.railway.app/api/auth/me\": read tcp 192.168.8.13:62924->66.33.22.160:443: read: connection reset by peer"
+
+running (5m23.9s), 0006/1000 VUs, 64896 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+time="2026-05-30T16:48:09+08:00" level=warning msg="Request Failed" error="read tcp 192.168.8.13:62402->66.33.22.160:443: read: connection reset by peer"
+
+running (5m24.9s), 0002/1000 VUs, 64900 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m25.9s), 0001/1000 VUs, 64901 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m26.9s), 0001/1000 VUs, 64901 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m27.9s), 0001/1000 VUs, 64901 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m28.9s), 0001/1000 VUs, 64901 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+
+running (5m29.9s), 0001/1000 VUs, 64901 complete and 0 interrupted iterations
+default ↓ [ 100% ] 0999/1000 VUs  5m0s
+[32m     ✓ login 200[0m
+[32m     ✓ login Set-Cookie present[0m
+[31m     ✗ me 200
+      ↳  99% — ✓ 64888 / ✗ 13[0m
+[31m     ✗ my-evaluations 200
+      ↳  99% — ✓ 64853 / ✗ 48[0m
+
+     checks[2m.............................:[0m [36m99.95%[0m [36;2m✓ 131739[0m     [36;2m✗ 61[0m    
+     data_received[2m......................:[0m [36m477 MB[0m [36;2m1.4 MB/s[0m
+     data_sent[2m..........................:[0m [36m8.9 MB[0m [36;2m27 kB/s[0m
+   [32m✓[0m endpoint_me_duration[2m...............:[0m avg=[36m458.84ms[0m min=[36m69.59ms[0m med=[36m222.34ms[0m max=[36m38.4s[0m   p(90)=[36m1.03s[0m    p(95)=[36m1.4s[0m 
+   [32m✓[0m endpoint_my_evaluations_duration[2m...:[0m avg=[36m863.58ms[0m min=[36m84.7ms[0m  med=[36m462.42ms[0m max=[36m1m0s[0m    p(90)=[36m1.95s[0m    p(95)=[36m2.7s[0m 
+     http_req_blocked[2m...................:[0m avg=[36m6ms[0m      min=[36m0s[0m      med=[36m0s[0m       max=[36m10.9s[0m   p(90)=[36m1µs[0m      p(95)=[36m1µs[0m  
+     http_req_connecting[2m................:[0m avg=[36m2.77ms[0m   min=[36m0s[0m      med=[36m0s[0m       max=[36m8.73s[0m   p(90)=[36m0s[0m       p(95)=[36m0s[0m   
+     http_req_duration[2m..................:[0m avg=[36m659.94ms[0m min=[36m69.59ms[0m med=[36m333.63ms[0m max=[36m1m0s[0m    p(90)=[36m1.52s[0m    p(95)=[36m2.18s[0m
+       { expected_response:true }[2m.......:[0m avg=[36m644.75ms[0m min=[36m69.59ms[0m med=[36m333.27ms[0m max=[36m36.08s[0m  p(90)=[36m1.51s[0m    p(95)=[36m2.17s[0m
+   [32m✓[0m http_req_failed[2m....................:[0m [36m0.04%[0m  [36;2m✓ 61[0m         [36;2m✗ 130740[0m
+     http_req_receiving[2m.................:[0m avg=[36m270.77ms[0m min=[36m0s[0m      med=[36m2.03ms[0m   max=[36m52.88s[0m  p(90)=[36m752.78ms[0m p(95)=[36m1.25s[0m
+     http_req_sending[2m...................:[0m avg=[36m118.72µs[0m min=[36m7µs[0m     med=[36m62µs[0m     max=[36m41.21ms[0m p(90)=[36m198µs[0m    p(95)=[36m288µs[0m
+     http_req_tls_handshaking[2m...........:[0m avg=[36m3.22ms[0m   min=[36m0s[0m      med=[36m0s[0m       max=[36m9.96s[0m   p(90)=[36m0s[0m       p(95)=[36m0s[0m   
+     http_req_waiting[2m...................:[0m avg=[36m389.05ms[0m min=[36m65.84ms[0m med=[36m227.57ms[0m max=[36m38.4s[0m   p(90)=[36m897.09ms[0m p(95)=[36m1.2s[0m 
+     http_reqs[2m..........................:[0m [36m130801[0m [36;2m396.35391/s[0m
+     iteration_duration[2m.................:[0m avg=[36m2.34s[0m    min=[36m1.15s[0m   med=[36m1.76s[0m    max=[36m1m20s[0m   p(90)=[36m3.88s[0m    p(95)=[36m4.77s[0m
+     iterations[2m.........................:[0m [36m64901[0m  [36;2m196.663367/s[0m
+     vus[2m................................:[0m [36m1[0m      [36;2mmin=1[0m        [36;2mmax=999[0m 
+     vus_max[2m............................:[0m [36m1000[0m   [36;2mmin=1000[0m     [36;2mmax=1000[0m
+running (5m30.0s), 0000/1000 VUs, 64901 complete and 1 interrupted iterations
+default ✓ [ 100% ] 0000/1000 VUs  5m0s
