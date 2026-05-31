@@ -24,7 +24,6 @@ jobs:
         run: npm run test -- --coverage
 
       - name: Set up Java 25
-        working-directory: backend
         uses: actions/setup-java@v4
         with:
           java-version: '25'
