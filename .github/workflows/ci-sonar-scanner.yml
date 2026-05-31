@@ -3,7 +3,7 @@ name: CI / Sonar Scanner
 on:
   push:
     branches:
-      - main
+      - feature/sonar-scanner
 
 
 jobs:
