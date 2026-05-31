@@ -16,12 +16,15 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install dependencies
+        working-directory: frontend
         run: npm install -D @vitest/coverage-v8
 
       - name: Frontend coverage
+        working-directory: frontend
         run: npm run test -- --coverage
 
       - name: Backend coverage
+        working-directory: backend
         run : mvn clean test
 
       - uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
