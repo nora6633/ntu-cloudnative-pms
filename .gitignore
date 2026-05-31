@@ -2,3 +2,8 @@
 .env.production
 
 .vscode/settings.json
+
+# k6 load test — credentials and transient run artifacts
+loadtest/.env
+loadtest/summary.json
+loadtest/results.json
