@@ -24,7 +24,7 @@ import edu.ntu.pms.user.entity.Department;
 import edu.ntu.pms.user.entity.Job;
 import edu.ntu.pms.user.entity.User;
 
-public class EvaluationMapperTests {
+public class EvaluationMapperTestSuite {
 
     private final EvaluationMapper mapper = Mappers.getMapper(EvaluationMapper.class);
 

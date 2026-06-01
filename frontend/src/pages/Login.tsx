@@ -88,23 +88,6 @@ export default function Login() {
           <Button onClick={onSubmit} disabled={submitting || !allfilled}>
             {submitting ? 'Signing in...' : 'Sign in'}
           </Button>
-          {/* <button 
-            type="submit" 
-            disabled={submitting}
-            style={{
-              padding: '0.75rem',
-              cursor: submitting ? 'not-allowed' : 'pointer',
-              // Dynamic Colors: Grey when disabled, White when enabled
-              backgroundColor: submitting ? '#cccccc' : '#ffffff',  // grey : green
-              color: '#000000', 
-              border: '1px solid #999',
-              borderRadius: '4px',
-              fontWeight: 'bold',
-              transition: 'background-color 0.2s'
-            }}
-          >
-            {submitting ? 'Signing in...' : 'Sign in'}
-          </button> */}
         </div>
       </form>
     </section>

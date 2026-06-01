@@ -7,3 +7,6 @@
 loadtest/.env
 loadtest/summary.json
 loadtest/results.json
+
+#sonar
+.scannerwork
