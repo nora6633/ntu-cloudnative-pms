@@ -1,6 +1,6 @@
 # ntu-cloudnative-pms
 
-> A cloud-native Performance Management System for managing employee performance evaluations — built for NTU Spring 2026 Cloud Native Development and Best Practice (IM5072 / CSIE5217).
+> A Performance Management System for managing employee performance evaluations — built for NTU x TSMC Spring 2026 Cloud Native Development and Best Practice (IM5072 / CSIE5217).
 
 **Live demo:** https://pms-frontend-production-f2a8.up.railway.app
 
@@ -245,15 +245,10 @@ Department and Job CRUD endpoints are shared between `ADMIN` and `HR`.
 
 | Requirement | Status |
 |---|---|
-| Stateless authentication | ✅ JWT in `HttpOnly; SameSite=Lax; Secure` cookie |
-| Method-level RBAC | ✅ `@PreAuthorize` (controller) + service-layer checks for employee actions |
-| Audit log writes | ✅ Atomic with the originating transaction (Hibernate Envers); append-only via `REVTYPE` (`0` = INSERT, `1` = UPDATE, `2` = DELETE); `User.passwordHash` excluded |
-| Schema safety in production | ✅ `application-prod.yaml` sets `ddl-auto=validate` — startup fails fast on schema drift |
-| Concurrency control | 🟡 `@Version` on `Goal` (optimistic locking); other entities rely on default transactional isolation |
-| Performance / uptime targets | 🟡 Not measured — no benchmark or SLO instrumentation yet |
-| Encryption at rest | 🟡 Relies on Railway-managed disk encryption; no application-level field encryption |
-| Health / metrics endpoints | ❌ Not implemented (no Spring Boot Actuator, no Prometheus / Micrometer) |
-| Schema migration tool | ❌ Not implemented (Flyway / Liquibase planned) |
+| Stateless authentication | JWT in `HttpOnly; SameSite=Lax; Secure` cookie |
+| Method-level RBAC | `@PreAuthorize` (controller) + service-layer checks for employee actions |
+| Audit log writes | Atomic with the originating transaction (Hibernate Envers); append-only via `REVTYPE` (`0` = INSERT, `1` = UPDATE, `2` = DELETE); `User.passwordHash` excluded |
+| Schema safety in production | `application-prod.yaml` sets `ddl-auto=validate` — startup fails fast on schema drift |
 
 ---
 
@@ -262,6 +257,25 @@ Department and Job CRUD endpoints are shared between `ADMIN` and `HR`.
 ### Load Test
 - `BASE_URL=https://pms-frontend-production-f2a8.up.railway.app PMS_USER=xxx PMS_PASS=xxx k6 run loadtest/load-test.js`
 ---
+
+## Demo 
+- HR
+           <img width="1306" height="736" alt="image" src="https://github.com/user-attachments/assets/01fac295-493b-4149-bb79-0aca883ac126" />
+           <img width="1297" height="453" alt="image" src="https://github.com/user-attachments/assets/ab382396-e4a4-4875-912d-968cd6bf0456" />
+           <img width="1284" height="751" alt="image" src="https://github.com/user-attachments/assets/d73c8310-1772-44fd-81b5-37929dddc303" />
+
+
+- Employee
+           <img width="1209" height="560" alt="image" src="https://github.com/user-attachments/assets/84d88221-d525-4ac4-ba07-064911ac4828" />
+
+- Manager
+           <img width="1286" height="420" alt="image" src="https://github.com/user-attachments/assets/06e62c8a-1fe6-4135-801d-0617e388a929" />
+
+- Admin
+           <img width="1273" height="741" alt="image" src="https://github.com/user-attachments/assets/409af6ae-3175-4c47-b8c3-8cbf6f30b8b1" />
+           <img width="1279" height="738" alt="image" src="https://github.com/user-attachments/assets/a3b8cdbc-e349-40d4-9c2e-4f745aad1a62" />
+           <img width="1288" height="742" alt="image" src="https://github.com/user-attachments/assets/883b872b-8e0a-4b63-8c17-6c1eafa18ab1" />
+           <img width="1194" height="742" alt="image" src="https://github.com/user-attachments/assets/c7793660-ec2a-4a09-b620-b9d4b6739e4d" />
 
 ## Team
 
