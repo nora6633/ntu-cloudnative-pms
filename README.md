@@ -4,23 +4,6 @@
 
 **Live demo:** https://pms-frontend-production-f2a8.up.railway.app
 
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [System Architecture](#system-architecture)
-- [Getting Started](#getting-started)
-- [API Contract & Code Generation](#api-contract--code-generation)
-- [CI / CD](#ci--cd)
-- [Modules](#modules)
-- [Non-Functional Requirements](#non-functional-requirements)
-- [Team](#team)
-
----
-
 ## Overview
 
 The Performance Management System (PMS) supports the full lifecycle of employee performance evaluations. It covers template creation by HR, goal drafting and submission by employees, manager reviews, and HR finalization — all with role-based access control, immutable audit logging, and a containerized cloud-native deployment.
@@ -75,6 +58,14 @@ The Performance Management System (PMS) supports the full lifecycle of employee 
 
 ---
 
+### Application Architecture
+- Backend
+           <img width="864" height="189" alt="image" src="https://github.com/user-attachments/assets/b68a2249-958e-4a94-a82e-3543e344a758" />
+
+### Evaluation flow
+<img width="745" height="408" alt="image" src="https://github.com/user-attachments/assets/7243f8d3-1169-4899-b766-a3f77c7ffc0d" />
+
+
 ## System Architecture
 
 ### Current deployment (Stage 1)
@@ -95,6 +86,9 @@ Browser → nginx (frontend container, serves React SPA)
 - Frontend image: nginx serving static React build; `VITE_API_URL` resolved at container startup via `envsubst` into `/config.js`, so the same image runs in any environment.
 - Backend image: JRE-only Alpine, non-root user; activated profile (`SPRING_PROFILES_ACTIVE=prod` in production) merges `application-prod.yaml` on top of `application.yaml`.
 - Production profile tightens `ddl-auto=validate`, disables Swagger UI, and enforces `cookie.secure=true`.
+---
+
+
 
 ### Growth roadmap (designed but not yet implemented)
 
@@ -252,10 +246,15 @@ Department and Job CRUD endpoints are shared between `ADMIN` and `HR`.
 
 ---
 
----
-## Test
-### Load Test
+
+### Stress Test 
+
 - `BASE_URL=https://pms-frontend-production-f2a8.up.railway.app PMS_USER=xxx PMS_PASS=xxx k6 run loadtest/load-test.js`
+<img width="692" height="404" alt="image" src="https://github.com/user-attachments/assets/e6e6fe17-8064-42a8-8059-4fbf4aecf6b8" />
+
+<img width="993" height="376" alt="6dc82f27-0949-4e0d-9dec-2377ca6c6cd3" src="https://github.com/user-attachments/assets/95d73c02-d508-4f68-9740-ba054716b46d" />
+<img width="2048" height="1161" alt="b2459044-54cf-4cca-b5e6-0a4e0a3f22c4" src="https://github.com/user-attachments/assets/158fee6a-6049-4832-85c3-3f1a3d1efe82" />
+
 ---
 
 ## Demo 
